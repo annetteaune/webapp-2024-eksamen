@@ -1,16 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  categories,
-  comments,
-  courseCreateSteps,
-  courses,
-  users,
-} from "../data/data";
-
-import { useParams, useRouter } from "next/navigation";
+import Course from "@/components/Course";
 import Courses from "@/components/Courses";
+import Create from "@/components/Create";
+import Lesson from "@/components/Lesson";
+import SignUp from "@/components/Signup";
 
 export default function All() {
   return (
@@ -32,7 +26,11 @@ export default function All() {
         </ul>
       </nav>
       <main className="h-full">
+        <SignUp />
         <Courses />
+        <Create />
+        <Course />
+        <Lesson />
         <p>Siden er tom</p>
       </main>
       <footer className="flex justify-between" data-testid="footer">

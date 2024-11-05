@@ -1,21 +1,33 @@
 import { courses } from "@/data/data";
 import { useEffect, useState } from "react";
+import {
+  Course as CourseType,
+  Lesson as LessonType,
+} from "../interfaces/types";
+import Lesson from "./Lesson";
+import { User } from "../interfaces/types";
 
-const getCourse = async (slug) => {
+// hente kursdata
+const getCourse = async (slug: string): Promise<CourseType | undefined> => {
   const data = await courses.filter((course) => course.slug === slug);
   return data?.[0];
 };
 
-export default function Course() {
-  const [content, setContent] = useState(null);
+interface CourseProps {
+  users?: User[]; // TODO optional siden jeg ikke helt har koll på denne
+}
 
+export default function Course({ users }: CourseProps) {
+  const [content, setContent] = useState<CourseType | null>(null);
+
+  // TODO bytte ut med params?
   const courseSlug = "javascript-101";
   const lessonSlug = "variabler";
 
   useEffect(() => {
     const getContent = async () => {
       const data = await getCourse(courseSlug);
-      setContent(data);
+      setContent(data || null);
     };
     getContent();
   }, [courseSlug]);

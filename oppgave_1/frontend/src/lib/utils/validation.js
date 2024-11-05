@@ -1,4 +1,4 @@
-const isValid = (items) => {
+export const isValid = (items) => {
   const invalidFields = [];
   // eslint-disable-next-line no-shadow
   const validate = (items) => {

@@ -1,63 +1,79 @@
+import { useEffect, useState } from "react";
 import { comments, courses } from "@/data/data";
-import { useState } from "react";
+import { Comment, Course, Lesson as LessonType } from "@/interfaces/types";
+import {
+  FormSubmitEvent,
+  InputChangeEvent,
+  TextAreaChangeEvent,
+} from "@/interfaces/types";
 
-const createComment = async (data) => {
+const createComment = async (data: Comment): Promise<void> => {
   await comments.push(data);
 };
 
-const getComments = async (lessonSlug) => {
+const getComments = async (lessonSlug: string): Promise<Comment[]> => {
   const data = await comments.filter(
     (comment) => comment.lesson.slug === lessonSlug
   );
   return data;
 };
 
-const getLesson = async (courseSlug, lessonSlug) => {
-  const data = await courses
-    .flatMap(
-      (course) =>
-        course.slug === courseSlug &&
-        course.lessons.filter((lesson) => lesson.slug === lessonSlug)
-    )
-    .filter(Boolean);
+const getLesson = async (
+  courseSlug: string,
+  lessonSlug: string
+): Promise<LessonType | undefined> => {
+  const lessons = courses
+    .filter((course) => course.slug === courseSlug)
+    .flatMap((course) => course.lessons)
+    .filter((lesson) => lesson.slug === lessonSlug);
+
+  return lessons[0];
+};
+
+const getCourse = async (courseSlug: string): Promise<Course | undefined> => {
+  const data = await courses.filter((course) => course.slug === courseSlug);
   return data?.[0];
 };
 
 export default function Lesson() {
-  const [success, setSuccess] = useState(false);
-  const [formError, setFormError] = useState(false);
-  const [lessonComments, setComments] = useState([]);
-  const [comment, setComment] = useState("");
-  const [name, setName] = useState("");
-  const [lesson, setLesson] = useState(null);
-  const [course, setCourse] = useState(null);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [formError, setFormError] = useState<boolean>(false);
+  const [lessonComments, setComments] = useState<Comment[]>([]);
+  const [comment, setComment] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [lesson, setLesson] = useState<LessonType | null>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+
+  // TODO params
   const courseSlug = "javascript-101";
   const lessonSlug = "variabler";
 
-  const handleComment = (event) => {
+  const handleComment = (event: TextAreaChangeEvent) => {
     setComment(event.target.value);
   };
 
-  const handleName = (event) => {
+  const handleName = (event: InputChangeEvent) => {
     setName(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormSubmitEvent) => {
     event.preventDefault();
     setFormError(false);
     setSuccess(false);
     if (!comment || !name) {
       setFormError(true);
     } else {
-      await createComment({
+      const newComment: Comment = {
         id: `${Math.floor(Math.random() * 1000 + 1)}`,
         createdBy: {
-          id: Math.floor(Math.random() * 1000 + 1),
+          id: String(Math.floor(Math.random() * 1000 + 1)),
           name,
         },
         comment,
         lesson: { slug: lessonSlug },
-      });
+      };
+
+      await createComment(newComment);
       const commentsData = await getComments(lessonSlug);
       setComments(commentsData);
       setSuccess(true);
@@ -66,11 +82,11 @@ export default function Lesson() {
 
   useEffect(() => {
     const getContent = async () => {
-      const lessonDate = await getLesson(courseSlug, lessonSlug);
-      const courseData = await getCourse(courseSlug, lessonSlug);
+      const lessonData = await getLesson(courseSlug, lessonSlug);
+      const courseData = await getCourse(courseSlug);
       const commentsData = await getComments(lessonSlug);
-      setLesson(lessonDate);
-      setCourse(courseData);
+      setLesson(lessonData || null);
+      setCourse(courseData || null);
       setComments(commentsData);
     };
     getContent();
@@ -97,7 +113,8 @@ export default function Lesson() {
       >
         {lesson?.preAmble}
       </p>
-      {lesson?.text?.length > 0 &&
+      {lesson?.text &&
+        lesson.text.length > 0 &&
         lesson.text.map((text) => (
           <p
             data-testid="lesson_text"
@@ -130,13 +147,12 @@ export default function Lesson() {
             </span>
             <textarea
               data-testid="form_textarea"
-              type="text"
               name="comment"
               id="comment"
               value={comment}
               onChange={handleComment}
               className="w-full rounded bg-slate-100"
-              cols="30"
+              cols={30}
             />
           </label>
           <button

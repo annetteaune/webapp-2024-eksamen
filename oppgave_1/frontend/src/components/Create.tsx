@@ -1,26 +1,41 @@
-const createCourse = async (data) => {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { categories, courses, courseCreateSteps } from "@/data/data";
+import {
+  Course,
+  CourseFields,
+  Lesson,
+  CourseStep,
+  ButtonClickEvent,
+  InputChangeEvent,
+  SelectChangeEvent,
+  TextAreaChangeEvent,
+} from "@/interfaces/types";
+import { isValid } from "@/lib/utils/validation";
+
+const createCourse = async (data: Course): Promise<void> => {
   await courses.push(data);
 };
 
 export default function Create() {
-  const [success, setSuccess] = useState(false);
-  const [formError, setFormError] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const [currentLesson, setCurrentLesson] = useState(0);
-  const [courseFields, setCourseFields] = useState({
+  const [success, setSuccess] = useState<boolean>(false);
+  const [formError, setFormError] = useState<boolean>(false);
+  const [current, setCurrent] = useState<number>(0);
+  const [currentLesson, setCurrentLesson] = useState<number>(0);
+  const [courseFields, setCourseFields] = useState<CourseFields>({
     id: `${Math.floor(Math.random() * 1000 + 1)}`,
     title: "",
     slug: "",
     description: "",
     category: "",
   });
-  const [lessons, setLessons] = useState([]);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
 
   const router = useRouter();
 
-  const step = courseCreateSteps[current]?.name;
+  const step: string = courseCreateSteps[current]?.name;
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: ButtonClickEvent) => {
     event.preventDefault();
     setFormError(false);
     setSuccess(false);
@@ -37,7 +52,7 @@ export default function Create() {
     }
   };
 
-  const addTextBox = () => {
+  const addTextBox = (): void => {
     const updatedLessonText = lessons.map((lesson, i) => {
       if (currentLesson === i) {
         const text = [
@@ -59,7 +74,7 @@ export default function Create() {
     setLessons(updatedLessonText);
   };
 
-  const removeTextBox = (index) => {
+  const removeTextBox = (index: number): void => {
     const removed = lessons[currentLesson].text.filter((_, i) => i !== index);
     const updatedLessonText = lessons.map((lesson, i) => {
       if (currentLesson === i) {
@@ -73,12 +88,14 @@ export default function Create() {
     setLessons(updatedLessonText);
   };
 
-  const handleCourseFieldChange = (event) => {
+  const handleCourseFieldChange = (
+    event: InputChangeEvent | SelectChangeEvent
+  ): void => {
     const { name, value } = event.target;
     setCourseFields((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleStep = (index) => {
+  const handleStep = (index: number): void => {
     setFormError(false);
     switch (index) {
       case 0:
@@ -89,17 +106,19 @@ export default function Create() {
         break;
     }
   };
-
-  const handleLessonFieldChange = (event, index) => {
+  const handleLessonFieldChange = (
+    event: InputChangeEvent | TextAreaChangeEvent,
+    index?: number
+  ): void => {
     const { name, value } = event.target;
-    let text;
+    let text = lessons[currentLesson]?.text || [];
+
     if (lessons[currentLesson]?.text?.length === 0) {
       text = [{ id: `${Math.floor(Math.random() * 1000 + 1)}`, text: "" }];
-    }
-    if (lessons[currentLesson]?.text?.length > 0) {
-      text = lessons[currentLesson]?.text?.map((_text, i) => {
+    } else if (name === "text" && typeof index === "number") {
+      text = lessons[currentLesson].text.map((_text, i) => {
         if (i === index) {
-          return { id: _text.id, [name]: value };
+          return { id: _text.id, text: value };
         }
         return _text;
       });
@@ -107,18 +126,18 @@ export default function Create() {
 
     const updatedLessons = lessons.map((lesson, i) => {
       if (i === currentLesson) {
-        return { ...lesson, [name]: value, text: text?.length > 0 ? text : [] };
+        return { ...lesson, [name]: value, text };
       }
       return lesson;
     });
     setLessons(updatedLessons);
   };
 
-  const changeCurrentLesson = (index) => {
+  const changeCurrentLesson = (index: number): void => {
     setCurrentLesson(index);
   };
 
-  const addLesson = () => {
+  const addLesson = (): void => {
     setLessons((prev) => [
       ...prev,
       {
@@ -320,7 +339,6 @@ export default function Create() {
                         <span className="text-sm font-semibold">Tekst*</span>
                         <textarea
                           data-testid="form_lesson_text"
-                          type="text"
                           name="text"
                           id={`text-${field?.id}`}
                           value={field?.text}
@@ -328,7 +346,7 @@ export default function Create() {
                             handleLessonFieldChange(event, index)
                           }
                           className="w-full rounded bg-slate-100"
-                          cols="30"
+                          cols={30}
                         />
                       </label>
                       <button
@@ -345,13 +363,12 @@ export default function Create() {
                     <span className="mb-1 text-sm font-semibold">Tekst*</span>
                     <textarea
                       data-testid="form_lesson_text"
-                      type="text"
                       name="text"
                       id="text"
                       value={lessons[currentLesson]?.text?.[0]?.text}
                       onChange={(event) => handleLessonFieldChange(event, 0)}
                       className="w-full rounded bg-slate-100"
-                      cols="30"
+                      cols={30}
                     />
                   </label>
                 )}

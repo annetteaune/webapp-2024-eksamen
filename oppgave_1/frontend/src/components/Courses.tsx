@@ -1,11 +1,13 @@
-import { categories, courses } from "@/data/data";
 import { useState } from "react";
+import { categories, courses } from "@/data/data";
+import { Course } from "@/interfaces/types";
+import { SelectChangeEvent } from "@/interfaces/types";
 
 export default function Courses() {
-  const [value, setValue] = useState("");
-  const [data, setData] = useState(courses);
+  const [value, setValue] = useState<string>("");
+  const [data, setData] = useState<Course[]>(courses);
 
-  const handleFilter = (event) => {
+  const handleFilter = (event: SelectChangeEvent) => {
     const category = event.target.value;
     setValue(category);
     if (category && category.length > 0) {

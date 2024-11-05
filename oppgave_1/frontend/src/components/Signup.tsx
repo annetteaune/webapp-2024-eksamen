@@ -1,9 +1,15 @@
 import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+  FormFields,
+  FormSubmitEvent,
+  InputChangeEvent,
+} from "@/interfaces/types";
 
 export default function SignUp() {
   const [success, setSuccess] = useState(false);
   const [formError, setFormError] = useState(false);
-  const [fields, setFields] = useState({
+  const [fields, setFields] = useState<FormFields>({
     name: "",
     email: "",
     admin: false,
@@ -12,7 +18,7 @@ export default function SignUp() {
 
   const formIsValid = Object.values(fields).filter((val) => val?.length === 0);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormSubmitEvent) => {
     event.preventDefault();
     setFormError(false);
     setSuccess(false);
@@ -26,7 +32,7 @@ export default function SignUp() {
     }
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: InputChangeEvent) => {
     const { name, value } = event.target;
     setFields((prev) => ({ ...prev, [name]: value }));
   };
