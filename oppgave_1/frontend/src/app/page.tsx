@@ -1,10 +1,8 @@
-import All from "@/pages/All";
+"use client";
+
+import SignUp from "@/components/Signup";
 
 export default function Home() {
-  return (
-    <main className="h-full">
-      <All />
-    </main>
-  );
+  return <SignUp />;
 }
 import React from "react";
