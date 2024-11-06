@@ -6,6 +6,7 @@ import {
   InputChangeEvent,
   TextAreaChangeEvent,
 } from "@/interfaces/types";
+import { useParams } from "next/navigation";
 
 const createComment = async (data: Comment): Promise<void> => {
   await comments.push(data);
@@ -44,9 +45,9 @@ export default function Lesson() {
   const [lesson, setLesson] = useState<LessonType | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
 
-  // TODO params
-  const courseSlug = "javascript-101";
-  const lessonSlug = "variabler";
+  const params = useParams<{ slug: string; lessonSlug: string }>();
+  const courseSlug = params?.slug;
+  const lessonSlug = params?.lessonSlug;
 
   const handleComment = (event: TextAreaChangeEvent) => {
     setComment(event.target.value);
@@ -60,37 +61,44 @@ export default function Lesson() {
     event.preventDefault();
     setFormError(false);
     setSuccess(false);
-    if (!comment || !name) {
+    if (!comment || !name || !lessonSlug) {
       setFormError(true);
-    } else {
-      const newComment: Comment = {
-        id: `${Math.floor(Math.random() * 1000 + 1)}`,
-        createdBy: {
-          id: String(Math.floor(Math.random() * 1000 + 1)),
-          name,
-        },
-        comment,
-        lesson: { slug: lessonSlug },
-      };
-
-      await createComment(newComment);
-      const commentsData = await getComments(lessonSlug);
-      setComments(commentsData);
-      setSuccess(true);
+      return;
     }
+
+    const newComment: Comment = {
+      id: `${Math.floor(Math.random() * 1000 + 1)}`,
+      createdBy: {
+        id: String(Math.floor(Math.random() * 1000 + 1)),
+        name,
+      },
+      comment,
+      lesson: { slug: lessonSlug },
+    };
+
+    await createComment(newComment);
+    const commentsData = await getComments(lessonSlug);
+    setComments(commentsData);
+    setSuccess(true);
   };
 
   useEffect(() => {
     const getContent = async () => {
-      const lessonData = await getLesson(courseSlug, lessonSlug);
-      const courseData = await getCourse(courseSlug);
-      const commentsData = await getComments(lessonSlug);
-      setLesson(lessonData || null);
-      setCourse(courseData || null);
-      setComments(commentsData);
+      if (courseSlug && lessonSlug) {
+        const lessonData = await getLesson(courseSlug, lessonSlug);
+        const courseData = await getCourse(courseSlug);
+        const commentsData = await getComments(lessonSlug);
+        setLesson(lessonData || null);
+        setCourse(courseData || null);
+        setComments(commentsData);
+      }
     };
     getContent();
   }, [courseSlug, lessonSlug]);
+
+  if (!lesson || !course) {
+    return <div>Laster inn...</div>;
+  }
 
   return (
     <div>
