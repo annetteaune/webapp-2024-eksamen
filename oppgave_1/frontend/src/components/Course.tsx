@@ -7,6 +7,7 @@ import {
 import Lesson from "./Lesson";
 import { User } from "../interfaces/types";
 import Link from "next/link";
+import UsersList from "./UsersList";
 
 // hente kursdata
 const getCourse = async (slug: string): Promise<CourseType | undefined> => {
@@ -78,13 +79,7 @@ export default function Course({ courseSlug, lessonSlug }: CourseProps) {
           </p>
         </section>
       )}
-      <aside
-        data-testid="enrollments"
-        className="border-l border-slate-200 pl-6"
-      >
-        <h3 className="mb-4 text-base font-bold">Kategori</h3>
-        <p className="capitalize">{content.category}</p>
-      </aside>
+      <UsersList />
     </div>
   );
 }
