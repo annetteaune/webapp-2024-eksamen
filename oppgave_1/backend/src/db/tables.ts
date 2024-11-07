@@ -9,6 +9,16 @@ export const createTables = async (db: DB) => {
       email TEXT NOT NULL UNIQUE
     );
 
+    CREATE TABLE categories (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL UNIQUE
+    );
+
+    CREATE TABLE course_create_steps (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL
+    );
+
     CREATE TABLE courses (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -22,8 +32,7 @@ export const createTables = async (db: DB) => {
       course_id TEXT NOT NULL,
       title TEXT NOT NULL,
       slug TEXT NOT NULL,
-      pre_amble TEXT NOT NULL,
-      order_number INTEGER,
+      preAmble TEXT NOT NULL,
       FOREIGN KEY (course_id) REFERENCES courses(id)
     );
 
@@ -36,12 +45,10 @@ export const createTables = async (db: DB) => {
 
     CREATE TABLE comments (
       id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
-      lesson_id TEXT NOT NULL,
+      created_by_id TEXT NOT NULL,
+      created_by_name TEXT NOT NULL,
       comment TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (lesson_id) REFERENCES lessons(id)
+      lesson_slug TEXT NOT NULL
     );
   `);
 };

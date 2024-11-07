@@ -6,6 +6,7 @@ import { createLessonService } from "../../lessons/service";
 import { createLessonRepository } from "../../lessons/repository";
 import db from "../../../db/db";
 import { courseSchema } from "../helpers";
+import { Course } from "@/types";
 
 const courseRouter = new Hono();
 
@@ -59,7 +60,18 @@ courseRouter.post("/", async (c) => {
 
   try {
     const validatedData = courseSchema.parse(body);
-    const result = await courseService.createCourse(validatedData);
+
+    const courseData: Pick<
+      Course,
+      "title" | "slug" | "description" | "category"
+    > = {
+      title: validatedData.title,
+      slug: validatedData.slug,
+      description: validatedData.description,
+      category: validatedData.category,
+    };
+
+    const result = await courseService.createCourse(courseData);
 
     if (!result.success) {
       return c.json(

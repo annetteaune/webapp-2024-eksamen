@@ -1,7 +1,6 @@
 import type { DB } from "@/db/db";
 import {
   CourseRow,
-  LessonRow,
   Result,
   ResultHandler,
   type Course,
@@ -26,18 +25,29 @@ export const createCourseRepository = (db: DB) => {
     courseId: string
   ): Promise<Lesson[]> => {
     const query = db.prepare(`
-      SELECT * FROM lessons 
-      WHERE course_id = ?
-      ORDER BY order_number ASC
+      SELECT l.id, l.course_id, l.title, l.slug, l.preAmble,
+             GROUP_CONCAT(lt.id) as text_ids,
+             GROUP_CONCAT(lt.text) as texts
+      FROM lessons l
+      LEFT JOIN lesson_text lt ON l.id = lt.lesson_id
+      WHERE l.course_id = ?
+      GROUP BY l.id
     `);
-    const lessons = query.all(courseId) as LessonRow[];
+
+    const lessons = query.all(courseId) as any[];
+
     return lessons.map((lesson) => ({
       id: lesson.id,
-      course_id: lesson.course_id,
+      courseId: lesson.course_id,
       title: lesson.title,
       slug: lesson.slug,
-      pre_amble: lesson.pre_amble,
-      order_number: lesson.order_number,
+      preAmble: lesson.preAmble,
+      text: lesson.text_ids
+        ? lesson.text_ids.split(",").map((id: string, index: number) => ({
+            id,
+            text: lesson.texts.split(",")[index],
+          }))
+        : [],
     }));
   };
 
@@ -50,7 +60,7 @@ export const createCourseRepository = (db: DB) => {
       const coursesWithLessons = await Promise.all(
         courses.map(async (course) => {
           const lessons = await findAllLessonsForCourse(course.id);
-          return { ...fromDb(course), lessons };
+          return fromDb(course, lessons);
         })
       );
 
@@ -63,9 +73,10 @@ export const createCourseRepository = (db: DB) => {
   // henter kurs basert på slug
   const findBySlug = async (slug: string): Promise<Result<Course>> => {
     try {
-      const course = await exists(slug);
-      if (!course)
+      const courseExists = await exists(slug);
+      if (!courseExists) {
         return ResultHandler.failure("Course not found", "NOT_FOUND");
+      }
 
       const query = db.prepare("SELECT * FROM courses WHERE slug = ?");
       const courseData = query.get(slug) as CourseRow;
@@ -76,7 +87,7 @@ export const createCourseRepository = (db: DB) => {
 
       // henter leksjoner per kurs
       const lessons = await findAllLessonsForCourse(courseData.id);
-      const courseWithLessons = { ...fromDb(courseData), lessons };
+      const courseWithLessons = fromDb(courseData, lessons);
 
       return ResultHandler.success(courseWithLessons);
     } catch (error) {
@@ -86,7 +97,7 @@ export const createCourseRepository = (db: DB) => {
 
   // opprette kurs
   const create = async (
-    course: Omit<Course, "id">
+    course: Omit<Course, "id" | "lessons">
   ): Promise<Result<Course>> => {
     try {
       const id = String(Math.random());
@@ -139,8 +150,34 @@ export const createCourseRepository = (db: DB) => {
   // slette
   const remove = async (slug: string): Promise<Result<void>> => {
     try {
-      const stmt = db.prepare("DELETE FROM courses WHERE slug = ?");
-      stmt.run(slug);
+      const courseQuery = db.prepare("SELECT id FROM courses WHERE slug = ?");
+      const course = courseQuery.get(slug) as CourseRow;
+
+      if (course) {
+        // sletter lesson_text-relasjon først
+        const lessonsQuery = db.prepare(
+          "SELECT id FROM lessons WHERE course_id = ?"
+        );
+        const lessons = lessonsQuery.all(course.id) as { id: string }[];
+
+        const deleteLessonText = db.prepare(
+          "DELETE FROM lesson_text WHERE lesson_id = ?"
+        );
+        lessons.forEach((lesson) => {
+          deleteLessonText.run(lesson.id);
+        });
+
+        // sletter leksjon
+        const deleteLessons = db.prepare(
+          "DELETE FROM lessons WHERE course_id = ?"
+        );
+        deleteLessons.run(course.id);
+
+        // sletter kurset til sist
+        const deleteCourse = db.prepare("DELETE FROM courses WHERE id = ?");
+        deleteCourse.run(course.id);
+      }
+
       return ResultHandler.success(undefined);
     } catch (error) {
       return ResultHandler.failure(error, "INTERNAL_SERVER_ERROR");

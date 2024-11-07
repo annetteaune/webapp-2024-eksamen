@@ -17,34 +17,52 @@ export interface User {
   email: string;
 }
 
+export interface CourseCreateStep {
+  id: string;
+  name: string;
+}
+
+export interface LessonText {
+  id: string;
+  text: string;
+}
+
+export interface Lesson {
+  id: string;
+  courseId: string;
+  title: string;
+  slug: string;
+  preAmble: string;
+  text: LessonText[];
+}
+
 export interface Course {
   id: string;
   title: string;
   slug: string;
   description: string;
   category: string;
-}
-
-export interface Lesson {
-  id: string;
-  course_id: string;
-  title: string;
-  slug: string;
-  pre_amble: string;
-  order_number: number;
-}
-
-export interface LessonText {
-  id: string;
-  lesson_id: string;
-  text: string;
+  lessons: Lesson[];
 }
 
 export interface Comment {
   id: string;
-  user_id: string;
-  lesson_id: string;
+  createdBy: {
+    id: string;
+    name: string;
+  };
   comment: string;
+  lesson: {
+    slug: string;
+  };
+}
+
+export interface DatabaseData {
+  users: User[];
+  categories: string[];
+  courseCreateSteps: CourseCreateStep[];
+  courses: Course[];
+  comments: Comment[];
 }
 
 // her har jeg fått hjelp fra claude.ai

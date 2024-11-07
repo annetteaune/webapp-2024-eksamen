@@ -18,7 +18,7 @@ export const createCourseService = (
   };
 
   const createCourse = async (
-    courseData: Omit<Course, "id">
+    courseData: Pick<Course, "title" | "slug" | "description" | "category">
   ): Promise<Result<Course>> => {
     return courseRepository.create(courseData);
   };

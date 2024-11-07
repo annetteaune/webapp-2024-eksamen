@@ -1,23 +1,24 @@
-import type { Lesson } from "@/types";
+import type { Lesson, LessonText } from "@/types";
 
+// her har jeg fått hjelp av claude.ai
 export const createLesson = (lesson: Partial<Lesson>): Lesson => {
   return {
     id: lesson.id ?? String(Math.random()),
-    course_id: lesson.course_id ?? "",
+    courseId: lesson.courseId ?? "",
     title: lesson.title ?? "",
     slug: lesson.slug ?? "",
-    pre_amble: lesson.pre_amble ?? "",
-    order_number: lesson.order_number ?? 0,
+    preAmble: lesson.preAmble ?? "",
+    text: lesson.text ?? [],
   };
 };
 
-export const fromDb = (lesson: any): Lesson => {
+export const fromDb = (lesson: any, texts: LessonText[] = []): Lesson => {
   return {
     id: lesson.id,
-    course_id: lesson.course_id,
+    courseId: lesson.course_id,
     title: lesson.title,
     slug: lesson.slug,
-    pre_amble: lesson.pre_amble,
-    order_number: lesson.order_number,
+    preAmble: lesson.preAmble,
+    text: texts,
   };
 };

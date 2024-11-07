@@ -7,15 +7,17 @@ export const createCourse = (course: Partial<Course>): Course => {
     slug: course.slug ?? "",
     description: course.description ?? "",
     category: course.category ?? "",
+    lessons: course.lessons ?? [],
   };
 };
 
-export const fromDb = (course: any): Course => {
+export const fromDb = (course: any, lessons: any[] = []): Course => {
   return {
     id: course.id,
     title: course.title,
     slug: course.slug,
     description: course.description,
     category: course.category,
+    lessons: lessons,
   };
 };
