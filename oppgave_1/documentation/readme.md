@@ -5,6 +5,7 @@
 - `/kurs` - Håndterer all funksjonalitet relatert til kurs og tilknyttede leksjoner
 - `/kategorier` - Håndterer tilgjengelige kategorier for kurs
 - `/brukere` - Håndterer brukerinformasjon og registrering
+- `/kommentarer` - Håndterer henting og posting av kommentarer i leksjoner
 
 ## 2: HTTP-verb og respons
 
@@ -93,6 +94,27 @@
 - **Data:** `{ name: string, email: string }`
 - **Respons:** `{ success: true, data: { id: string, name: string, email: string } }`
 - **Statuskoder:**
+
+  - 201: Created
+  - 400: Bad Request
+  - 500: Internal Server Error
+
+  ### /kommentarer
+
+#### GET `/kommentarer/:lessonSlug`
+
+- **Formål:** Henter en leksjons tilknyttede kommentarer
+- **Response:** `[{ id, createdBy: { id, name }, comment, lesson: { slug }, createdAt }]`
+- **Statuskoder:**
+  - 200: OK
+  - 500: Internal Server Error
+
+#### POST `/kommentarer`
+
+- **Formål:** Opprett ny kommentar
+- **Data:** `{ comment: string, createdById: string, createdByName: string, lessonSlug: string }`
+- **Response:** `{ success: true, data: { id, createdBy: { id, name }, comment, lesson: { slug }, createdAt } }`
+- **Statuskoder:**
   - 201: Created
   - 400: Bad Request
   - 500: Internal Server Error
@@ -127,11 +149,13 @@
 ### /kurs/:slug/:lessonSlug
 
 - Viser innhold for en spesifikk leksjon
-- Kommentarfunksjonalitet
+- Viser kommentarer tilknyttet nåværende leksjon
 - Viser deltakerliste
 - Bruker:
   - GET `/kurs/:slug` for leksjonsdata
   - GET `/brukere` for deltakerliste
+  - GET `/kommentarer/:lessonSlug` for å hente kommentarer
+  - POST `/kommentarer` for å opprette nye kommentarer
 
 ### /ny
 
@@ -141,7 +165,7 @@
 - Bruker:
   - POST `/kurs` for å opprette kurs
   - GET `/kategorier` for kategorivalg
-- Flertrinns skjema:
+- Flertrinnsskjema:
   1. Kursinformasjon
   2. Legge til leksjoner
   3. Publisering

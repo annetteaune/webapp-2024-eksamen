@@ -1,53 +1,29 @@
-import { useEffect, useState } from "react";
-import { comments, courses } from "@/data/data";
-import { Comment, Course, Lesson as LessonType } from "@/interfaces/types";
+import { useState } from "react";
+import { Comment } from "@/interfaces/types";
 import {
   FormSubmitEvent,
   InputChangeEvent,
   TextAreaChangeEvent,
 } from "@/interfaces/types";
-import { useParams } from "next/navigation";
+import { useLesson } from "@/hooks/useLesson";
+import { useComments } from "@/hooks/useComments";
 
-const createComment = async (data: Comment): Promise<void> => {
-  await comments.push(data);
-};
+interface LessonProps {
+  courseSlug: string;
+  lessonSlug: string;
+}
 
-const getComments = async (lessonSlug: string): Promise<Comment[]> => {
-  const data = await comments.filter(
-    (comment) => comment.lesson.slug === lessonSlug
-  );
-  return data;
-};
-
-const getLesson = async (
-  courseSlug: string,
-  lessonSlug: string
-): Promise<LessonType | undefined> => {
-  const lessons = courses
-    .filter((course) => course.slug === courseSlug)
-    .flatMap((course) => course.lessons)
-    .filter((lesson) => lesson.slug === lessonSlug);
-
-  return lessons[0];
-};
-
-const getCourse = async (courseSlug: string): Promise<Course | undefined> => {
-  const data = await courses.filter((course) => course.slug === courseSlug);
-  return data?.[0];
-};
-
-export default function Lesson() {
+export default function Lesson({ courseSlug, lessonSlug }: LessonProps) {
   const [success, setSuccess] = useState<boolean>(false);
   const [formError, setFormError] = useState<boolean>(false);
-  const [lessonComments, setComments] = useState<Comment[]>([]);
   const [comment, setComment] = useState<string>("");
   const [name, setName] = useState<string>("");
-  const [lesson, setLesson] = useState<LessonType | null>(null);
-  const [course, setCourse] = useState<Course | null>(null);
 
-  const params = useParams<{ slug: string; lessonSlug: string }>();
-  const courseSlug = params?.slug;
-  const lessonSlug = params?.lessonSlug;
+  const { lesson, course, isLoading, error } = useLesson(
+    courseSlug,
+    lessonSlug
+  );
+  const { comments, addComment } = useComments(lessonSlug);
 
   const handleComment = (event: TextAreaChangeEvent) => {
     setComment(event.target.value);
@@ -61,43 +37,34 @@ export default function Lesson() {
     event.preventDefault();
     setFormError(false);
     setSuccess(false);
+
     if (!comment || !name || !lessonSlug) {
       setFormError(true);
       return;
     }
 
-    const newComment: Comment = {
-      id: `${Math.floor(Math.random() * 1000 + 1)}`,
-      createdBy: {
-        id: String(Math.floor(Math.random() * 1000 + 1)),
-        name,
-      },
-      comment,
-      lesson: { slug: lessonSlug },
-    };
+    try {
+      await addComment({
+        comment,
+        createdById: String(Math.floor(Math.random() * 1000 + 1)),
+        createdByName: name,
+        lessonSlug,
+      });
 
-    await createComment(newComment);
-    const commentsData = await getComments(lessonSlug);
-    setComments(commentsData);
-    setSuccess(true);
+      setSuccess(true);
+      setComment("");
+      setName("");
+    } catch (error) {
+      setFormError(true);
+    }
   };
 
-  useEffect(() => {
-    const getContent = async () => {
-      if (courseSlug && lessonSlug) {
-        const lessonData = await getLesson(courseSlug, lessonSlug);
-        const courseData = await getCourse(courseSlug);
-        const commentsData = await getComments(lessonSlug);
-        setLesson(lessonData || null);
-        setCourse(courseData || null);
-        setComments(commentsData);
-      }
-    };
-    getContent();
-  }, [courseSlug, lessonSlug]);
-
-  if (!lesson || !course) {
+  if (isLoading) {
     return <div>Laster inn...</div>;
+  }
+
+  if (error || !lesson || !course) {
+    return <div>Kunne ikke laste inn leksjon</div>;
   }
 
   return (
@@ -134,7 +101,7 @@ export default function Lesson() {
         ))}
       <section data-testid="comments">
         <h4 className="mt-8 mb-4 text-lg font-bold">
-          Kommentarer ({lessonComments?.length})
+          Kommentarer ({comments?.length})
         </h4>
         <form data-testid="comment_form" onSubmit={handleSubmit} noValidate>
           <label className="mb-4 flex flex-col" htmlFor="name">
@@ -180,13 +147,13 @@ export default function Lesson() {
               className="font-semibold text-emerald-500"
               data-testid="form_success"
             >
-              Skjema sendt
+              Kommentar lagt til
             </p>
           ) : null}
         </form>
         <ul className="mt-8" data-testid="comments_list">
-          {lessonComments?.length > 0
-            ? lessonComments.map((c) => (
+          {comments?.length > 0
+            ? comments.map((c) => (
                 <li
                   className="mb-6 rounded border border-slate-200 px-4 py-6"
                   key={c.id}

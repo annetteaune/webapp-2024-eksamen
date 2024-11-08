@@ -40,8 +40,15 @@ export const seed = async (db: DB) => {
   `);
 
   const insertComment = db.prepare(`
-    INSERT INTO comments (id, created_by_id, created_by_name, comment, lesson_slug)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO comments (
+      id, 
+      comment,
+      created_by_id,
+      created_by_name,
+      lesson_slug,
+      created_at
+    )
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
 
   db.transaction(() => {
@@ -95,10 +102,11 @@ export const seed = async (db: DB) => {
     for (const comment of comments) {
       insertComment.run(
         comment.id,
+        comment.comment,
         comment.createdBy.id,
         comment.createdBy.name,
-        comment.comment,
-        comment.lesson.slug
+        comment.lesson.slug,
+        new Date().toISOString()
       );
     }
   })();

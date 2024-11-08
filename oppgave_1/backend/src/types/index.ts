@@ -64,7 +64,7 @@ export interface Comment {
 
 export interface DatabaseData {
   users: User[];
-  categories: Category[];
+  categories: string[];
   courseCreateSteps: CourseCreateStep[];
   courses: Course[];
   comments: Comment[];

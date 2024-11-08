@@ -4,6 +4,11 @@ export interface User {
   email: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+}
+
 export interface Comment {
   id: string;
   createdBy: {
@@ -14,6 +19,14 @@ export interface Comment {
   lesson: {
     slug: string;
   };
+  createdAt?: string;
+}
+
+export interface CreateCommentDTO {
+  createdById: string;
+  createdByName: string;
+  comment: string;
+  lessonSlug: string;
 }
 
 export interface LessonText {
@@ -27,7 +40,6 @@ export interface Lesson {
   slug: string;
   preAmble: string;
   text: LessonText[];
-  order?: string;
 }
 
 export interface Course {

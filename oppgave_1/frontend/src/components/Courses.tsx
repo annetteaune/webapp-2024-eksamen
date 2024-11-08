@@ -1,24 +1,45 @@
 import { useState } from "react";
-import { categories, courses } from "@/data/data";
 import { Course } from "@/interfaces/types";
 import { SelectChangeEvent } from "@/interfaces/types";
+import { useCategories } from "@/hooks/useCategories";
+import { useCourses } from "@/hooks/useCourses";
 
 export default function Courses() {
   const [value, setValue] = useState<string>("");
-  const [data, setData] = useState<Course[]>(courses);
+  const {
+    categories,
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useCategories();
+  const {
+    courses,
+    isLoading: coursesLoading,
+    error: coursesError,
+  } = useCourses();
+  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
 
   const handleFilter = (event: SelectChangeEvent) => {
     const category = event.target.value;
     setValue(category);
     if (category && category.length > 0) {
-      const content = courses.filter((course) =>
-        course.category.toLocaleLowerCase().includes(category.toLowerCase())
+      const filtered = courses.filter((course) =>
+        course.category.toLowerCase().includes(category.toLowerCase())
       );
-      setData(content);
+      setFilteredCourses(filtered);
     } else {
-      setData(courses);
+      setFilteredCourses(courses);
     }
   };
+
+  if (coursesLoading || categoriesLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (coursesError || categoriesError) {
+    return <div>Error loading data</div>;
+  }
+
+  const displayedCourses = value ? filteredCourses : courses;
 
   return (
     <>
@@ -38,16 +59,16 @@ export default function Courses() {
           >
             <option value="">Alle</option>
             {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
+              <option key={category.id} value={category.name}>
+                {category.name}
               </option>
             ))}
           </select>
         </label>
       </header>
       <section className="mt-6 grid grid-cols-3 gap-8" data-testid="courses">
-        {data && data.length > 0 ? (
-          data.map((course) => (
+        {displayedCourses && displayedCourses.length > 0 ? (
+          displayedCourses.map((course) => (
             <article
               className="rounded-lg border border-slate-400 px-6 py-8"
               key={course.id}

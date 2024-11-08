@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { categories, courses, courseCreateSteps } from "@/data/data";
+
 import {
   Course,
   CourseFields,
@@ -12,10 +12,13 @@ import {
   TextAreaChangeEvent,
 } from "@/interfaces/types";
 import { isValid } from "@/lib/utils/validation";
+import { useCategories } from "@/hooks/useCategories";
+import { fetcher } from "@/api/fetcher";
 
-const createCourse = async (data: Course): Promise<void> => {
-  await courses.push(data);
-};
+const courseCreateSteps = [
+  { id: "1", name: "Kurs" },
+  { id: "2", name: "Leksjoner" },
+];
 
 export default function Create() {
   const [success, setSuccess] = useState<boolean>(false);
@@ -32,6 +35,7 @@ export default function Create() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
 
   const router = useRouter();
+  const { categories } = useCategories();
 
   const step: string = courseCreateSteps[current]?.name;
 
@@ -41,12 +45,30 @@ export default function Create() {
     setSuccess(false);
 
     if (lessons.length > 0 && isValid(lessons) && isValid(courseFields)) {
-      setSuccess(true);
-      setCurrent(2);
-      await createCourse({ ...courseFields, lessons });
-      setTimeout(() => {
-        router.push("/kurs");
-      }, 500);
+      try {
+        const response = await fetcher("/kurs", {
+          method: "POST",
+          body: JSON.stringify({
+            title: courseFields.title,
+            slug: courseFields.slug,
+            description: courseFields.description,
+            category: courseFields.category.toLowerCase(),
+          }),
+        });
+
+        if (response.success) {
+          setSuccess(true);
+          setCurrent(2);
+          setTimeout(() => {
+            router.push("/kurs");
+          }, 500);
+        } else {
+          setFormError(true);
+        }
+      } catch (error) {
+        setFormError(true);
+        console.error("Failed to create course:", error);
+      }
     } else {
       setFormError(true);
     }
@@ -106,6 +128,7 @@ export default function Create() {
         break;
     }
   };
+
   const handleLessonFieldChange = (
     event: InputChangeEvent | TextAreaChangeEvent,
     index?: number
@@ -136,7 +159,6 @@ export default function Create() {
   const changeCurrentLesson = (index: number): void => {
     setCurrentLesson(index);
   };
-
   const addLesson = (): void => {
     setLessons((prev) => [
       ...prev,
@@ -146,7 +168,7 @@ export default function Create() {
         slug: "",
         preAmble: "",
         text: [],
-        order: `${lessons.length}`,
+        courseId: courseFields.id,
       },
     ]);
     setCurrentLesson(lessons.length);
@@ -241,9 +263,9 @@ export default function Create() {
                 <option disabled value="">
                   Velg kategori
                 </option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+                {categories?.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
                   </option>
                 ))}
               </select>

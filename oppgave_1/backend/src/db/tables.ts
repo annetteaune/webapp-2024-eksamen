@@ -43,12 +43,14 @@ export const createTables = async (db: DB) => {
       FOREIGN KEY (lesson_id) REFERENCES lessons(id)
     );
 
-    CREATE TABLE comments (
+CREATE TABLE comments (
       id TEXT PRIMARY KEY,
       created_by_id TEXT NOT NULL,
       created_by_name TEXT NOT NULL,
       comment TEXT NOT NULL,
-      lesson_slug TEXT NOT NULL
+      lesson_slug TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (created_by_id) REFERENCES users(id)
     );
   `);
 };
