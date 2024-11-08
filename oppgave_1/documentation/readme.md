@@ -1,53 +1,147 @@
 # Eksamen - webapp 2024 - Del 1
 
-### TODO: brukere? ikke klargjort for i eksisterende kode
-
 ## 1: API-endepunkter
 
-- **/kurs** - For å hente alle kurs eller opprette et nytt kurs
+- `/kurs` - Håndterer all funksjonalitet relatert til kurs og tilknyttede leksjoner
+- `/kategorier` - Håndterer tilgjengelige kategorier for kurs
+- `/brukere` - Håndterer brukerinformasjon og registrering
 
-- **/kurs/:slug** - For å hente et spesifikt kurs basert på slug
-
-- **/leksjon/:slug** - For å hente informasjon om en spesifikk leksjon i et kurs
-
-## 2: HTTP-verb
+## 2: HTTP-verb og respons
 
 ### /kurs
 
-- **GET:** Hente alle tilgjene kurs
-- **POST:** Opprette nytt kurs
+#### -GET
+
+- **Formål:** Hente alle tilgjengelige kurs med deres leksjoner
+- **Respons:** `[{ id, title, slug, description, category, lessons: [...] }]`
+- **Statuskoder:**
+  - 200: OK
+  - 500: Internal Server Error
+
+#### POST
+
+- **Formål:** Opprette nytt kurs
+- **Data:** `{ title, slug, description, category }`
+- **Respons:** `{ success: true, data: { id, title, slug, description, category, lessons: [] } }`
+- **Statuskoder:**
+  - 201: Created
+  - 400: Bad Request
+  - 500: Internal Server Error
 
 ### /kurs/:slug
 
-- **GET:** Hente detaljer/leksjoner for ett spesifikt kurs
+#### GET
 
-### /leksjon/:slug
+- **Formål:** Hente detaljer om ett spesifikt kurs med tilhørende leksjoner
+- **Respons:** `{ id, title, slug, description, category, lessons: [...] }`
+- **Statuskoder:**
+  - 200: OK
+  - 404: Not Found
+  - 500: Internal Server Error
 
-- **GET:** Hente en spesifik leksjon
+#### PATCH `/kurs/:slug/category`
 
-## 3: Respons
+- **Formål:** Oppdatere kategori for et kurs
+- **Data:** `{ category: string }`
+- **Respons:** `{ success: true, data: { id, title, slug, description, category, lessons: [...] } }`
+- **Statuskoder:**
+  - 200: OK
+  - 404: Not Found
+  - 500: Internal Server Error
 
-| Endepunkt        | Metode | Respons                                          | Statuskoder   |
-| ---------------- | ------ | ------------------------------------------------ | ------------- |
-| `/kurs`          | GET    | Liste over kurs (`[{ id, title, slug, ... }]`)   | 200, 500      |
-| `/kurs`          | POST   | Bekreftelse på opprettelse (`{ success: true }`) | 201, 400, 500 |
-| `/kurs/:slug`    | GET    | Kursdetaljer (`{ id, title, lessons: [...] }`)   | 200, 404, 500 |
-| `/leksjon/:slug` | GET    | Leksjonsdetaljer (`{ title, text, comments }`)   | 200, 404, 500 |
+#### DELETE
 
-### 3.1 Statuskoder
+- **Formål:** Slette et kurs og tilknyttede leksjoner
+- **Respons:** `{ success: true }`
+- **Statuskoder:**
+  - 200: OK
+  - 500: Internal Server Error
 
-| Statuskode | Betydning                                             |
-| ---------- | ----------------------------------------------------- |
-| **200**    | OK – Forespørselen var vellykket, og data returneres  |
-| **201**    | Created – Ny ressurs ble opprettet vellykket          |
-| **400**    | Bad Request – Forespørselen inneholdt ugyldige data   |
-| **404**    | Not Found – Den etterspurte ressursen ble ikke funnet |
-| **500**    | Internal Server Error – En feil oppstod på serveren   |
+### /kategorier
 
-## URL-er
+#### GET
 
-- **/**: Landingsside. Viser
-- **/kurs:** Viser en oversikt over alle kurs. Mulig å filtrere basert på kategori
-- **/kurs/:slug:** Viser detaljer om kurset og en liste over leksjoner. Brukeren kan velge en leksjon for detaljer
-- **/kurs/:slug/:leksjon:** Viser detaljer for en leksjon i et kurs og lar brukere legge til kommentarer
-- **/ny:** Side for å opprette et nytt kurs med tittel, beskrivelse, og leksjoner. Denne siden sender en POST-forespørsel til /kurs for å lagre kursdata
+- **Formål:** Hente liste over alle tilgjengelige kategorier
+- **Respons:** `[{ id: string, name: string }]`
+- **Statuskoder:**
+  - 200: OK
+  - 500: Internal Server Error
+
+#### POST
+
+- **Formål:** Opprette ny kategori
+- **Data:** `{ name: string }`
+- **Respons:** `{ success: true, data: { id: string, name: string } }`
+- **Statuskoder:**
+  - 201: Created
+  - 400: Bad Request
+  - 500: Internal Server Error
+
+### /brukere
+
+#### GET
+
+- **Formål:** Hente liste over alle brukere
+- **Respons:** `[{ id: string, name: string, email: string }]`
+- **Statuskoder:**
+  - 200: OK
+  - 500: Internal Server Error
+
+#### POST
+
+- **Formål:** Registrere ny bruker
+- **Data:** `{ name: string, email: string }`
+- **Respons:** `{ success: true, data: { id: string, name: string, email: string } }`
+- **Statuskoder:**
+  - 201: Created
+  - 400: Bad Request
+  - 500: Internal Server Error
+
+## 3: URL-er og Sidestruktur
+
+### / (Landingsside)
+
+- Ny bruker-registrering
+- Innloggingsskjema
+- Bruker POST `/brukere` for registrering
+- Navigasjon til andre sider
+
+### /kurs
+
+- Viser oversikt over alle tilgjengelige kurs
+- Mulighet for filtrering basert på kategori
+- Bruker:
+  - GET `/kurs` for kursliste
+  - GET `/kategorier` for filtreringsalternativer
+  - GET `/brukere` for å vise påmeldte brukere
+
+### /kurs/:slug
+
+- Viser detaljert informasjon om ett spesifikt kurs
+- Liste over kursets leksjoner
+- Viser påmeldte brukere
+- Bruker:
+  - GET `/kurs/:slug` for kursdetaljer
+  - GET `/brukere` for å vise påmeldte brukere
+
+### /kurs/:slug/:lessonSlug
+
+- Viser innhold for en spesifikk leksjon
+- Kommentarfunksjonalitet
+- Viser deltakerliste
+- Bruker:
+  - GET `/kurs/:slug` for leksjonsdata
+  - GET `/brukere` for deltakerliste
+
+### /ny
+
+- Skjema for å opprette nytt kurs
+- Legge til leksjoner til kurset
+- Velge kategori fra eksisterende kategorier
+- Bruker:
+  - POST `/kurs` for å opprette kurs
+  - GET `/kategorier` for kategorivalg
+- Flertrinns skjema:
+  1. Kursinformasjon
+  2. Legge til leksjoner
+  3. Publisering

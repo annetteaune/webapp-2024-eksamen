@@ -2,8 +2,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { createCourseService } from "../service";
 import { createCourseRepository } from "../repository";
-import { createLessonService } from "../../lessons/service";
-import { createLessonRepository } from "../../lessons/repository";
+
 import db from "../../../db/db";
 import { courseSchema } from "../helpers";
 import { Course } from "@/types";
@@ -11,9 +10,7 @@ import { Course } from "@/types";
 const courseRouter = new Hono();
 
 const courseRepository = createCourseRepository(db);
-const lessonRepository = createLessonRepository(db);
-const lessonService = createLessonService(lessonRepository, courseRepository);
-const courseService = createCourseService(courseRepository, lessonService);
+const courseService = createCourseService(courseRepository);
 
 courseRouter.get("/", async (c) => {
   const result = await courseService.getAllCourses();

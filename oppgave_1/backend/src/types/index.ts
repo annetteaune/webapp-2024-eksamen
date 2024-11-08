@@ -17,6 +17,11 @@ export interface User {
   email: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+}
+
 export interface CourseCreateStep {
   id: string;
   name: string;
@@ -59,12 +64,11 @@ export interface Comment {
 
 export interface DatabaseData {
   users: User[];
-  categories: string[];
+  categories: Category[];
   courseCreateSteps: CourseCreateStep[];
   courses: Course[];
   comments: Comment[];
 }
-
 // her har jeg fått hjelp fra claude.ai
 export type Result<T> =
   | {

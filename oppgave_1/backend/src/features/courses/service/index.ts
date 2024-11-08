@@ -1,14 +1,10 @@
 import type { Course } from "@/types";
 import type { Result } from "@/types";
 import type { CourseRepository } from "../repository";
-import type { LessonService } from "../../lessons/service";
 
 export type CourseService = ReturnType<typeof createCourseService>;
 
-export const createCourseService = (
-  courseRepository: CourseRepository,
-  lessonService: LessonService
-) => {
+export const createCourseService = (courseRepository: CourseRepository) => {
   const getAllCourses = async (): Promise<Result<Course[]>> => {
     return courseRepository.findAll();
   };
@@ -31,10 +27,6 @@ export const createCourseService = (
   };
 
   const deleteCourse = async (slug: string): Promise<Result<void>> => {
-    const result = await lessonService.deleteLessonsByCourseSlug(slug);
-    if (!result.success) {
-      return result;
-    }
     return courseRepository.remove(slug);
   };
 
