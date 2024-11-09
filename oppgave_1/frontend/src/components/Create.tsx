@@ -54,6 +54,14 @@ export default function Create() {
             slug: courseFields.slug,
             description: courseFields.description,
             category: courseFields.category.toLowerCase(),
+            lessons: lessons.map((lesson) => ({
+              title: lesson.title,
+              slug: lesson.slug,
+              preAmble: lesson.preAmble,
+              text: lesson.text.map((t) => ({
+                text: t.text,
+              })),
+            })),
           }),
         });
 

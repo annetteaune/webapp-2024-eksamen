@@ -1,6 +1,7 @@
 import type { DB } from "@/db/db";
 import {
   CourseRow,
+  CreateCourseDTO,
   Result,
   ResultHandler,
   type Course,
@@ -21,13 +22,14 @@ export const createCourseRepository = (db: DB) => {
   };
 
   // hente alle leksjoner tilhørende et spesifikt kurs
+  // har fått hjelp av claude.ai til å splitte teksten med noe annet enn komma, da outputen ble avkortet i leksjonstekstene
   const findAllLessonsForCourse = async (
     courseId: string
   ): Promise<Lesson[]> => {
     const query = db.prepare(`
       SELECT l.id, l.course_id, l.title, l.slug, l.preAmble,
-             GROUP_CONCAT(lt.id) as text_ids,
-             GROUP_CONCAT(lt.text) as texts
+             GROUP_CONCAT(lt.id, '||') as text_ids,
+             GROUP_CONCAT(lt.text, '||') as texts
       FROM lessons l
       LEFT JOIN lesson_text lt ON l.id = lt.lesson_id
       WHERE l.course_id = ?
@@ -43,9 +45,9 @@ export const createCourseRepository = (db: DB) => {
       slug: lesson.slug,
       preAmble: lesson.preAmble,
       text: lesson.text_ids
-        ? lesson.text_ids.split(",").map((id: string, index: number) => ({
+        ? lesson.text_ids.split("||").map((id: string, index: number) => ({
             id,
-            text: lesson.texts.split(",")[index],
+            text: lesson.texts.split("||")[index],
           }))
         : [],
     }));
@@ -96,33 +98,76 @@ export const createCourseRepository = (db: DB) => {
   };
 
   // opprette kurs
+  // har her fått hjelp fra claude.ai til å sørge for at leksjoner blir lagret sammen med kursene når de opprettes
   const create = async (
-    course: Omit<Course, "id" | "lessons">
+    courseData: CreateCourseDTO
   ): Promise<Result<Course>> => {
     try {
-      const id = String(Math.random());
-      const stmt = db.prepare(`
-        INSERT INTO courses (id, title, slug, description, category)
-        VALUES (?, ?, ?, ?, ?)
-      `);
+      const courseId = String(Math.random());
 
-      stmt.run(
-        id,
-        course.title,
-        course.slug,
-        course.description,
-        course.category
-      );
-      const result = await findBySlug(course.slug);
+      // Start a transaction to ensure all operations succeed or fail together
+      const result = db.transaction(() => {
+        // Insert course
+        const courseStmt = db.prepare(`
+          INSERT INTO courses (id, title, slug, description, category)
+          VALUES (?, ?, ?, ?, ?)
+        `);
 
-      if (!result.success) {
+        courseStmt.run(
+          courseId,
+          courseData.title,
+          courseData.slug,
+          courseData.description,
+          courseData.category
+        );
+
+        // Insert lessons if they exist
+        if (courseData.lessons && courseData.lessons.length > 0) {
+          const lessonStmt = db.prepare(`
+            INSERT INTO lessons (id, course_id, title, slug, preAmble)
+            VALUES (?, ?, ?, ?, ?)
+          `);
+
+          const textStmt = db.prepare(`
+            INSERT INTO lesson_text (id, lesson_id, text)
+            VALUES (?, ?, ?)
+          `);
+
+          for (const lesson of courseData.lessons) {
+            const lessonId = String(Math.random());
+
+            // Insert lesson
+            lessonStmt.run(
+              lessonId,
+              courseId,
+              lesson.title,
+              lesson.slug,
+              lesson.preAmble
+            );
+
+            // Insert lesson texts if they exist
+            if (lesson.text && lesson.text.length > 0) {
+              for (const textItem of lesson.text) {
+                textStmt.run(
+                  String(Math.random()), // Generate new ID for each text
+                  lessonId,
+                  textItem.text
+                );
+              }
+            }
+          }
+        }
+      })();
+
+      const courseResult = await findBySlug(courseData.slug);
+
+      if (!courseResult.success) {
         return ResultHandler.failure(
           "Failed to create course",
           "INTERNAL_SERVER_ERROR"
         );
       }
-
-      return ResultHandler.success(result.data);
+      return ResultHandler.success(courseResult.data);
     } catch (error) {
       return ResultHandler.failure(error, "INTERNAL_SERVER_ERROR");
     }

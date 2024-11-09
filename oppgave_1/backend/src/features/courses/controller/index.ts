@@ -5,7 +5,7 @@ import { createCourseRepository } from "../repository";
 
 import db from "../../../db/db";
 import { courseSchema } from "../helpers";
-import { Course } from "@/types";
+import { Course, CreateCourseDTO } from "@/types";
 
 const courseRouter = new Hono();
 
@@ -52,20 +52,26 @@ courseRouter.get("/:slug", async (c) => {
   return c.json({ success: true, data: result.data });
 });
 
+// har fått hjelp her fra claude.ai, etter trøbbel med å lagre leksjoner til kurs
 courseRouter.post("/", async (c) => {
   const body = await c.req.json();
 
   try {
     const validatedData = courseSchema.parse(body);
 
-    const courseData: Pick<
-      Course,
-      "title" | "slug" | "description" | "category"
-    > = {
+    const courseData: CreateCourseDTO = {
       title: validatedData.title,
       slug: validatedData.slug,
       description: validatedData.description,
       category: validatedData.category,
+      lessons: validatedData.lessons?.map((lesson) => ({
+        title: lesson.title,
+        slug: lesson.slug,
+        preAmble: lesson.preAmble,
+        text: lesson.text.map((text) => ({
+          text: text.text,
+        })),
+      })),
     };
 
     const result = await courseService.createCourse(courseData);
