@@ -28,5 +28,5 @@ export function useCourses() {
     fetchCourses();
   }, []);
 
-  return { courses, isLoading, error };
+  return { courses, setCourses, isLoading, error };
 }
