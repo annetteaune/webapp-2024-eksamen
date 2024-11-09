@@ -70,7 +70,7 @@ export default function Create() {
           setCurrent(2);
           setTimeout(() => {
             router.push("/kurs");
-          }, 500);
+          }, 3000);
         } else {
           setFormError(true);
         }

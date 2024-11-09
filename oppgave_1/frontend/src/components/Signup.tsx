@@ -4,7 +4,9 @@ import {
   FormFields,
   FormSubmitEvent,
   InputChangeEvent,
+  User,
 } from "@/interfaces/types";
+import { fetcher } from "@/api/fetcher";
 
 export default function SignUp() {
   const [success, setSuccess] = useState(false);
@@ -18,17 +20,35 @@ export default function SignUp() {
 
   const formIsValid = Object.values(fields).filter((val) => val?.length === 0);
 
-  const handleSubmit = (event: FormSubmitEvent) => {
+  const handleSubmit = async (event: FormSubmitEvent) => {
     event.preventDefault();
     setFormError(false);
     setSuccess(false);
+
     if (formIsValid.length === 0) {
       setSuccess(true);
-      setTimeout(() => {
-        router.push("/kurs");
-      }, 500);
-    } else {
-      setFormError(true);
+      try {
+        const response = await fetcher<{ success: boolean; data: User }>(
+          "/brukere",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              name: fields.name,
+              email: fields.email,
+            }),
+          }
+        );
+
+        if (response.success) {
+          // redirect til kurs
+          setTimeout(() => {
+            router.push("/kurs");
+          }, 1000);
+        }
+      } catch (error) {
+        console.error("Failed to create user:", error);
+        setFormError(true);
+      }
     }
   };
 
