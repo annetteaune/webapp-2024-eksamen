@@ -44,13 +44,13 @@ export default function Lesson({ courseSlug, lessonSlug }: LessonProps) {
       {lesson?.text &&
         lesson.text.length > 0 &&
         lesson.text.map((text) => (
-          <p
-            data-testid="lesson_text"
-            className="mt-4 font-normal"
+          <div
             key={text.id}
-          >
-            {text.text}
-          </p>
+            data-testid="lesson_text"
+            className="mt-4 prose font-normal"
+            // bruker dangerouslysetinnerhtml for å vise formatering ved bruk av rik tekst
+            dangerouslySetInnerHTML={{ __html: text.text }}
+          />
         ))}
       <Comments lessonSlug={lessonSlug} />
     </div>

@@ -15,6 +15,7 @@ import { isValid } from "@/lib/utils/validation";
 import { useCategories } from "@/hooks/useCategories";
 import { fetcher } from "@/api/fetcher";
 import { generateRandomId } from "@/lib/utils/randomId";
+import TextEditor from "./TextEditor";
 
 const courseCreateSteps = [
   { id: "1", name: "Kurs" },
@@ -26,6 +27,7 @@ export default function Create() {
   const [formError, setFormError] = useState<boolean>(false);
   const [current, setCurrent] = useState<number>(0);
   const [currentLesson, setCurrentLesson] = useState<number>(0);
+  const [useRichEditor, setUseRichEditor] = useState(false);
   const [courseFields, setCourseFields] = useState<CourseFields>({
     id: generateRandomId(),
     title: "",
@@ -366,20 +368,34 @@ export default function Create() {
                         htmlFor={`text-${field?.id}`}
                       >
                         <span className="text-sm font-semibold">Tekst*</span>
-                        <textarea
-                          data-testid="form_lesson_text"
-                          name="text"
-                          id={`text-${field?.id}`}
+                        <div className="mb-2">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={useRichEditor}
+                              onChange={(e) =>
+                                setUseRichEditor(e.target.checked)
+                              }
+                            />
+                            <span className="text-sm">
+                              Bruk avansert editor
+                            </span>
+                          </label>
+                        </div>
+                        {/* Har fått hjelp av claude.ai til implementasjonen av den utbyttbare editoren */}
+                        <TextEditor
                           value={field?.text}
-                          onChange={(event) =>
-                            handleLessonFieldChange(event, index)
-                          }
-                          className="w-full rounded bg-slate-100"
-                          cols={30}
+                          onChange={(value) => {
+                            const updatedLessons = [...lessons];
+                            updatedLessons[currentLesson].text[index].text =
+                              value;
+                            setLessons(updatedLessons);
+                          }}
+                          useRichText={useRichEditor}
                         />
                       </label>
                       <button
-                        className="text-sm font-semibold text-red-400 "
+                        className="text-sm font-semibold text-red-400"
                         type="button"
                         onClick={() => removeTextBox(index)}
                       >
@@ -390,14 +406,31 @@ export default function Create() {
                 ) : (
                   <label className="mb-4 flex flex-col" htmlFor="text">
                     <span className="mb-1 text-sm font-semibold">Tekst*</span>
-                    <textarea
-                      data-testid="form_lesson_text"
-                      name="text"
-                      id="text"
-                      value={lessons[currentLesson]?.text?.[0]?.text}
-                      onChange={(event) => handleLessonFieldChange(event, 0)}
-                      className="w-full rounded bg-slate-100"
-                      cols={30}
+                    <div className="mb-2">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={useRichEditor}
+                          onChange={(e) => setUseRichEditor(e.target.checked)}
+                        />
+                        <span className="text-sm">Bruk avansert editor</span>
+                      </label>
+                    </div>
+                    {/* Har fått hjelp av claude.ai til implementasjonen av den utbyttbare editoren */}
+                    <TextEditor
+                      value={lessons[currentLesson]?.text?.[0]?.text || ""}
+                      onChange={(value) => {
+                        const updatedLessons = [...lessons];
+                        if (!updatedLessons[currentLesson].text[0]) {
+                          updatedLessons[currentLesson].text[0] = {
+                            id: generateRandomId(),
+                            text: "",
+                          };
+                        }
+                        updatedLessons[currentLesson].text[0].text = value;
+                        setLessons(updatedLessons);
+                      }}
+                      useRichText={useRichEditor}
                     />
                   </label>
                 )}
