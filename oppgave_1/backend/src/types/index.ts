@@ -60,6 +60,7 @@ export interface Comment {
   lesson: {
     slug: string;
   };
+  createdAt: string;
 }
 
 export interface DatabaseData {

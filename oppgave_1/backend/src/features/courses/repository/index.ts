@@ -199,28 +199,44 @@ export const createCourseRepository = (db: DB) => {
       const course = courseQuery.get(slug) as CourseRow;
 
       if (course) {
-        // sletter lesson_text-relasjon først
+        // henter alle tilknyttede leksjoner for å få tilgang til slugs
         const lessonsQuery = db.prepare(
-          "SELECT id FROM lessons WHERE course_id = ?"
+          "SELECT id, slug FROM lessons WHERE course_id = ?"
         );
-        const lessons = lessonsQuery.all(course.id) as { id: string }[];
+        const lessons = lessonsQuery.all(course.id) as {
+          id: string;
+          slug: string;
+        }[];
 
-        const deleteLessonText = db.prepare(
-          "DELETE FROM lesson_text WHERE lesson_id = ?"
-        );
-        lessons.forEach((lesson) => {
-          deleteLessonText.run(lesson.id);
-        });
+        db.transaction(() => {
+          // slette tilknyttede kommentarer
+          const deleteComments = db.prepare(
+            "DELETE FROM comments WHERE lesson_slug = ?"
+          );
+          lessons.forEach((lesson) => {
+            deleteComments.run(lesson.slug);
+          });
 
-        // sletter leksjon
-        const deleteLessons = db.prepare(
-          "DELETE FROM lessons WHERE course_id = ?"
-        );
-        deleteLessons.run(course.id);
+          // slette tilknyttede leksjonstekster
+          const deleteLessonText = db.prepare(
+            "DELETE FROM lesson_text WHERE lesson_id = ?"
+          );
+          lessons.forEach((lesson) => {
+            deleteLessonText.run(lesson.id);
+          });
 
-        // sletter kurset til sist
-        const deleteCourse = db.prepare("DELETE FROM courses WHERE id = ?");
-        deleteCourse.run(course.id);
+          // slette tilknyttede leksjoner
+          const deleteLessons = db.prepare(
+            "DELETE FROM lessons WHERE course_id = ?"
+          );
+          deleteLessons.run(course.id);
+
+          // slette selve kurset
+          const deleteCourse = db.prepare("DELETE FROM courses WHERE id = ?");
+          deleteCourse.run(course.id);
+        })();
+
+        return ResultHandler.success(undefined);
       }
 
       return ResultHandler.success(undefined);
