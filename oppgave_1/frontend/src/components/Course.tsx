@@ -2,7 +2,9 @@ import { Course as CourseType } from "@/interfaces/types";
 import Link from "next/link";
 import UsersList from "./UsersList";
 import Lesson from "./Lesson";
+import CourseCategory from "./CourseCategory";
 import { useCourse } from "@/hooks/useCourse";
+import { useCategories } from "@/hooks/useCategories";
 
 interface CourseProps {
   courseSlug: string;
@@ -11,6 +13,7 @@ interface CourseProps {
 
 export default function Course({ courseSlug, lessonSlug }: CourseProps) {
   const { course, isLoading, error } = useCourse(courseSlug);
+  const { categories } = useCategories();
 
   if (isLoading) {
     return (
@@ -66,14 +69,23 @@ export default function Course({ courseSlug, lessonSlug }: CourseProps) {
         </article>
       ) : (
         <section>
-          <h2 className="text-2xl font-bold" data-testid="course_title">
-            {course.title}
-          </h2>
+          <div className="flex justify-between">
+            <h3 data-testid="course_title" className="mb-6 text-base font-bold">
+              <a className="underline" href={`/kurs/${course?.slug}`}>
+                {course?.title}
+              </a>
+            </h3>
+            <CourseCategory
+              courseSlug={course.slug}
+              currentCategory={course.category}
+              categories={categories}
+            />
+          </div>
           <p
-            className="mt-4 font-semibold leading-relaxed"
             data-testid="course_description"
+            className="mt-4 font-semibold leading-relaxed"
           >
-            {course.description}
+            {course?.description}
           </p>
         </section>
       )}
