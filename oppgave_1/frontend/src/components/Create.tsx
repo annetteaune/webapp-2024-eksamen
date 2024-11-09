@@ -14,6 +14,7 @@ import {
 import { isValid } from "@/lib/utils/validation";
 import { useCategories } from "@/hooks/useCategories";
 import { fetcher } from "@/api/fetcher";
+import { generateRandomId } from "@/lib/utils/randomId";
 
 const courseCreateSteps = [
   { id: "1", name: "Kurs" },
@@ -26,7 +27,7 @@ export default function Create() {
   const [current, setCurrent] = useState<number>(0);
   const [currentLesson, setCurrentLesson] = useState<number>(0);
   const [courseFields, setCourseFields] = useState<CourseFields>({
-    id: `${Math.floor(Math.random() * 1000 + 1)}`,
+    id: generateRandomId(),
     title: "",
     slug: "",
     description: "",
@@ -77,12 +78,10 @@ export default function Create() {
   const addTextBox = (): void => {
     const updatedLessonText = lessons.map((lesson, i) => {
       if (currentLesson === i) {
-        const text = [
-          { id: `${Math.floor(Math.random() * 1000 + 1)}`, text: "" },
-        ];
+        const text = [{ id: generateRandomId(), text: "" }];
         if (lesson.text.length === 0) {
           text.push({
-            id: `${Math.floor(Math.random() * 1000 + 1)}`,
+            id: generateRandomId(),
             text: "",
           });
         }
@@ -137,7 +136,7 @@ export default function Create() {
     let text = lessons[currentLesson]?.text || [];
 
     if (lessons[currentLesson]?.text?.length === 0) {
-      text = [{ id: `${Math.floor(Math.random() * 1000 + 1)}`, text: "" }];
+      text = [{ id: generateRandomId(), text: "" }];
     } else if (name === "text" && typeof index === "number") {
       text = lessons[currentLesson].text.map((_text, i) => {
         if (i === index) {
@@ -163,7 +162,7 @@ export default function Create() {
     setLessons((prev) => [
       ...prev,
       {
-        id: `${Math.floor(Math.random() * 1000 + 1)}`,
+        id: generateRandomId(),
         title: "",
         slug: "",
         preAmble: "",
