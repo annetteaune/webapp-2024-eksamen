@@ -1,0 +1,30 @@
+.event-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  margin: 0 auto;
+}
+
+/*tablet*/
+@media (min-width: 768px) and (max-width: 1200px) {
+  .event-list {
+    flex-direction: row;
+  }
+}
+/*laptop*/
+@media (min-width: 1200px) {
+  .event-list {
+    flex-direction: row;
+    width: 90%;
+    margin: 0 auto;
+  }
+}
+
+/*desktop*/
+@media (min-width: 1920px) {
+  .event-list {
+    flex-direction: row;
+    width: 70%;
+  }
+}

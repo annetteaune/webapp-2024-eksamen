@@ -1,0 +1,41 @@
+.event-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  border: 1px solid black;
+  width: 100%;
+  min-height: 15rem;
+  margin: 0 auto;
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: space-between;
+    padding: 1rem;
+    .card-type {
+      font-size: 0.8rem;
+    }
+  }
+  .card-date-wrapper {
+    display: flex;
+    padding: 1rem;
+    justify-content: right;
+    font-size: 0.8rem;
+    gap: 1rem;
+  }
+  .card-desc {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  .card-status {
+    display: flex;
+    padding: 1rem;
+    justify-content: left;
+
+    font-size: 0.8rem;
+  }
+  .card-btn {
+    width: 50%;
+    margin: 1rem auto;
+  }
+}

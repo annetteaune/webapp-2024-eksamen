@@ -13,19 +13,23 @@
 - PATCH - oppdatere eksisterende (admin)
 - DELETE - slette arrangmenet (admin)
 
-### /events/:slug/bookings
-
-- GET - hente alle påmedlinger per arrangement
-- POST - opprette påmelding fr et arrangement
-- PACTH - oppdatere en påmelding (godkjent/avslått?)
-- DELETE - slette en påmelding
-
 ### /templates - håndterer maler og deres regler
 
 - GET - henter alle maler, responsen må være en lsite med alle maler
 - POST - opprette ny mal
 - DELETE - slette en mal (men kan ikke slette en som er i bruk! husk på)
 - PATCH - opddatere en mal?
+
+### /bookings - Påmeldinger
+
+- GET - hente alle påmedlinger
+- POST - opprette påmelding
+- PACTH - oppdatere en påmelding (godkjent/avslått?)
+- DELETE - slette en påmelding
+
+### /type - Arrangementstyper
+
+- GET - henter alle typer
 
 TODO: Skal til hvert api-endepunkt dokumentere responsen og statuskoden for de ulike verbene. Hva slags data skal returneres når det går riktig / feil.
 
@@ -60,18 +64,32 @@ TODO: Skal til hvert api-endepunkt dokumentere responsen og statuskoden for de u
 
 ### /admin/new
 
-- kan opprette ny mal (popupskjema?)
-- kan opprette event basetr på mal eller fra bunnen av
+- kan opprette ny mal
+- kan opprette event basert på mal eller fra bunnen av
 
 ## Filtrering:
 
-Backend:
-Frontend:
+Sende queries som parametere fra valg i fronted til backend. Backend henter og returnerer arrangementer basert på filtreringen.
 TODO
 
 ## Datamodell:
 
-TODO
+### Arrangement
+
+- id(int), slug(string), title(string), description(string), date(datetime), location(string), type(string), capacity(int), price(dec), waitlist?(array)
+
+### Mal
+
+- id(int), name(string), allowed_days(array), max_capacity(int), price(dec), is_private(bool), allow_same_day(bool), allow_waitlist(bool), created_at(datetime)
+  TODO
+
+### Påmelding
+
+- id(int), name(string), has_paid(bool)
+
+### Type
+
+- id(int), name(string)
 
 ## Malsystemet:
 
@@ -79,4 +97,8 @@ TODO
 
 ## Databasemodell og relasjoner:
 
-TODO
+Tre hovedtabeller: Events, Templates og Bookings. Koblingstabeller mellom disse.
+
+Event og Templates har en én-til-mange-relasjon siden mange arrangementer kan opprettes fra én mal
+Event og Bookings har en én-til-mange-relasjon, siden mange påmeldinger kan tilhøre ett arrangement.
+Begrunnelse: TODO
