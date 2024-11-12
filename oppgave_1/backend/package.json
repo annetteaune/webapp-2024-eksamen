@@ -3,14 +3,16 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tsx watch src/index.ts",
-		"db:setup": "tsx src/db/index.ts"
+		"db:setup": "tsx --tsconfig tsconfig.node.json src/db/index.ts"
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.12.1",
 		"@t3-oss/env-core": "^0.11.1",
 		"better-sqlite3": "^11.3.0",
 		"dotenv": "^16.4.5",
-		"hono": "^4.5.7"
+		"hono": "^4.5.7",
+		"pino": "^9.5.0",
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^2.27.0",
