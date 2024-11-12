@@ -25,6 +25,12 @@ export default function SignUp() {
     setFormError(false);
     setSuccess(false);
 
+    // måtte legge til dette da valideringen ikke trigget feilmeldingen etter implementasjon av lagring til db
+    if (!fields.name || !fields.email) {
+      setFormError(true);
+      return;
+    }
+
     if (formIsValid.length === 0) {
       setSuccess(true);
       try {
