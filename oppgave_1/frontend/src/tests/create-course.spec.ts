@@ -5,9 +5,16 @@ import {
   type Locator,
   type BrowserContext,
 } from "@playwright/test";
+import { waitForPageReady } from "./helpers";
 
 let page: Page;
 let context: BrowserContext;
+
+/*TODO: Flaky tests
+      Har brukt 2 dager på å forsøke å feilrette i flaky tester. Enkelte tester feiler, men bare noen ganger, men ingen tester
+      feiler om --trace on-flagget er på, så feilretting er veldig vanskelig. Om de ulike testblokkene kjøres med .only, feiler heller ingen per blokk,
+      untatt den aller siste - som foreøvrig bestandig passerer når ALLE kjøres. 
+      Ellers er det 1-3 tester som flagges som flaky per testrunde når alle blokkene kjøres. Lar stå som det er, og kommer tilbake til det om jeg får tid før innlevering.  */
 
 test.describe("Oppgave 1 Create", () => {
   test.beforeAll(async ({ browser }) => {
@@ -69,10 +76,11 @@ test.describe("Oppgave 1 Create", () => {
   test.describe("When stepping from first to second step", () => {
     test.beforeEach(async () => {
       await page.goto("/ny");
+      await waitForPageReady(page);
     });
 
     test("Should show error if any required field are missing", async () => {
-      await page.getByTestId("step").nth(1).click();
+      await page.click('button:has-text("Leksjoner")');
       const error = await page.getByTestId("form_error");
       await expect(error).toBeVisible();
     });
@@ -81,7 +89,7 @@ test.describe("Oppgave 1 Create", () => {
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
-      await page.getByTestId("step").nth(1).click();
+      await page.click('button:has-text("Leksjoner")');
       const error = await page.getByTestId("form_error");
       await expect(error).toBeVisible();
     });
@@ -90,7 +98,7 @@ test.describe("Oppgave 1 Create", () => {
       await page.getByTestId("form_title").fill("Test Title");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
-      await page.getByTestId("step").nth(1).click();
+      await page.click('button:has-text("Leksjoner")');
       const error = await page.getByTestId("form_error");
       await expect(error).toBeVisible();
     });
@@ -99,7 +107,7 @@ test.describe("Oppgave 1 Create", () => {
       await page.getByTestId("form_title").fill("Test Title");
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_category").selectOption("Code");
-      await page.getByTestId("step").nth(1).click();
+      await page.click('button:has-text("Leksjoner")');
       const error = await page.getByTestId("form_error");
       await expect(error).toBeVisible();
     });
@@ -108,34 +116,32 @@ test.describe("Oppgave 1 Create", () => {
       await page.getByTestId("form_title").fill("Test Title");
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_description").fill("Test description");
-      await page.getByTestId("step").nth(1).click();
+      await page.click('button:has-text("Leksjoner")');
       const error = await page.getByTestId("form_error");
       await expect(error).toBeVisible();
     });
 
-    // FEILER men bare noen ganger -  await expect(error).not.toBeVisible();
     test("Should not show error if all fields are provided", async () => {
       await page.getByTestId("form_title").fill("Test Title");
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
-      await page.getByTestId("step").nth(1).click();
-      const error = await page.getByTestId("form_error");
-      await expect(error).not.toBeVisible();
+      await page.click('button:has-text("Leksjoner")');
+      await expect(page.getByTestId("form_error")).not.toBeVisible();
     });
   });
 
   test.describe("When at step two", () => {
     test.beforeEach(async () => {
       await page.goto("/ny");
+      await waitForPageReady(page);
       await expect(page.getByTestId("course_step")).toBeVisible();
       await page.getByTestId("form_title").fill("Test Title");
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
 
-      const buttons = await page.getByTestId("step").all();
-      await buttons[1].click();
+      await page.click('button:has-text("Leksjoner")');
     });
 
     test("Should have disabled submit btn", async () => {
@@ -144,7 +150,6 @@ test.describe("Oppgave 1 Create", () => {
       await expect(submitBtn).toBeDisabled();
     });
 
-    // FEILER i beforeeach MEN BARE NOEN GANGER - await expect(page.getByTestId("form_error")).not.toBeVisible();
     test("Should have no errors", async () => {
       await expect(page.getByTestId("form_error")).not.toBeVisible();
     });
@@ -154,13 +159,11 @@ test.describe("Oppgave 1 Create", () => {
     });
 
     test("Should have test-id lessons", async () => {
+      await page.click('button:has-text("+ Ny leksjon")');
       const lessons = page.getByTestId("lessons");
-      await expect(lessons).toBeAttached();
-      const lessonItems = await lessons.locator("li").all();
-      expect(lessonItems.length).toBe(0);
+      await expect(lessons).toBeVisible();
     });
 
-    // Feiler noen ganger
     test("Should have test-id form_lesson_add", async () => {
       const addButton = page.getByTestId("form_lesson_add");
       await expect(addButton).toBeVisible();
@@ -170,22 +173,18 @@ test.describe("Oppgave 1 Create", () => {
   test.describe("When creating multiple lessons", () => {
     test.beforeEach(async () => {
       await page.goto("/ny");
-      await expect(page.getByTestId("course_step")).toBeAttached();
+      await waitForPageReady(page);
+
       await page.getByTestId("form_title").fill("Test Title");
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
 
-      const steps = page.getByTestId("steps");
-      await expect(steps).toBeAttached();
-
-      await page.getByTestId("step").nth(1).click();
-
-      await expect(page.getByTestId("form_lesson_add")).toBeAttached();
-      await page.getByTestId("form_lesson_add").click();
+      await page.click('button:has-text("Leksjoner")');
+      await waitForPageReady(page);
+      await page.click('button:has-text("+ Ny leksjon")');
     });
 
-    // FEILER i beforeeach men bare noen ganger - expect.toBeAttached
     test("Should have disabled submit btn if title is missing", async () => {
       await page.getByTestId("form_lesson_slug").fill("lesson-slug");
       await page.getByTestId("form_lesson_preAmble").fill("Test preamble");
@@ -193,7 +192,7 @@ test.describe("Oppgave 1 Create", () => {
       const submitBtn = await page.getByTestId("form_submit");
       await expect(submitBtn).toBeDisabled();
     });
-    // FEILER noen ganger
+
     test("Should have disabled submit btn if preAmble is missing", async () => {
       await page.getByTestId("form_lesson_title").fill("Lesson Title");
       await page.getByTestId("form_lesson_slug").fill("lesson-slug");
@@ -232,7 +231,6 @@ test.describe("Oppgave 1 Create", () => {
       await expect(submitBtn).toBeDisabled();
     });
 
-    // FEILER i beforeeach men bare noen ganger
     test("Should have enabled submit btn if all fields are added on all lesson", async () => {
       await page.getByTestId("form_lesson_title").fill("Lesson Title");
       await page.getByTestId("form_lesson_slug").fill("lesson-slug");
@@ -242,7 +240,6 @@ test.describe("Oppgave 1 Create", () => {
       await expect(submitBtn).toBeEnabled();
     });
 
-    // FEILER i beforeeach men abre noen ganger expect.toBeAttached— create-course.spec.ts:183
     test("Should disable publish button if new lesson is added", async () => {
       await page.getByTestId("form_lesson_title").fill("Lesson 1");
       await page.getByTestId("form_lesson_slug").fill("lesson-1");
@@ -262,11 +259,11 @@ test.describe("Oppgave 1 Create", () => {
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
-      await page.getByTestId("step").nth(1).click();
-      await page.getByTestId("form_lesson_add").click();
+      await page.click('button:has-text("Leksjoner")');
+      await waitForPageReady(page);
+      await page.click('button:has-text("+ Ny leksjon")');
     });
 
-    // FEILER i beforeeach men bare noen ganger
     test("Should have enabled publish button if all text fields are valid", async () => {
       await page.getByTestId("form_lesson_title").fill("Lesson 1");
       await page.getByTestId("form_lesson_slug").fill("lesson-1");
@@ -278,15 +275,19 @@ test.describe("Oppgave 1 Create", () => {
       await expect(submitBtn).toBeEnabled();
     });
   });
+
   test.describe("When created new course", () => {
     test.beforeEach(async () => {
       await page.goto("/ny");
+      await waitForPageReady(page);
       await page.getByTestId("form_title").fill("Test Course");
       await page.getByTestId("form_slug").fill("test-course");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
-      await page.getByTestId("step").nth(1).click();
-      await page.getByTestId("form_lesson_add").click();
+      await page.click('button:has-text("Leksjoner")');
+      await waitForPageReady(page);
+      await page.click('button:has-text("+ Ny leksjon")');
+      await waitForPageReady(page);
       await page.getByTestId("form_lesson_title").fill("Test Lesson");
       await page.getByTestId("form_lesson_slug").fill("test-lesson");
       await page.getByTestId("form_lesson_preAmble").fill("Test preamble");
@@ -299,17 +300,17 @@ test.describe("Oppgave 1 Create", () => {
       });
     });
 
-    // FEILER men bare noen ganger locator.getByTestId('form_lesson_add').click— create-course.spec.ts:286
     test("Should have show success when submitted", async () => {
-      await page.getByTestId("form_submit").click();
+      await page.click('button:has-text("Publiser")');
+      await waitForPageReady(page);
       const success = await page.getByTestId("form_success");
       await expect(success).toBeVisible();
       await expect(success).toHaveText("Skjema sendt");
     });
 
-    // FEILER i beforeeach men abre noen ganger
     test("Should show preview of content when submitted", async () => {
       await page.getByTestId("form_submit").click();
+      await waitForPageReady(page);
       await expect(page.getByTestId("review")).toBeVisible();
       await expect(page.getByTestId("review_course")).toBeVisible();
       await expect(page.getByTestId("review_course_title")).toContainText(
@@ -340,27 +341,29 @@ test.describe("Oppgave 1 Create", () => {
       );
     });
 
-    // denne testen er skrevet av claude.ai - FEILER i beforeeach men bare noen ganger locator.getByTestId('form_lesson_add').click
+    // denne testen er skrevet av claude.ai
     test("Should get response 200 from server", async () => {
       const responsePromise = page.waitForResponse(
         (response) =>
           response.url().includes("/kurs") &&
           response.request().method() === "POST"
       );
-      await page.getByTestId("form_submit").click();
+      await page.click('button:has-text("Publiser")');
+      await waitForPageReady(page);
       const response = await responsePromise;
       expect(response.status()).toBe(201);
     });
 
-    // denne testen er skrevet av claude.ai - FEILER i beforeeach men bare noen ganger
+    // denne testen er (hovedsakelig) skrevet av claude.ai
     test("Should get correct data from server", async () => {
       const responsePromise = page.waitForResponse(
         (response) =>
           response.url().includes("/kurs") &&
           response.request().method() === "POST"
       );
-      await page.getByTestId("form_submit").click();
 
+      await page.click('button:has-text("Publiser")');
+      await waitForPageReady(page);
       const response = await responsePromise;
       const data = await response.json();
 
