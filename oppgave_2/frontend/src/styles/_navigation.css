@@ -4,8 +4,11 @@ header {
   padding: 1rem;
   nav {
     ul {
-      a {
-        padding: 1rem;
+      display: flex;
+      li {
+        a {
+          padding: 1rem;
+        }
       }
     }
   }

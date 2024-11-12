@@ -7,6 +7,8 @@ export default function EventList() {
       {dummyData.events.map((event) => (
         <EventCard
           key={event.id}
+          id={event.id}
+          slug={event.slug}
           title={event.title}
           type={event.type}
           date={event.date}

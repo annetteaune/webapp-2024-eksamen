@@ -1,7 +1,10 @@
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
+import Link from "next/link";
 
 type EventCardProps = {
+  id: number;
+  slug: string;
   title: string;
   type: string;
   date: string;
@@ -12,6 +15,8 @@ type EventCardProps = {
 };
 
 export default function EventCard({
+  id,
+  slug,
   title,
   type,
   date,
@@ -39,7 +44,10 @@ export default function EventCard({
       <p className="card-desc">{description}</p>
 
       <span className="card-status">Status: {status}</span>
-      <button className="card-btn">Les mer</button>
+
+      <Link href={`/${slug}`} className="card-btn">
+        <button>Les mer</button>
+      </Link>
     </article>
   );
 }

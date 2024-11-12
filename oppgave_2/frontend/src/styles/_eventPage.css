@@ -1,0 +1,86 @@
+.event-page {
+  max-width: 80%;
+  margin: 0 auto;
+  .event-header {
+    padding: 1rem 0;
+  }
+  .event-description {
+    padding: 1rem 0;
+  }
+  .event-info {
+    padding: 1rem 0;
+  }
+  h3 {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.booking-form {
+  padding: 2rem;
+  margin: 0 auto;
+  .attendees-section {
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    border: 1px solid grey;
+    margin-bottom: 2rem;
+    .attendee-form {
+      h4 {
+        margin-bottom: 1rem;
+      }
+
+      .form-row {
+        margin-bottom: 1rem;
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+        }
+        input {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid grey;
+        }
+      }
+    }
+  }
+  .submit-btn {
+    font-weight: bold;
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+.add-attendee-btn,
+.remove-attendee-btn,
+.submit-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+/*tablet*/
+@media (min-width: 768px) and (max-width: 1200px) {
+  .event-page {
+    max-width: 70%;
+  }
+}
+/*laptop*/
+@media (min-width: 1200px) {
+  .event-page {
+    max-width: 65%;
+  }
+  .booking-form {
+    max-width: 70%;
+  }
+}
+
+/*desktop*/
+@media (min-width: 1920px) {
+  .event-page {
+    max-width: 60%;
+  }
+  .booking-form {
+    max-width: 50%;
+  }
+}

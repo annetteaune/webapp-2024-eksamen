@@ -1,11 +1,19 @@
+import Link from "next/link";
+
 export default function Nav() {
   return (
     <header>
-      <h1>LOGO</h1>
+      <Link href="/">
+        <h1>LOGO</h1>
+      </Link>
       <nav>
         <ul>
-          <a>Hjem</a>
-          <a>Admin</a>
+          <li>
+            <Link href="/">Hjem</Link>
+          </li>
+          <li>
+            <Link href="/admin">Admin</Link>
+          </li>
         </ul>
       </nav>
     </header>

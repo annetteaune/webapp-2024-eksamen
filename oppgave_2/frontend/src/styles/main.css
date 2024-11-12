@@ -3,9 +3,10 @@
 @import "_footer.css";
 @import "_eventCard.css";
 @import "_eventList.css";
+@import "_eventPage.css";
 
 html {
-  font-size: calc(1em + 1vw);
+  font-size: calc(0.5em + 0.5vw);
 }
 
 body {
@@ -26,7 +27,7 @@ code {
 
 h2 {
   text-align: center;
-  padding: 3rem;
+  padding: 1rem;
 }
 
 /*tablet*/
