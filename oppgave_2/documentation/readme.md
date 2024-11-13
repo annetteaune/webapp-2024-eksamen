@@ -97,8 +97,9 @@ TODO
 
 ## Databasemodell og relasjoner:
 
-Tre hovedtabeller: Events, Templates og Bookings. Koblingstabeller mellom disse.
+Fire hovedtabeller: Events, Templates, Types og Bookings.
 
-Event og Templates har en én-til-mange-relasjon siden mange arrangementer kan opprettes fra én mal
-Event og Bookings har en én-til-mange-relasjon, siden mange påmeldinger kan tilhøre ett arrangement.
+Event og Templates har en én-til-mange-relasjon siden mange arrangementer kan opprettes fra én mal, men en mal kan benyttes til mange arrangementer.
+Event og Bookings har en én-til-mange-relasjon, siden mange påmeldinger kan tilhøre ett arrangement, men en individuell påmelding kun gjelder det ene arrangementet.
+Types og Events har en én-til-mange-relasjon, siden et arrangement kan bare ha én type, men en type kan tulhøre mange arrangmeneter.
 Begrunnelse: TODO

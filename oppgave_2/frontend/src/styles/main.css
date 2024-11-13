@@ -30,6 +30,10 @@ h2 {
   padding: 1rem;
 }
 
+.not-found {
+  text-align: center;
+}
+
 /*tablet*/
 @media (min-width: 768px) and (max-width: 1200px) {
 }

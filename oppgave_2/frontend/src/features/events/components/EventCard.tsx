@@ -36,7 +36,7 @@ export default function EventCard({
         <span className="card-type">{type}</span>
       </div>
 
-      <div className="card-date-wrapper">
+      <div className="card-meta">
         <span className="card-date">{formattedDate}</span>
         <span className="card-place">{location}</span>
       </div>

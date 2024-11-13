@@ -16,7 +16,7 @@
       font-variant: small-caps;
     }
   }
-  .card-date-wrapper {
+  .card-meta {
     display: flex;
     padding: 1rem;
     justify-content: right;
