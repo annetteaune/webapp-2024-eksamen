@@ -24,6 +24,10 @@
 
 - GET - hente alle påmedlinger
 - POST - opprette påmelding
+
+### /bookings/:slug - påmeldinger til et spesifikt arrangement
+
+- GET - hente påmedlingen
 - PACTH - oppdatere en påmelding (godkjent/avslått?)
 - DELETE - slette en påmelding
 

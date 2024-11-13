@@ -49,7 +49,7 @@ export const seed = async (db: DB) => {
     `);
 
     data.events.forEach((event: any) => {
-      const typeId = data.types.find((t: any) => t.name === event.type)?.id;
+      const type = data.types.find((t: any) => t.name === event.type);
 
       insertEvent.run(
         event.id,
@@ -59,7 +59,7 @@ export const seed = async (db: DB) => {
         event.description_long,
         event.date,
         event.location,
-        typeId,
+        type?.id,
         event.capacity,
         event.price,
         event.template_id,

@@ -11,14 +11,14 @@ export const createTables = async (db: DB) => {
 
   db.exec(`
     CREATE TABLE types (
-      id INTEGER PRIMARY KEY,
+      id TEXT PRIMARY KEY,
       name TEXT NOT NULL
     );
 
     CREATE TABLE templates (
-      id INTEGER PRIMARY KEY,
+      id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      allowed_days TEXT NOT NULL,
+      allowed_days TEXT,
       max_capacity INTEGER NOT NULL,
       price DECIMAL(10, 2) NOT NULL,
       is_private BOOLEAN NOT NULL,
@@ -28,17 +28,17 @@ export const createTables = async (db: DB) => {
     );
 
     CREATE TABLE events (
-      id INTEGER PRIMARY KEY,
+      id TEXT PRIMARY KEY,
       slug TEXT UNIQUE NOT NULL,
       title TEXT NOT NULL,
       description_short TEXT NOT NULL,
       description_long TEXT NOT NULL,
       date DATETIME NOT NULL,
       location TEXT NOT NULL,
-      type_id INTEGER NOT NULL,
+      type_id TEXT NOT NULL,
       capacity INTEGER NOT NULL,
       price DECIMAL(10, 2) NOT NULL,
-      template_id INTEGER NOT NULL,
+      template_id TEXT NOT NULL,
       status TEXT NOT NULL,
       waitlist TEXT,
       FOREIGN KEY (template_id) REFERENCES templates(id),
@@ -46,8 +46,8 @@ export const createTables = async (db: DB) => {
     );
 
     CREATE TABLE bookings (
-      id INTEGER PRIMARY KEY,
-      event_id INTEGER NOT NULL,
+      id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL,
       name TEXT NOT NULL,
       email TEXT NOT NULL,
       has_paid BOOLEAN NOT NULL DEFAULT 0,

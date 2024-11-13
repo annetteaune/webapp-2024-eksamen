@@ -1,45 +1,45 @@
 {
     "events": [
         {
-            "id": 1,
+            "id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
             "slug": "fredagsjoggen",
             "title": "Fredagsjoggen",
             "description_short": "Bli med på en sosial joggetur hver fredag!",
-            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
             "date": "2025-11-15T18:00:00Z",
             "location": "Sentralparken",
             "type": "Trening",
             "capacity": 20,
             "price": 0,
-            "template_id": 1,
+            "template_id": "t1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
             "status": "Ledig"
         },
         {
-            "id": 2,
+            "id": "f2c3d4e5-f6g7-5b6c-9d0e-1f2g3h4i5j6",
             "slug": "aarsmote-20245",
             "title": "Årsmøte 2025",
             "description_short": "Årlig møte med viktige beslutninger for foreningen.",
-            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
             "date": "2025-02-20T19:00:00Z",
             "location": "Rådhuset, møterom 2",
             "type": "Møte",
             "capacity": 50,
             "price": 0,
-            "template_id": 2,
+            "template_id": "t2b3c4d5-e6f7-5g6h-9i0j-1k2l3m4n5o6",
             "status": "Ledig"
         },
         {
-            "id": 3,
+            "id": "g3d4e5f6-g7h8-6c7d-0e1f-2g3h4i5j6k7",
             "slug": "sommerfest-2025",
             "title": "Sommerfest",
             "description_short": "Sommerfest med grill og aktiviteter for hele familien.",
-            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
             "date": "2025-06-15T15:00:00Z",
             "location": "Foreningslokalet",
             "type": "Sosialt",
             "capacity": 100,
             "price": 200,
-            "template_id": 3,
+            "template_id": "t3c4d5e6-f7g8-6h7i-0j1k-2l3m4n5o6p7",
             "status": "Fullbooket",
             "waitlist": [
                 {
@@ -59,10 +59,10 @@
     ],
     "templates": [
         {
-            "id": 1,
+            "id": "t1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
             "name": "Fredagsjoggen",
             "allowed_days": [
-                "Fredag"
+                "Friday"
             ],
             "max_capacity": 20,
             "price": 0,
@@ -72,9 +72,13 @@
             "created_at": "2025-11-01T12:00:00Z"
         },
         {
-            "id": 2,
+            "id": "t2b3c4d5-e6f7-5g6h-9i0j-1k2l3m4n5o6",
             "name": "Årsmøte",
-            "allowed_days": [],
+            "allowed_days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday"
+            ],
             "max_capacity": 50,
             "price": 0,
             "is_private": false,
@@ -83,9 +87,12 @@
             "created_at": "2025-10-20T12:00:00Z"
         },
         {
-            "id": 3,
+            "id": "t3c4d5e6-f7g8-6h7i-0j1k-2l3m4n5o6p7",
             "name": "Sommerfest",
-            "allowed_days": [],
+            "allowed_days": [
+                "Saturday",
+                "Sunday"
+            ],
             "max_capacity": 100,
             "price": 200,
             "is_private": true,
@@ -96,24 +103,24 @@
     ],
     "bookings": [
         {
-            "id": 1,
-            "event_id": 1,
+            "id": "b1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
+            "event_id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
             "name": "Ola Nordmann",
             "email": "ola@example.com",
             "has_paid": true,
             "status": "Godkjent"
         },
         {
-            "id": 2,
-            "event_id": 1,
+            "id": "b2b3c4d5-e6f7-5g6h-9i0j-1k2l3m4n5o6",
+            "event_id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
             "name": "Kari Nordmann",
             "email": "kari@example.com",
             "has_paid": false,
             "status": "På venteliste"
         },
         {
-            "id": 3,
-            "event_id": 3,
+            "id": "b3c4d5e6-f7g8-6h7i-0j1k-2l3m4n5o6p7",
+            "event_id": "g3d4e5f6-g7h8-6c7d-0e1f-2g3h4i5j6k7",
             "name": "Per Hansen",
             "email": "per@example.com",
             "has_paid": true,
@@ -122,15 +129,15 @@
     ],
     "types": [
         {
-            "id": 1,
+            "id": "type1-a2b3-c4d5-e6f7-g8h9i0j1k2l3",
             "name": "Trening"
         },
         {
-            "id": 2,
+            "id": "type2-b3c4-d5e6-f7g8-h9i0j1k2l3m4",
             "name": "Møte"
         },
         {
-            "id": 3,
+            "id": "type3-c4d5-e6f7-g8h9-i0j1k2l3m4n5",
             "name": "Sosialt"
         }
     ]
