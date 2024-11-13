@@ -3,10 +3,13 @@ import { nb } from "date-fns/locale";
 import Link from "next/link";
 
 type EventCardProps = {
-  id: number;
+  id: string;
   slug: string;
   title: string;
-  type: string;
+  type: {
+    id: string;
+    name: string;
+  };
   date: string;
   location: string;
   description: string;
@@ -33,7 +36,7 @@ export default function EventCard({
     <article className="event-card">
       <div className="card-header">
         <h3 className="card-title">{title}</h3>
-        <span className="card-type">{type}</span>
+        <span className="card-type">{type.name}</span>
       </div>
 
       <div className="card-meta">

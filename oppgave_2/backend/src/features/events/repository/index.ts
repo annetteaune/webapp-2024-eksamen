@@ -21,6 +21,7 @@ type DbEvent = {
   date: string;
   location: string;
   type_id: string;
+  type_name: string;
   capacity: number;
   price: number;
   template_id: string;
@@ -30,12 +31,24 @@ type DbEvent = {
 
 export const findAllEvents = async (db: DB): Promise<Result<Event[]>> => {
   try {
-    const events = db.prepare("SELECT * FROM events").all() as DbEvent[];
+    const events = db
+      .prepare(
+        `
+      SELECT events.*, types.name as type_name 
+      FROM events 
+      JOIN types ON events.type_id = types.id
+    `
+      )
+      .all() as DbEvent[];
 
     const validatedEvents = events.map((event) =>
       eventSchema.parse({
         ...event,
         waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
+        type: {
+          id: event.type_id,
+          name: event.type_name,
+        },
       })
     );
 
@@ -99,7 +112,14 @@ export const findEventBySlug = async (
 ): Promise<Result<Event>> => {
   try {
     const event = db
-      .prepare("SELECT * FROM events WHERE slug = ?")
+      .prepare(
+        `
+        SELECT events.*, types.name as type_name 
+        FROM events 
+        JOIN types ON events.type_id = types.id
+        WHERE events.slug = ?
+      `
+      )
       .get(slug) as DbEvent | undefined;
 
     if (!event) {
@@ -115,6 +135,10 @@ export const findEventBySlug = async (
     const validatedEvent = eventSchema.parse({
       ...event,
       waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
+      type: {
+        id: event.type_id,
+        name: event.type_name,
+      },
     });
 
     return {

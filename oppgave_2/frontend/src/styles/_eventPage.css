@@ -50,9 +50,18 @@
   }
 }
 
+.booking-success {
+  margin-top: 3rem;
+  text-align: center;
+  .new-booking-btn {
+    margin-top: 1rem;
+  }
+}
+
 .add-attendee-btn,
 .remove-attendee-btn,
-.submit-btn {
+.submit-btn,
+.new-booking-btn {
   padding: 0.5rem 1rem;
   border: none;
   cursor: pointer;

@@ -6,7 +6,7 @@ export const bookingSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   has_paid: z.boolean(),
-  status: z.enum(["Godkjent", "På venteliste", "Avslått"]),
+  status: z.enum(["Godkjent", "Til behandling", "På venteliste", "Avslått"]),
 });
 
 export const createBookingSchema = bookingSchema.omit({
@@ -16,6 +16,6 @@ export const createBookingSchema = bookingSchema.omit({
 });
 
 export const updateBookingSchema = z.object({
-  status: z.enum(["Godkjent", "På venteliste", "Avslått"]),
+  status: z.enum(["Godkjent", "Til behandling", "På venteliste", "Avslått"]),
   has_paid: z.boolean().optional(),
 });

@@ -19,7 +19,7 @@ type BookingsResponse = {
     name: string;
     email: string;
     hasPaid: boolean;
-    status: "Godkjent" | "På venteliste" | "Avslått";
+    status: "Godkjent" | "Til behandling" | "På venteliste" | "Avslått";
   }[];
 };
 
@@ -29,7 +29,7 @@ type BookingResponse = {
   name: string;
   email: string;
   hasPaid: boolean;
-  status: "Godkjent" | "På venteliste" | "Avslått";
+  status: "Godkjent" | "Til behandling" | "På venteliste" | "Avslått";
 };
 
 export const getAllBookings = async (

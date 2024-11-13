@@ -84,7 +84,7 @@ export const createBooking = async (
       id,
       ...booking,
       has_paid: false,
-      status: "På venteliste" as const,
+      status: "Til behandling" as const,
     };
 
     db.prepare(

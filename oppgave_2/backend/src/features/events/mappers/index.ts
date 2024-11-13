@@ -8,7 +8,10 @@ export const toEventResponse = (event: Event) => ({
   descriptionLong: event.description_long,
   date: event.date,
   location: event.location,
-  typeId: event.type_id,
+  type: {
+    id: event.type_id,
+    name: event.type_name,
+  },
   capacity: event.capacity,
   price: event.price,
   templateId: event.template_id,

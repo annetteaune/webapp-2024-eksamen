@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useBookings } from "../hooks/useBookings";
 
 type Attendee = {
   name: string;
@@ -7,7 +8,7 @@ type Attendee = {
 };
 
 type BookingFormProps = {
-  eventId: number;
+  eventId: string;
   eventTitle: string;
 };
 
@@ -15,12 +16,17 @@ export default function BookingForm({ eventId, eventTitle }: BookingFormProps) {
   const [attendees, setAttendees] = useState<Attendee[]>([
     { name: "", email: "" },
   ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const { createBooking } = useBookings();
 
   const addAttendee = () => {
     setAttendees([...attendees, { name: "", email: "" }]);
   };
 
-  // claude.ai
+  //claude.ai
   const removeAttendee = (index: number) => {
     if (attendees.length > 1) {
       const newAttendees = attendees.filter((_, i) => i !== index);
@@ -28,24 +34,64 @@ export default function BookingForm({ eventId, eventTitle }: BookingFormProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
 
-    const bookings = attendees.map((attendee) => ({
-      event_id: eventId,
-      name: attendee.name,
-      email: attendee.email,
-      has_paid: false,
-      status: "På venteliste",
-    }));
+    try {
+      // legger inn hver påmelding separat
+      const bookingPromises = attendees.map((attendee) =>
+        createBooking({
+          event_id: eventId,
+          name: attendee.name,
+          email: attendee.email,
+        })
+      );
 
-    console.log(bookings);
+      await Promise.all(bookingPromises);
+
+      setSubmitSuccess(true);
+      setAttendees([{ name: "", email: "" }]); // reset skjema
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit booking. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (submitSuccess) {
+    return (
+      <div className="booking-success">
+        <h3>Påmelding mottatt!</h3>
+        <p>Takk for din påmelding til {eventTitle}.</p>
+        <p>
+          Du vil motta en bekreftelse på e-post når påmeldingen er behandlet.
+        </p>
+        <button
+          onClick={() => {
+            setSubmitSuccess(false);
+            setAttendees([{ name: "", email: "" }]);
+          }}
+          className="new-booking-btn"
+        >
+          Registrer ny påmelding
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
       <h2 className="page-title">Påmeldingsskjema</h2>
       <form onSubmit={handleSubmit} className="booking-form">
+        {submitError && <div className="error-message">{submitError}</div>}
+
         <div className="attendees-section">
           {attendees.map((attendee, index) => (
             <div key={index} className="attendee-form">
@@ -62,6 +108,7 @@ export default function BookingForm({ eventId, eventTitle }: BookingFormProps) {
                       newAttendees[index].name = e.target.value;
                       setAttendees(newAttendees);
                     }}
+                    disabled={isSubmitting}
                   />
                 </label>
               </div>
@@ -77,6 +124,7 @@ export default function BookingForm({ eventId, eventTitle }: BookingFormProps) {
                       newAttendees[index].email = e.target.value;
                       setAttendees(newAttendees);
                     }}
+                    disabled={isSubmitting}
                   />
                 </label>
               </div>
@@ -85,6 +133,7 @@ export default function BookingForm({ eventId, eventTitle }: BookingFormProps) {
                   type="button"
                   onClick={() => removeAttendee(index)}
                   className="remove-attendee-btn"
+                  disabled={isSubmitting}
                 >
                   Fjern deltaker
                 </button>
@@ -96,13 +145,14 @@ export default function BookingForm({ eventId, eventTitle }: BookingFormProps) {
             type="button"
             onClick={addAttendee}
             className="add-attendee-btn"
+            disabled={isSubmitting}
           >
             Legg til deltaker
           </button>
         </div>
 
-        <button type="submit" className="submit-btn">
-          Meld på
+        <button type="submit" className="submit-btn" disabled={isSubmitting}>
+          {isSubmitting ? "Sender..." : "Meld på"}
         </button>
       </form>
     </>
