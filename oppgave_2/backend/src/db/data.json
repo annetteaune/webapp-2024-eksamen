@@ -1,157 +1,113 @@
 {
     "events": [
         {
-            "id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f4a3b4c5d",
+            "id": "550e8400-e29b-41d4-a716-446655440000",
             "slug": "fredagsjoggen-22-11",
-            "title": "Fredagsjoggen",
+            "title": "Fredagsjoggen med venteliste",
             "description_short": "Bli med på en sosial joggetur hver fredag!",
             "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
             "date": "2024-11-22T18:00:00Z",
             "location": "Sentralparken",
-            "type": "Trening",
-            "capacity": 20,
+            "type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "capacity": 5,
             "price": 0,
-            "template_id": "t1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
-            "status": "Ledig"
+            "template_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+            "status": "Ledige plasser"
         },
         {
-            "id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+            "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
             "slug": "fredagsjoggen-15-11",
-            "title": "Fredagsjoggen",
+            "title": "Fredagsjoggen uten venteliste",
             "description_short": "Bli med på en sosial joggetur hver fredag!",
             "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
             "date": "2024-11-15T18:00:00Z",
             "location": "Sentralparken",
-            "type": "Trening",
-            "capacity": 20,
+            "type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "capacity": 5,
             "price": 0,
-            "template_id": "t1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
-            "status": "Ledig"
+            "template_id": "8c9e6679-7425-40de-944b-e07fc1f90ae8",
+            "status": "Ledige plasser"
         },
         {
-            "id": "f2c3d4e5-f6g7-5b6c-9d0e-1f2g3h4i5j6",
+            "id": "7ba7b810-9dad-11d1-80b4-00c04fd430c9",
             "slug": "aarsmote-20245",
             "title": "Årsmøte 2025",
             "description_short": "Årlig møte med viktige beslutninger for foreningen.",
             "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
             "date": "2025-02-20T19:00:00Z",
             "location": "Rådhuset, møterom 2",
-            "type": "Møte",
-            "capacity": 50,
-            "price": 0,
-            "template_id": "t2b3c4d5-e6f7-5g6h-9i0j-1k2l3m4n5o6",
-            "status": "Ledig"
-        },
-        {
-            "id": "g3d4e5f6-g7h8-6c7d-0e1f-2g3h4i5j6k7",
-            "slug": "sommerfest-2025",
-            "title": "Sommerfest",
-            "description_short": "Sommerfest med grill og aktiviteter for hele familien.",
-            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-            "date": "2025-06-15T15:00:00Z",
-            "location": "Foreningslokalet",
-            "type": "Sosialt",
-            "capacity": 100,
+            "type_id": "d47ac10b-58cc-4372-a567-0e02b2c3d480",
+            "capacity": 5,
             "price": 200,
-            "template_id": "t3c4d5e6-f7g8-6h7i-0j1k-2l3m4n5o6p7",
-            "status": "Fullbooket",
-            "waitlist": [
-                {
-                    "name": "Anna Hansen",
-                    "email": "anna@example.com",
-                    "status": "På venteliste",
-                    "added_at": "2025-11-01T12:00:00Z"
-                },
-                {
-                    "name": "Eirik Olsen",
-                    "email": "eirik@example.com",
-                    "status": "På venteliste",
-                    "added_at": "2025-11-02T15:30:00Z"
-                }
-            ]
+            "template_id": "8c9e6679-7425-40de-944b-e07fc1f90ae8",
+            "status": "Ledige plasser"
         }
     ],
     "templates": [
         {
-            "id": "t1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
-            "name": "Fredagsjoggen",
-            "allowed_days": [
-                "Friday"
-            ],
-            "max_capacity": 20,
-            "price": 0,
-            "is_private": false,
-            "allow_waitlist": true,
-            "allow_same_day": false,
-            "created_at": "2025-11-01T12:00:00Z"
-        },
-        {
-            "id": "t2b3c4d5-e6f7-5g6h-9i0j-1k2l3m4n5o6",
-            "name": "Årsmøte",
+            "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+            "name": "Test Template Med Venteliste",
             "allowed_days": [
                 "Monday",
                 "Tuesday",
-                "Wednesday"
+                "Wednesday",
+                "Thursday",
+                "Friday"
             ],
-            "max_capacity": 50,
+            "max_capacity": 5,
+            "price": 0,
+            "is_private": false,
+            "allow_waitlist": true,
+            "allow_same_day": true,
+            "created_at": "2024-11-01T12:00:00Z"
+        },
+        {
+            "id": "8c9e6679-7425-40de-944b-e07fc1f90ae8",
+            "name": "Test Template Uten Venteliste",
+            "allowed_days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ],
+            "max_capacity": 5,
             "price": 0,
             "is_private": false,
             "allow_waitlist": false,
-            "allow_same_day": false,
-            "created_at": "2025-10-20T12:00:00Z"
-        },
-        {
-            "id": "t3c4d5e6-f7g8-6h7i-0j1k-2l3m4n5o6p7",
-            "name": "Sommerfest",
-            "allowed_days": [
-                "Saturday",
-                "Sunday"
-            ],
-            "max_capacity": 100,
-            "price": 200,
-            "is_private": true,
-            "allow_waitlist": true,
-            "allow_same_day": false,
-            "created_at": "2025-09-15T12:00:00Z"
+            "allow_same_day": true,
+            "created_at": "2024-11-01T12:00:00Z"
         }
     ],
     "bookings": [
         {
-            "id": "b1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
-            "event_id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+            "id": "9c9e6679-7425-40de-944b-e07fc1f90ae9",
+            "event_id": "550e8400-e29b-41d4-a716-446655440000",
             "name": "Ola Nordmann",
             "email": "ola@example.com",
             "has_paid": true,
             "status": "Godkjent"
         },
         {
-            "id": "b2b3c4d5-e6f7-5g6h-9i0j-1k2l3m4n5o6",
-            "event_id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+            "id": "ac9e6679-7425-40de-944b-e07fc1f90ae0",
+            "event_id": "550e8400-e29b-41d4-a716-446655440000",
             "name": "Kari Nordmann",
             "email": "kari@example.com",
             "has_paid": false,
             "status": "På venteliste"
-        },
-        {
-            "id": "b3c4d5e6-f7g8-6h7i-0j1k-2l3m4n5o6p7",
-            "event_id": "g3d4e5f6-g7h8-6c7d-0e1f-2g3h4i5j6k7",
-            "name": "Per Hansen",
-            "email": "per@example.com",
-            "has_paid": true,
-            "status": "Godkjent"
         }
     ],
     "types": [
         {
-            "id": "type1-a2b3-c4d5-e6f7-g8h9i0j1k2l3",
+            "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "Trening"
         },
         {
-            "id": "type2-b3c4-d5e6-f7g8-h9i0j1k2l3m4",
+            "id": "d47ac10b-58cc-4372-a567-0e02b2c3d480",
             "name": "Møte"
         },
         {
-            "id": "type3-c4d5-e6f7-g8h9-i0j1k2l3m4n5",
+            "id": "e47ac10b-58cc-4372-a567-0e02b2c3d481",
             "name": "Sosialt"
         }
     ]

@@ -11,7 +11,6 @@ import {
 import { toBookingResponse, toBookingsResponse } from "../mappers";
 import { type Result } from "@/types";
 
-// responstyper
 type BookingsResponse = {
   bookings: {
     id: string;
@@ -59,7 +58,16 @@ export const getBookingsByEvent = async (
 
   return {
     success: true,
-    data: toBookingsResponse(result.data),
+    data: {
+      bookings: result.data.map((booking) => ({
+        id: booking.id,
+        eventId: booking.event_id,
+        name: booking.name,
+        email: booking.email,
+        hasPaid: booking.has_paid,
+        status: booking.status,
+      })),
+    },
   };
 };
 

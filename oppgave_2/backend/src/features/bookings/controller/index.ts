@@ -21,12 +21,21 @@ app.get("/", async (c) => {
   return c.json(result.data);
 });
 
-app.get("/:eventId", async (c) => {
-  const eventId = c.req.param("eventId");
-  const result = await getBookingsByEvent(db, eventId);
+app.get("/:slug", async (c) => {
+  const slug = c.req.param("slug");
+
+  const event = (await db
+    .prepare("SELECT id FROM events WHERE slug = ?")
+    .get(slug)) as { id: string } | undefined;
+
+  if (!event) {
+    return c.json({ bookings: [] }, { status: 404 });
+  }
+
+  const result = await getBookingsByEvent(db, event.id);
 
   if (!result.success) {
-    return c.json({ error: result.error }, { status: 500 });
+    return c.json({ bookings: [] }, { status: 404 });
   }
 
   return c.json(result.data);

@@ -59,7 +59,7 @@ export const seed = async (db: DB) => {
         event.description_long,
         event.date,
         event.location,
-        type?.id,
+        event.type_id,
         event.capacity,
         event.price,
         event.template_id,

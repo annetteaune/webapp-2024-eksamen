@@ -21,6 +21,13 @@ type DbBooking = {
   status: string;
 };
 
+type EventDetails = {
+  price: number;
+  capacity: number;
+  template_id: string;
+  status: string;
+};
+
 export const findAllBookings = async (db: DB): Promise<Result<Booking[]>> => {
   try {
     const bookings = db.prepare("SELECT * FROM bookings").all() as DbBooking[];
@@ -53,10 +60,13 @@ export const findBookingsByEventId = async (
   try {
     const bookings = db
       .prepare("SELECT * FROM bookings WHERE event_id = ?")
-      .all(eventId);
+      .all(eventId) as DbBooking[];
 
     const validatedBookings = bookings.map((booking) =>
-      bookingSchema.parse(booking)
+      bookingSchema.parse({
+        ...booking,
+        has_paid: Boolean(booking.has_paid),
+      })
     );
 
     return {
@@ -64,6 +74,7 @@ export const findBookingsByEventId = async (
       data: validatedBookings,
     };
   } catch (error) {
+    console.error("Error in findBookingsByEventId:", error);
     return {
       success: false,
       error: {
@@ -74,17 +85,91 @@ export const findBookingsByEventId = async (
   }
 };
 
+const getApprovedBookingsCount = (db: DB, eventId: string): number => {
+  const result = db
+    .prepare(
+      `
+      SELECT COUNT(*) as count 
+      FROM bookings 
+      WHERE event_id = ? AND status = 'Godkjent'
+    `
+    )
+    .get(eventId) as { count: number };
+
+  return result.count;
+};
+
+const getEventDetails = (db: DB, eventId: string): EventDetails | undefined => {
+  return db
+    .prepare(
+      `
+      SELECT e.price, e.capacity, e.template_id, e.status,
+             t.allow_waitlist
+      FROM events e
+      JOIN templates t ON e.template_id = t.id
+      WHERE e.id = ?
+    `
+    )
+    .get(eventId) as EventDetails;
+};
+
+const getTemplateDetails = (db: DB, templateId: string) => {
+  return db
+    .prepare(
+      `
+      SELECT allow_waitlist
+      FROM templates
+      WHERE id = ?
+    `
+    )
+    .get(templateId) as { allow_waitlist: number };
+};
+
 export const createBooking = async (
   db: DB,
   booking: CreateBooking
 ): Promise<Result<Booking>> => {
   try {
     const id = generateUUID();
+    const eventDetails = getEventDetails(db, booking.event_id);
+
+    if (!eventDetails) {
+      return {
+        success: false,
+        error: {
+          code: "EVENT_NOT_FOUND",
+          message: "Could not find event",
+        },
+      };
+    }
+
+    const templateDetails = getTemplateDetails(db, eventDetails.template_id);
+    const allowWaitlist = Boolean(templateDetails?.allow_waitlist);
+
+    const currentBookings = getApprovedBookingsCount(db, booking.event_id);
+    const hasCapacity = currentBookings < eventDetails.capacity;
+
+    // har fått hjelp til å sette opp håndtering av venteliste av claude.ai
+    let status: string;
+    if (hasCapacity) {
+      status = eventDetails.price === 0 ? "Godkjent" : "Til behandling";
+    } else if (allowWaitlist) {
+      status = "På venteliste";
+    } else {
+      return {
+        success: false,
+        error: {
+          code: "EVENT_FULL",
+          message: "Event is full and does not allow waitlist",
+        },
+      };
+    }
+
     const newBooking = {
       id,
       ...booking,
-      has_paid: false,
-      status: "Til behandling" as const,
+      has_paid: eventDetails.price === 0 && status === "Godkjent",
+      status,
     };
 
     db.prepare(
@@ -100,12 +185,24 @@ export const createBooking = async (
       newBooking.has_paid ? 1 : 0,
       newBooking.status
     );
+    if (
+      status === "Godkjent" &&
+      currentBookings + 1 === eventDetails.capacity
+    ) {
+      db.prepare(`UPDATE events SET status = 'Fullbooket' WHERE id = ?`).run(
+        booking.event_id
+      );
+    }
 
     return {
       success: true,
-      data: newBooking,
+      data: bookingSchema.parse({
+        ...newBooking,
+        has_paid: Boolean(newBooking.has_paid),
+      }),
     };
   } catch (error) {
+    console.error("Booking creation error:", error);
     return {
       success: false,
       error: {

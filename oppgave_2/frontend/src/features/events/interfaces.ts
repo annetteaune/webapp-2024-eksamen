@@ -13,7 +13,7 @@ export interface Event {
   capacity: number;
   price: number;
   templateId: string;
-  status: "Ledig" | "Fullbooket";
+  status: "Ledige plasser" | "Fullbooket";
   waitlist: Array<{
     name: string;
     email: string;
@@ -25,3 +25,9 @@ export interface Event {
 export interface EventsResponse {
   events: Event[];
 }
+export type BookingCounts = {
+  approved: number;
+  pending: number;
+  waitlist: number;
+  total: number;
+};

@@ -20,7 +20,7 @@ export const eventSchema = z.object({
   capacity: z.number().positive(),
   price: z.number().min(0),
   template_id: z.string().min(1),
-  status: z.enum(["Ledig", "Fullbooket"]),
+  status: z.enum(["Ledige plasser", "Fullbooket"]),
   waitlist: z.array(waitlistItemSchema).nullable(),
 });
 

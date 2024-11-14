@@ -47,9 +47,11 @@ TODO: Skal til hvert api-endepunkt dokumentere responsen og statuskoden for de u
 
 ### /events:slug - detaljer
 
-- detaljer om et spesifikt arrangement som titel, tidspunkt, etc etc
-- har påmeldingsskjema
-- statusindikator fullbooket/ledige plasser
+- Detaljer om et spesifikt arrangement som tittel, tidspunkt, sted, pris, antall plasser
+- Statusindikator fullbooket/ledige plasser
+- Påmeldingsskjema:
+  - Om gratis kan man melde seg på og automatisk få godkjent så lenge det er plass på arrangementet
+  - Er det et betalt arrangement, får man status "til behandling", og admin må godkjenne denne manuelt da det antas as betaling foregår analogt.
 
 ### /admin - landingsside admin
 

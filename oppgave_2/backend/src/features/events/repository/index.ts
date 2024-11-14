@@ -189,7 +189,7 @@ export const createEvent = async (
     const newEvent = eventSchema.parse({
       id,
       ...event,
-      status: "Ledig",
+      status: "Ledige plasser",
       waitlist: null,
     });
 
