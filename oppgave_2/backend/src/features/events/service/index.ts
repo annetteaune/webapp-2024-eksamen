@@ -15,8 +15,17 @@ import { type Result } from "@/types";
 type EventResponse = ReturnType<typeof toEventResponse>;
 type EventsResponse = ReturnType<typeof toEventsResponse>;
 
-export const getEvents = async (db: DB): Promise<Result<EventsResponse>> => {
-  const result = await findAllEvents(db);
+type FilterParams = {
+  typeId?: string;
+  month?: string;
+  year?: string;
+};
+
+export const getEvents = async (
+  db: DB,
+  filters?: FilterParams
+): Promise<Result<EventsResponse>> => {
+  const result = await findAllEvents(db, filters);
 
   if (!result.success) {
     return result;

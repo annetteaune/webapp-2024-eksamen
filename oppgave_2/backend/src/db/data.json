@@ -1,12 +1,26 @@
 {
     "events": [
         {
-            "id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
-            "slug": "fredagsjoggen",
+            "id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f4a3b4c5d",
+            "slug": "fredagsjoggen-22-11",
             "title": "Fredagsjoggen",
             "description_short": "Bli med på en sosial joggetur hver fredag!",
             "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-            "date": "2025-11-15T18:00:00Z",
+            "date": "2024-11-22T18:00:00Z",
+            "location": "Sentralparken",
+            "type": "Trening",
+            "capacity": 20,
+            "price": 0,
+            "template_id": "t1a2b3c4-d5e6-4f7g-8h9i-0j1k2l3m4n5",
+            "status": "Ledig"
+        },
+        {
+            "id": "e1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+            "slug": "fredagsjoggen-15-11",
+            "title": "Fredagsjoggen",
+            "description_short": "Bli med på en sosial joggetur hver fredag!",
+            "description_long": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+            "date": "2024-11-15T18:00:00Z",
             "location": "Sentralparken",
             "type": "Trening",
             "capacity": 20,

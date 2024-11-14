@@ -73,8 +73,14 @@ TODO: Skal til hvert api-endepunkt dokumentere responsen og statuskoden for de u
 
 ## Filtrering:
 
-Sende queries som parametere fra valg i fronted til backend. Backend henter og returnerer arrangementer basert på filtreringen.
-TODO
+#### Frontend:
+
+Filter-komponentet setter opp tre dropdrowns, som inneholder verdier. Når en av disse verdiene velges av brukeren, blir URL-parameterne oppdatert til å inneholde denne verdien, eksempelvis slik: `http://localhost:4000/?month=11&year=2025`.
+Når URL-en endres, fetcher EventList-komponenten ny data basert på parameterne. Slik kan filtrerte resultater lett deles og bokmerkes.
+
+#### Backend:
+
+Endepuktet `/events` tar imot query-parametere fra frontend. Controlleren skiller ut parameterne,og sender dem til servicelaget. Repoen bygger en dynamisk SQL-query basert på de valgte filterne, og returnerer data som mathcer disse filterne.
 
 ## Datamodell:
 

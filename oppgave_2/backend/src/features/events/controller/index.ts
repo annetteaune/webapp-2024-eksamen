@@ -13,7 +13,15 @@ import { createEventSchema, updateEventSchema } from "../helpers";
 const app = new Hono();
 
 app.get("/", async (c) => {
-  const result = await getEvents(db);
+  const { type, month, year } = c.req.query();
+
+  const filters = {
+    typeId: type,
+    month: month,
+    year: year,
+  };
+
+  const result = await getEvents(db, filters);
 
   if (!result.success) {
     return c.json({ error: result.error }, { status: 500 });

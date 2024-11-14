@@ -44,3 +44,20 @@
     }
   }
 }
+
+/*tablet*/
+@media (min-width: 768px) and (max-width: 1200px) {
+  .event-card {
+    width: 45%;
+  }
+}
+/*laptop*/
+@media (min-width: 1200px) {
+  .event-card {
+    width: 30%;
+  }
+}
+
+/*desktop*/
+@media (min-width: 1920px) {
+}

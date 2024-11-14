@@ -29,17 +29,41 @@ type DbEvent = {
   waitlist: string | null;
 };
 
-export const findAllEvents = async (db: DB): Promise<Result<Event[]>> => {
+// har fått hjelp av claude.ai til å skrive queries for filtrering
+export const findAllEvents = async (
+  db: DB,
+  filters?: {
+    typeId?: string;
+    month?: string;
+    year?: string;
+  }
+): Promise<Result<Event[]>> => {
   try {
-    const events = db
-      .prepare(
-        `
+    let query = `
       SELECT events.*, types.name as type_name 
       FROM events 
       JOIN types ON events.type_id = types.id
-    `
-      )
-      .all() as DbEvent[];
+      WHERE 1=1
+    `;
+
+    const queryParams: any[] = [];
+
+    if (filters?.typeId) {
+      query += ` AND events.type_id = ?`;
+      queryParams.push(filters.typeId);
+    }
+
+    if (filters?.month) {
+      query += ` AND strftime('%m', events.date) = ?`;
+      queryParams.push(filters.month.padStart(2, "0"));
+    }
+
+    if (filters?.year) {
+      query += ` AND strftime('%Y', events.date) = ?`;
+      queryParams.push(filters.year);
+    }
+
+    const events = db.prepare(query).all(...queryParams) as DbEvent[];
 
     const validatedEvents = events.map((event) =>
       eventSchema.parse({

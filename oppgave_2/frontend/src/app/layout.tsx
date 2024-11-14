@@ -16,6 +16,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Del 2",
   description: "Arrangement med booking",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
