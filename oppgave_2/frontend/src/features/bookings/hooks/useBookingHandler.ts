@@ -6,7 +6,7 @@ import {
   CreateBookingData,
 } from "../interfaces";
 import { z } from "zod";
-import { Template } from "@/features/templates/interfaces";
+import { Template } from "@/features/admin/interfaces";
 
 // har fått hjelp av claude.ai til store deler av denne hooken
 export const useBookingHandler = (

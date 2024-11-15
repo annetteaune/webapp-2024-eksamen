@@ -49,7 +49,7 @@ export default function EventCard({
       <span className="card-status">Status: {status}</span>
 
       <Link href={`/${slug}`} className="card-btn">
-        <button>Les mer</button>
+        <button className="btn">Les mer</button>
       </Link>
     </article>
   );

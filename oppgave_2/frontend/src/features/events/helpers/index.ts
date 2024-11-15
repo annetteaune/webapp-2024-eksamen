@@ -1,7 +1,7 @@
 import { fetcher } from "@/api/fetcher";
 import { Booking } from "@/features/bookings/interfaces";
 import { BookingCounts } from "../interfaces";
-import { Template } from "@/features/templates/interfaces";
+import { Template } from "@/features/admin/interfaces";
 
 export async function getBookingCounts(slug: string): Promise<BookingCounts> {
   try {

@@ -5,7 +5,7 @@ import { useBookingHandler } from "../hooks/useBookingHandler";
 import { fetcher } from "@/api/fetcher";
 import type { Event } from "@/features/events/interfaces";
 import type { Booking } from "@/features/bookings/interfaces";
-import type { Template } from "@/features/templates/interfaces";
+import { Template } from "@/features/admin/interfaces";
 
 type Attendee = {
   name: string;
@@ -157,7 +157,7 @@ export default function BookingForm({
             setSubmitSuccess(false);
             setAttendees([{ name: "", email: "" }]);
           }}
-          className="new-booking-btn"
+          className="new-booking-btn btn"
         >
           Registrer ny påmelding
         </button>
@@ -216,7 +216,7 @@ export default function BookingForm({
                 <button
                   type="button"
                   onClick={() => removeAttendee(index)}
-                  className="remove-attendee-btn"
+                  className="remove-attendee-btn btn"
                   disabled={isSubmitting}
                 >
                   Fjern deltaker
@@ -229,7 +229,7 @@ export default function BookingForm({
               <button
                 type="button"
                 onClick={addAttendee}
-                className="add-attendee-btn"
+                className="add-attendee-btn btn"
                 disabled={isSubmitting}
               >
                 Legg til deltaker
@@ -243,7 +243,11 @@ export default function BookingForm({
           )}
         </div>
 
-        <button type="submit" className="submit-btn" disabled={isSubmitting}>
+        <button
+          type="submit"
+          className="submit-btn btn"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Sender..." : "Meld på"}
         </button>
       </form>

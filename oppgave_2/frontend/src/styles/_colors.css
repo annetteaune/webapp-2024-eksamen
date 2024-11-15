@@ -1,0 +1,19 @@
+:root {
+  --backgroundcolor: white;
+  --accentcolor: #eef0f3;
+
+  --font-normal: #111827;
+  --font-light: white;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #dc2626;
+
+  --border: #d1d5db;
+  --border-focus: #2563eb;
+
+  --btn: #2563eb;
+  --btn-hover: #1d4ed8;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
