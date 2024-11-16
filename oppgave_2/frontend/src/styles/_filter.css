@@ -1,20 +1,36 @@
 .filter-container {
   display: flex;
   gap: 1rem;
-  padding: 1rem;
+  padding: 1.5rem;
   margin: 1rem auto;
   max-width: 800px;
   justify-content: center;
   .filter-select {
-    padding: 0.5rem;
-    border: 1px solid gray;
-    min-width: 150px;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 200px;
+    background-color: white;
+    color: var(--font-normal);
+    transition: all 0.2s ease;
+    &:focus {
+      outline: none;
+      border-color: var(--btn);
+    }
   }
   .filter-reset-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid gray;
-    background: white;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background-color: white;
     cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--font-normal);
+    &:hover {
+      background-color: var(--btn-hover);
+      color: var(--font-light);
+      border-color: var(--border-focus);
+    }
   }
 }
 

@@ -6,7 +6,6 @@ export default function Home() {
   return (
     <>
       <Filter />
-      <h2>Alle arrangementer</h2>
       <EventList />
     </>
   );

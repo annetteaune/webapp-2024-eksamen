@@ -59,21 +59,24 @@ export default function EventList() {
   if (!events.length) return <div>Ingen arrangementer funnet</div>;
 
   return (
-    <section className="event-list">
-      {events.map((event) => (
-        <EventCard
-          key={event.id}
-          id={event.id}
-          slug={event.slug}
-          title={event.title}
-          type={event.type}
-          date={event.date}
-          location={event.location}
-          description={event.descriptionShort}
-          capacity={event.capacity}
-          status={event.status}
-        />
-      ))}
-    </section>
+    <>
+      <h2 className="page-title">Alle arrangementer</h2>
+      <section className="event-list">
+        {events.map((event) => (
+          <EventCard
+            key={event.id}
+            id={event.id}
+            slug={event.slug}
+            title={event.title}
+            type={event.type}
+            date={event.date}
+            location={event.location}
+            description={event.descriptionShort}
+            capacity={event.capacity}
+            status={event.status}
+          />
+        ))}
+      </section>
+    </>
   );
 }

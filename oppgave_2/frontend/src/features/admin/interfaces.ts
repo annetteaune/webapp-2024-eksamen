@@ -9,3 +9,30 @@ export interface Template {
   createdAt: string;
   allowedDays: string[];
 }
+
+export interface Type {
+  id: string;
+  name: string;
+}
+
+export interface TypesResponse {
+  types: Type[];
+}
+
+export type RequiredEventFields = {
+  slug: string;
+  title: string;
+  descriptionShort: string;
+  descriptionLong: string;
+  date: string;
+  location: string;
+  typeId: string;
+  capacity: number;
+  price: number;
+  allowWaitlist: boolean;
+};
+
+export type EventFormFields = RequiredEventFields & {
+  templateId?: string;
+  allowWaitlist: boolean;
+};

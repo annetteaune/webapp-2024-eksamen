@@ -37,7 +37,7 @@ export default async function EventPage({ slug }: EventPageProps) {
         </Link>
 
         <div className="event-header">
-          <h2 className="event-title">{event.title}</h2>
+          <h2 className="page-title">{event.title}</h2>
           <div className="event-meta">
             <p>{event.type.name}</p>
             <p>{formattedDate}</p>
@@ -97,7 +97,7 @@ export default async function EventPage({ slug }: EventPageProps) {
     );
   } catch (error) {
     return (
-      <div className="error-container">
+      <div className="not-found">
         <h2>Noe gikk galt</h2>
         <p>Kunne ikke laste arrangementet. Vennligst prøv igjen senere.</p>
         <Link href="/">Tilbake til forsiden</Link>
