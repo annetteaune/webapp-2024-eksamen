@@ -1,14 +1,34 @@
 "use client";
-import { useState } from "react";
-import { Template } from "../interfaces";
+import { useEffect, useState } from "react";
+import { Template, Type } from "../interfaces";
 import { FaTimes } from "react-icons/fa";
 import {
   templateFormSchema,
-  type TemplateFormData,
   type ValidationErrors,
   validateField,
   validateForm,
 } from "../helpers/validate";
+import { fetcher } from "@/api/fetcher";
+
+type DayOfWeek =
+  | "Mandag"
+  | "Tirsdag"
+  | "Onsdag"
+  | "Torsdag"
+  | "Fredag"
+  | "Lørdag"
+  | "Søndag";
+
+interface TemplateFormData {
+  name: string;
+  allowedDays: DayOfWeek[];
+  maxCapacity: number;
+  price: number;
+  isPrivate: boolean;
+  allowWaitlist: boolean;
+  allowSameDay: boolean;
+  typeId: string;
+}
 
 interface TemplateFormProps {
   onClose: () => void;
@@ -23,18 +43,20 @@ export const NewTemplateForm = ({
 }: TemplateFormProps) => {
   const [formData, setFormData] = useState<TemplateFormData>({
     name: initialData?.name ?? "",
-    allowedDays: initialData?.allowedDays ?? [],
+    allowedDays: (initialData?.allowedDays as DayOfWeek[]) ?? [],
     maxCapacity: initialData?.maxCapacity ?? 0,
     price: initialData?.price ?? 0,
     isPrivate: initialData?.isPrivate ?? false,
     allowWaitlist: initialData?.allowWaitlist ?? false,
     allowSameDay: initialData?.allowSameDay ?? true,
+    typeId: initialData?.typeId ?? "",
   });
 
+  const [types, setTypes] = useState<Type[]>([]);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const daysOfWeek = [
+  const daysOfWeek: DayOfWeek[] = [
     "Mandag",
     "Tirsdag",
     "Onsdag",
@@ -44,8 +66,28 @@ export const NewTemplateForm = ({
     "Søndag",
   ];
 
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const response = await fetcher<{ types: Type[] }>("/types");
+        setTypes(response.types);
+      } catch (error) {
+        console.error("Error fetching types:", error);
+      }
+    };
+
+    fetchTypes();
+
+    if (initialData) {
+      setFormData((prev) => ({
+        ...prev,
+        typeId: initialData.typeId,
+      }));
+    }
+  }, [initialData]);
+
   // claude.ai
-  const handleDayToggle = (day: string) => {
+  const handleDayToggle = (day: DayOfWeek) => {
     const newDays = formData.allowedDays.includes(day)
       ? formData.allowedDays.filter((d) => d !== day)
       : [...formData.allowedDays, day];
@@ -61,17 +103,21 @@ export const NewTemplateForm = ({
     );
     setErrors((prev) => ({ ...prev, ...newErrors }));
   };
+
   // claude.ai
   const handleInputChange = (
     field: keyof TemplateFormData,
-    value: string | number | boolean | string[]
+    value: string | number | boolean | DayOfWeek[]
   ) => {
     let processedValue = value;
     if (field === "maxCapacity" || field === "price") {
       processedValue = value === "" ? 0 : Number(value);
     }
 
-    const newData = { ...formData, [field]: processedValue };
+    const newData = {
+      ...formData,
+      [field]: processedValue,
+    } as TemplateFormData;
     setFormData(newData);
 
     if (Array.isArray(value)) {
@@ -114,7 +160,7 @@ export const NewTemplateForm = ({
         maxCapacity: Number(formData.maxCapacity),
         price: Number(formData.price),
       };
-      console.log("Frontend data being sent:", dataToValidate);
+
       const { isValid, errors: validationErrors } = validateForm(
         templateFormSchema,
         dataToValidate
@@ -162,6 +208,26 @@ export const NewTemplateForm = ({
             />
             {errors.name && (
               <span className="error-message">{errors.name}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label>Type arrangement</label>
+            <select
+              value={formData.typeId}
+              onChange={(e) => handleInputChange("typeId", e.target.value)}
+              className={errors.typeId ? "error" : ""}
+              disabled={isSubmitting}
+            >
+              <option value="">Velg type</option>
+              {types.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+            {errors.typeId && (
+              <span className="error-message">{errors.typeId}</span>
             )}
           </div>
 

@@ -46,17 +46,17 @@
     "templates": [
         {
             "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-            "name": "Test Template Med Venteliste",
+            "name": "Fredagsjoggen",
             "allowed_days": [
-                "Mandag",
                 "Fredag"
             ],
-            "max_capacity": 5,
+            "max_capacity": 25,
             "price": 0,
             "is_private": false,
             "allow_waitlist": true,
             "allow_same_day": true,
-            "created_at": "2024-11-01T12:00:00Z"
+            "created_at": "2024-11-01T12:00:00Z",
+            "type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
         },
         {
             "id": "8c9e6679-7425-40de-944b-e07fc1f90ae8",
@@ -70,7 +70,8 @@
             "is_private": false,
             "allow_waitlist": false,
             "allow_same_day": true,
-            "created_at": "2024-11-01T12:00:00Z"
+            "created_at": "2024-11-01T12:00:00Z",
+            "type_id": "d47ac10b-58cc-4372-a567-0e02b2c3d480"
         }
     ],
     "bookings": [

@@ -1,6 +1,6 @@
 :root {
-  --backgroundcolor: white;
-  --accentcolor: #eef0f3;
+  --backgroundcolor: #fcfcfc;
+  --accentcolor: #ffffff;
 
   --font-normal: #111827;
   --font-light: white;
@@ -12,8 +12,8 @@
   --border: #d1d5db;
   --border-focus: #2563eb;
 
-  --btn: #2563eb;
-  --btn-hover: #1d4ed8;
+  --btn: #007090;
+  --btn-hover: #005269;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

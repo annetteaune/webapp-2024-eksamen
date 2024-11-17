@@ -57,9 +57,10 @@
       &.waitlist-info {
         margin-top: 1.5rem;
         padding: 1rem;
-        background-color: var(--accentcolor);
-        border-radius: 6px;
+        background-color: var(--backgroundcolor);
+        border-radius: 8px;
         font-size: 0.875rem;
+        text-align: center;
       }
     }
   }

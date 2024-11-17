@@ -44,7 +44,7 @@ export const useAdminDashboard = () => {
     }
     return {
       success: false,
-      message: "Kunne ikke slette arrangementet",
+      message: "Kunne ikke slette arrangementet.",
     };
   };
 
@@ -87,6 +87,7 @@ export const useAdminDashboard = () => {
       is_private: formData.isPrivate,
       allow_waitlist: formData.allowWaitlist,
       allow_same_day: formData.allowSameDay,
+      type_id: formData.typeId,
     };
     const response = await fetcher("/templates", {
       method: "POST",
@@ -101,6 +102,54 @@ export const useAdminDashboard = () => {
     setTemplates((prev) => [...prev, response]);
     setShowNewTemplateForm(false);
     return { success: true };
+  };
+
+  const updateTemplate = async (
+    templateId: string,
+    formData: Omit<Template, "id" | "createdAt">
+  ) => {
+    const backendData = {
+      name: formData.name,
+      allowed_days: formData.allowedDays,
+      max_capacity: formData.maxCapacity,
+      price: formData.price,
+      is_private: formData.isPrivate,
+      allow_waitlist: formData.allowWaitlist,
+      allow_same_day: formData.allowSameDay,
+      type_id: formData.typeId,
+    };
+
+    try {
+      const response = await fetcher(`/templates/${templateId}`, {
+        method: "PATCH",
+        body: JSON.stringify(backendData),
+      });
+
+      if (response?.error) {
+        return {
+          success: false,
+          error: "Kunne ikke oppdatere malen.",
+        };
+      }
+
+      setTemplates((prev) =>
+        prev.map((template) =>
+          template.id === templateId
+            ? {
+                ...template,
+                ...formData,
+              }
+            : template
+        )
+      );
+      setSelectedTemplate(null);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: "Det oppstod en feil under oppdatering av malen.",
+      };
+    }
   };
 
   return {
@@ -118,5 +167,6 @@ export const useAdminDashboard = () => {
     deleteEvent,
     deleteTemplate,
     createTemplate,
+    updateTemplate,
   };
 };

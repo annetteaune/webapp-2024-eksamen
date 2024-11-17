@@ -8,7 +8,19 @@ export interface Template {
   isPrivate: boolean;
   createdAt: string;
   allowedDays: string[];
+  typeId: string;
 }
+
+export type TemplateFormData = {
+  name: string;
+  allowedDays: string[];
+  maxCapacity: number;
+  price: number;
+  isPrivate: boolean;
+  allowWaitlist: boolean;
+  allowSameDay: boolean;
+  typeId: string;
+};
 
 export interface Type {
   id: string;

@@ -7,19 +7,7 @@ export const templateSchema = z.object({
     .string()
     .min(1, "Navn på mal er påkrevd")
     .max(100, "Navn kan ikke være lengre enn 100 tegn"),
-  allowed_days: z
-    .array(
-      z.enum([
-        "Mandag",
-        "Tirsdag",
-        "Onsdag",
-        "Torsdag",
-        "Fredag",
-        "Lørdag",
-        "Søndag",
-      ])
-    )
-    .min(1, "Velg minst én tillatt dag"),
+  allowed_days: z.array(z.string()).min(1, "Velg minst én tillatt dag"),
   max_capacity: z
     .number()
     .int("Kapasitet må være et helt tall")
@@ -32,7 +20,8 @@ export const templateSchema = z.object({
   is_private: z.boolean(),
   allow_waitlist: z.boolean(),
   allow_same_day: z.boolean(),
-  created_at: z.string().datetime("Ugyldig datoformat"),
+  created_at: z.string().datetime(),
+  type_id: z.string().min(1, "Type er påkrevd"),
 });
 
 export const createTemplateSchema = templateSchema.omit({

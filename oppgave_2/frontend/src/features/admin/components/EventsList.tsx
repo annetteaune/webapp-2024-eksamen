@@ -3,7 +3,7 @@ import { FaEdit, FaTrash, FaUsers } from "react-icons/fa";
 
 interface EventsListProps {
   events: Event[];
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (id: string) => void;
 }
 
 export const EventsList = ({ events, onDelete }: EventsListProps) => (

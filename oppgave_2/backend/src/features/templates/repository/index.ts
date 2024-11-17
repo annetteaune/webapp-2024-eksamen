@@ -112,9 +112,11 @@ export const createTemplate = async (
 
     db.prepare(
       `
-      INSERT INTO templates (id, name, allowed_days, max_capacity, price,
-        is_private, allow_waitlist, allow_same_day, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO templates (
+        id, name, allowed_days, max_capacity, price,
+        is_private, allow_waitlist, allow_same_day, created_at, type_id
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
     ).run(
       newTemplate.id,
@@ -125,7 +127,8 @@ export const createTemplate = async (
       newTemplate.is_private ? 1 : 0,
       newTemplate.allow_waitlist ? 1 : 0,
       newTemplate.allow_same_day ? 1 : 0,
-      newTemplate.created_at
+      newTemplate.created_at,
+      newTemplate.type_id
     );
 
     return {
@@ -163,7 +166,7 @@ export const updateTemplate = async (
       `
       UPDATE templates 
       SET name = ?, allowed_days = ?, max_capacity = ?, price = ?,
-          is_private = ?, allow_waitlist = ?, allow_same_day = ?
+          is_private = ?, allow_waitlist = ?, allow_same_day = ?, type_id = ?
       WHERE id = ?
     `
     ).run(
@@ -174,6 +177,7 @@ export const updateTemplate = async (
       updatedTemplate.is_private ? 1 : 0,
       updatedTemplate.allow_waitlist ? 1 : 0,
       updatedTemplate.allow_same_day ? 1 : 0,
+      updatedTemplate.type_id,
       templateId
     );
 

@@ -6,15 +6,32 @@ export const templateFormSchema = z.object({
     .string()
     .min(1, "Navn på mal er påkrevd")
     .max(100, "Navn kan ikke være lengre enn 100 tegn"),
-  allowedDays: z.array(z.string()).min(1, "Velg minst én tillatt dag"),
+  allowedDays: z
+    .array(
+      z.enum([
+        "Mandag",
+        "Tirsdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lørdag",
+        "Søndag",
+      ])
+    )
+    .min(1, "Velg minst én tillatt dag"),
   maxCapacity: z
     .number()
-    .min(1, "Kapasitet må være minst 1")
-    .max(1000, "Kapasitet kan ikke overstige 1000"),
-  price: z.number().min(0, "Pris kan ikke være negativ"),
+    .int("Kapasitet må være et helt tall")
+    .positive("Kapasitet må være større enn 0")
+    .max(1000, "Kapasitet kan ikke være større enn 1000"),
+  price: z
+    .number()
+    .min(0, "Pris kan ikke være negativ")
+    .max(10000, "Pris kan ikke være større enn 10000"),
   isPrivate: z.boolean(),
   allowWaitlist: z.boolean(),
   allowSameDay: z.boolean(),
+  typeId: z.string().min(1, "Velg en arrangementstype"),
 });
 
 export const eventFormSchema = z.object({

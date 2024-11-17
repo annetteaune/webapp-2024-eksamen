@@ -24,7 +24,9 @@ export const createTables = async (db: DB) => {
       is_private BOOLEAN NOT NULL,
       allow_waitlist BOOLEAN NOT NULL,
       allow_same_day BOOLEAN NOT NULL,
-      created_at DATETIME NOT NULL
+      created_at DATETIME NOT NULL,
+      type_id TEXT NOT NULL,
+      FOREIGN KEY (type_id) REFERENCES types(id)
     );
 
     CREATE TABLE events (

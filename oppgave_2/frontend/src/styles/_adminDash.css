@@ -21,7 +21,8 @@
         font-weight: 500;
         transition: all 0.2s ease;
         &:hover {
-          background-color: var(--accentcolor);
+          background-color: var(--btn-hover);
+          color: var(--font-light);
         }
         &.active {
           background-color: var(--btn);
@@ -102,15 +103,15 @@
             font-size: 1.125rem;
             &.edit:hover {
               color: var(--btn);
-              background-color: rgba(37, 99, 235, 0.1);
+              background-color: rgba(177, 177, 177, 0.1);
             }
             &.delete:hover {
               color: var(--error);
-              background-color: rgba(220, 38, 38, 0.1);
+              background-color: rgba(177, 177, 177, 0.1);
             }
             &.users:hover {
               color: var(--btn);
-              background-color: rgba(37, 99, 235, 0.1);
+              background-color: rgba(177, 177, 177, 0.1);
             }
           }
         }

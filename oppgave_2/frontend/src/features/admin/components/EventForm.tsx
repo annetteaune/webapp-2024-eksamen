@@ -125,7 +125,7 @@ export const EventForm = ({
     }
   };
   // claude.ai
-  const applyTemplate = (templateId: string) => {
+  const applyTemplate = async (templateId: string) => {
     if (!templateId) {
       setFormData((prev) => ({
         ...prev,
@@ -133,19 +133,30 @@ export const EventForm = ({
         capacity: 0,
         price: 0,
         allowWaitlist: false,
+        typeId: "",
       }));
       return;
     }
-
-    const template = templates.find((t) => t.id === templateId);
-    if (template) {
-      setFormData((prev) => ({
-        ...prev,
-        templateId,
-        capacity: template.maxCapacity,
-        price: template.price,
-        allowWaitlist: template.allowWaitlist,
-      }));
+    try {
+      const template = templates.find((t) => t.id === templateId);
+      if (template) {
+        setFormData((prev) => ({
+          ...prev,
+          templateId,
+          capacity: template.maxCapacity,
+          price: template.price,
+          allowWaitlist: template.allowWaitlist,
+          typeId: template.typeId,
+        }));
+        const typeSelect = document.querySelector(
+          'select[name="typeId"]'
+        ) as HTMLSelectElement;
+        if (typeSelect) {
+          typeSelect.disabled = true;
+        }
+      }
+    } catch (error) {
+      console.error("Error applying template:", error);
     }
   };
 

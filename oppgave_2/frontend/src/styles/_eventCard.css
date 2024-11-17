@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: white;
+  background-color: var(--accentcolor);
   border: 1px solid var(--border);
   border-radius: 8px;
   width: 100%;

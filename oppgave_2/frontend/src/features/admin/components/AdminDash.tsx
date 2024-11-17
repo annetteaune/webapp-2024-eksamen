@@ -8,6 +8,7 @@ import { NewTemplateForm } from "./NewTemplateForm";
 import { EventForm } from "./EventForm";
 import { Event } from "@/features/events/interfaces";
 import { fetcher } from "@/api/fetcher";
+import { Template } from "../interfaces";
 
 const AdminDashboard = () => {
   const {
@@ -25,6 +26,7 @@ const AdminDashboard = () => {
     deleteEvent,
     deleteTemplate,
     createTemplate,
+    updateTemplate,
   } = useAdminDashboard();
 
   const handleCreateEvent = async (
@@ -42,6 +44,30 @@ const AdminDashboard = () => {
       throw error;
     }
   };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    const result = await deleteEvent(eventId);
+    if (!result.success && result.message) {
+      alert(result.message);
+    }
+  };
+
+  const handleSubmitTemplate = async (
+    data: Omit<Template, "id" | "createdAt">
+  ) => {
+    if (selectedTemplate) {
+      const result = await updateTemplate(selectedTemplate.id, data);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+    } else {
+      const result = await createTemplate(data);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+    }
+  };
+
   if (isLoading) {
     return <div className="loading">Laster inn...</div>;
   }
@@ -64,18 +90,18 @@ const AdminDashboard = () => {
           onEdit={setSelectedTemplate}
         />
       ) : (
-        <EventsList events={events} onDelete={deleteEvent} />
+        <EventsList events={events} onDelete={handleDeleteEvent} />
       )}
       {showNewTemplateForm && (
         <NewTemplateForm
           onClose={() => setShowNewTemplateForm(false)}
-          onSubmit={createTemplate}
+          onSubmit={handleSubmitTemplate}
         />
       )}
       {selectedTemplate && (
         <NewTemplateForm
           onClose={() => setSelectedTemplate(null)}
-          onSubmit={createTemplate}
+          onSubmit={handleSubmitTemplate}
           initialData={selectedTemplate}
         />
       )}

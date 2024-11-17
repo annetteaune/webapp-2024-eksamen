@@ -20,9 +20,9 @@ export const seed = async (db: DB) => {
     const insertTemplate = db.prepare(`
       INSERT INTO templates (
         id, name, allowed_days, max_capacity, price,
-        is_private, allow_waitlist, allow_same_day, created_at
+        is_private, allow_waitlist, allow_same_day, created_at, type_id
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     data.templates.forEach((template: any) => {
@@ -35,7 +35,8 @@ export const seed = async (db: DB) => {
         template.is_private ? 1 : 0,
         template.allow_waitlist ? 1 : 0,
         template.allow_same_day ? 1 : 0,
-        template.created_at
+        template.created_at,
+        template.type_id
       );
     });
 
