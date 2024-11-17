@@ -52,6 +52,7 @@ export const NewTemplateForm = ({
 
     const newData = { ...formData, allowedDays: newDays };
     setFormData(newData);
+
     const newErrors = validateField(
       templateFormSchema,
       "allowedDays",
@@ -63,23 +64,42 @@ export const NewTemplateForm = ({
   // claude.ai
   const handleInputChange = (
     field: keyof TemplateFormData,
-    value: string | number | boolean
+    value: string | number | boolean | string[]
   ) => {
-    const newData = { ...formData, [field]: value };
-    setFormData(newData);
-
-    let validationValue = value;
+    let processedValue = value;
     if (field === "maxCapacity" || field === "price") {
-      validationValue = Number(value);
+      processedValue = value === "" ? 0 : Number(value);
     }
 
-    const newErrors = validateField(
-      templateFormSchema,
-      field,
-      validationValue,
-      newData
-    );
-    setErrors((prev) => ({ ...prev, ...newErrors }));
+    const newData = { ...formData, [field]: processedValue };
+    setFormData(newData);
+
+    if (Array.isArray(value)) {
+      const newErrors = validateField(
+        templateFormSchema,
+        field,
+        value,
+        newData
+      );
+      setErrors((prev) => ({ ...prev, ...newErrors }));
+      return;
+    }
+
+    if (typeof value === "boolean") {
+      return;
+    }
+
+    const fieldSchema =
+      templateFormSchema.shape[field as keyof typeof templateFormSchema.shape];
+    if (fieldSchema) {
+      const newErrors = validateField(
+        templateFormSchema,
+        field,
+        processedValue,
+        newData
+      );
+      setErrors((prev) => ({ ...prev, ...newErrors }));
+    }
   };
 
   // claude.ai
@@ -94,7 +114,7 @@ export const NewTemplateForm = ({
         maxCapacity: Number(formData.maxCapacity),
         price: Number(formData.price),
       };
-
+      console.log("Frontend data being sent:", dataToValidate);
       const { isValid, errors: validationErrors } = validateForm(
         templateFormSchema,
         dataToValidate

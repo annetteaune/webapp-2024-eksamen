@@ -30,12 +30,14 @@ type DbEvent = {
 };
 
 // har fått hjelp av claude.ai til å skrive queries for filtrering
+// filtrerer også på templateID, for å unngå error i console-loggen ved forsøk på sletting av template i bruk
 export const findAllEvents = async (
   db: DB,
   filters?: {
     typeId?: string;
     month?: string;
     year?: string;
+    templateId?: string;
   }
 ): Promise<Result<Event[]>> => {
   try {
@@ -61,6 +63,10 @@ export const findAllEvents = async (
     if (filters?.year) {
       query += ` AND strftime('%Y', events.date) = ?`;
       queryParams.push(filters.year);
+    }
+    if (filters?.templateId) {
+      query += ` AND events.template_id = ?`;
+      queryParams.push(filters.templateId);
     }
 
     const events = db.prepare(query).all(...queryParams) as DbEvent[];

@@ -38,7 +38,9 @@ app.get("/:templateId", async (c) => {
 app.post("/", async (c) => {
   try {
     const body = await c.req.json();
+    console.log("Backend received data:", body);
     const validatedData = createTemplateSchema.parse(body);
+    console.log("After validation:", validatedData);
 
     const result = await addTemplate(db, validatedData);
 
@@ -48,6 +50,7 @@ app.post("/", async (c) => {
 
     return c.json(result.data, { status: 201 });
   } catch (error) {
+    console.log("Validation error:", error);
     if (error instanceof Error) {
       return c.json(
         {
@@ -112,24 +115,38 @@ app.patch("/:templateId", async (c) => {
 });
 
 app.delete("/:templateId", async (c) => {
-  const templateId = c.req.param("templateId");
-  const result = await removeTemplate(db, templateId);
+  try {
+    const templateId = c.req.param("templateId");
+    const result = await removeTemplate(db, templateId);
 
-  if (!result.success) {
+    if (!result.success) {
+      // Return appropriate status code without logging expected errors
+      return c.json(
+        { error: result.error },
+        {
+          status:
+            result.error.code === "TEMPLATE_NOT_FOUND"
+              ? 404
+              : result.error.code === "TEMPLATE_IN_USE"
+              ? 409
+              : 500,
+        }
+      );
+    }
+    return c.json({ success: true }, { status: 200 });
+  } catch (error) {
+    // Only log unexpected errors
+    console.error("Unexpected error during template deletion:", error);
     return c.json(
-      { error: result.error },
       {
-        status:
-          result.error.code === "TEMPLATE_NOT_FOUND"
-            ? 404
-            : result.error.code === "TEMPLATE_IN_USE"
-            ? 400
-            : 500,
-      }
+        error: {
+          code: "UNKNOWN_ERROR",
+          message: "An unexpected error occurred",
+        },
+      },
+      { status: 500 }
     );
   }
-
-  return c.json(null, { status: 204 });
 });
 
 export default app;

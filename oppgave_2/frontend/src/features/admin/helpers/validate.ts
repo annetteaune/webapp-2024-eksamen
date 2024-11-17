@@ -54,18 +54,26 @@ export type TemplateFormData = z.infer<typeof templateFormSchema>;
 export type EventFormData = z.infer<typeof eventFormSchema>;
 export type ValidationErrors = Partial<Record<string, string>>;
 
-// src/features/admin/helpers/validate.ts
-
+// claude.ai
 export const validateField = <T extends z.ZodObject<any>>(
   schema: T,
   field: keyof z.infer<T>,
-  value: string | number | boolean,
+  value: string | number | boolean | string[],
   data: z.infer<T>
 ): ValidationErrors => {
   try {
+    if (Array.isArray(value)) {
+      const fieldSchema = schema.shape[field];
+      if (fieldSchema) {
+        fieldSchema.parse(value);
+      }
+      return {};
+    }
+
     if (typeof value === "boolean") {
       return {};
     }
+
     const fieldSchema = schema.shape[field];
     if (fieldSchema) {
       fieldSchema.parse(value);

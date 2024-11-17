@@ -3,7 +3,7 @@ import { Template } from "../interfaces";
 
 interface TemplatesListProps {
   templates: Template[];
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<{ success: boolean; message?: string }>;
   onEdit: (template: Template) => void;
 }
 
@@ -29,7 +29,12 @@ export const TemplatesList = ({
             </button>
             <button
               className="icon-btn delete"
-              onClick={() => onDelete(template.id)}
+              onClick={async () => {
+                const result = await onDelete(template.id);
+                if (!result.success && result.message) {
+                  alert(result.message);
+                }
+              }}
             >
               <FaTrash />
             </button>

@@ -48,11 +48,8 @@
             "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
             "name": "Test Template Med Venteliste",
             "allowed_days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday"
+                "Mandag",
+                "Fredag"
             ],
             "max_capacity": 5,
             "price": 0,
@@ -65,11 +62,8 @@
             "id": "8c9e6679-7425-40de-944b-e07fc1f90ae8",
             "name": "Test Template Uten Venteliste",
             "allowed_days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday"
+                "Mandag",
+                "Fredag"
             ],
             "max_capacity": 5,
             "price": 0,

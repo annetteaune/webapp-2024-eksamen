@@ -109,8 +109,8 @@
               background-color: rgba(220, 38, 38, 0.1);
             }
             &.users:hover {
-              color: var(--success);
-              background-color: rgba(16, 185, 129, 0.1);
+              color: var(--btn);
+              background-color: rgba(37, 99, 235, 0.1);
             }
           }
         }
