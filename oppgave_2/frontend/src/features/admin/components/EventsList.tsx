@@ -34,7 +34,15 @@ export const EventsList = ({ events, onDelete }: EventsListProps) => (
             </button>
             <button
               className="icon-btn delete"
-              onClick={() => onDelete(event.id)}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Er du sikker på at du vil slette dette arrangementet?"
+                  )
+                ) {
+                  onDelete(event.id);
+                }
+              }}
             >
               <FaTrash />
             </button>

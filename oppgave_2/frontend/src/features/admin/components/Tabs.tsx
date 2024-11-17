@@ -1,4 +1,4 @@
-import { TabType } from "../hooks/useAdminDash";
+import { TabType } from "../interfaces";
 
 interface TabProps {
   activeTab: TabType;

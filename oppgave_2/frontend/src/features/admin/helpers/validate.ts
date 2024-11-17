@@ -71,7 +71,6 @@ export type TemplateFormData = z.infer<typeof templateFormSchema>;
 export type EventFormData = z.infer<typeof eventFormSchema>;
 export type ValidationErrors = Partial<Record<string, string>>;
 
-// claude.ai
 export const validateField = <T extends z.ZodObject<any>>(
   schema: T,
   field: keyof z.infer<T>,
@@ -127,3 +126,41 @@ export const validateForm = <T extends z.ZodObject<any>>(
     };
   }
 };
+
+export const createEventSchema = z.object({
+  slug: z
+    .string()
+    .min(1, "URL-slug er påkrevd")
+    .regex(
+      /^[a-z0-9-]+$/,
+      "URL-slug kan kun inneholde små bokstaver, tall og bindestrek"
+    ),
+  title: z
+    .string()
+    .min(1, "Tittel er påkrevd")
+    .max(100, "Tittel kan ikke være lengre enn 100 tegn"),
+  description_short: z
+    .string()
+    .min(1, "Kort beskrivelse er påkrevd")
+    .max(200, "Kort beskrivelse kan ikke være lengre enn 200 tegn"),
+  description_long: z
+    .string()
+    .min(1, "Lang beskrivelse er påkrevd")
+    .max(2000, "Lang beskrivelse kan ikke være lengre enn 2000 tegn"),
+  date: z.string().refine((date) => {
+    try {
+      const eventDate = new Date(date);
+      const now = new Date();
+      return eventDate > now;
+    } catch {
+      return false;
+    }
+  }, "Dato må være i fremtiden"),
+  location: z.string().min(1, "Lokasjon er påkrevd"),
+  type_id: z.string().min(1, "Type er påkrevd"),
+  capacity: z.number().positive("Kapasitet må være større enn 0").int(),
+  price: z.number().min(0, "Pris kan ikke være negativ"),
+  template_id: z.string().optional().nullable(),
+});
+
+export type CreateEventData = z.infer<typeof createEventSchema>;

@@ -1,17 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
 import { Event } from "@/features/events/interfaces";
-import { EventFormFields, RequiredEventFields, Template } from "../interfaces";
-import { Type } from "../interfaces";
 import { FaTimes } from "react-icons/fa";
-import { fetcher } from "@/api/fetcher";
-import {
-  eventFormSchema,
-  type EventFormData,
-  type ValidationErrors,
-  validateField,
-  validateForm,
-} from "../helpers/validate";
+import { useEventForm } from "../hooks/useEventForm";
 
 interface EventFormProps {
   onClose: () => void;
@@ -24,141 +14,16 @@ export const EventForm = ({
   onSubmit,
   initialData,
 }: EventFormProps) => {
-  const [formData, setFormData] = useState<EventFormFields>({
-    slug: initialData?.slug ?? "",
-    title: initialData?.title ?? "",
-    descriptionShort: initialData?.descriptionShort ?? "",
-    descriptionLong: initialData?.descriptionLong ?? "",
-    date: initialData?.date ?? "",
-    location: initialData?.location ?? "",
-    typeId: initialData?.type.id ?? "",
-    capacity: initialData?.capacity ?? 0,
-    price: initialData?.price ?? 0,
-    templateId: initialData?.templateId,
-    allowWaitlist: false,
-  });
-
-  const [errors, setErrors] = useState<ValidationErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [types, setTypes] = useState<Type[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [typesResponse, templatesResponse] = await Promise.all([
-          fetcher<TypesResponse>("/types"),
-          fetcher<{ templates: Template[] }>("/templates"),
-        ]);
-        setTypes(typesResponse.types);
-        setTemplates(templatesResponse.templates);
-      } catch (error) {
-        console.error("Error fetching form data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // claude.ai
-  const handleInputChange = (
-    field: keyof EventFormFields,
-    value: string | number | boolean
-  ) => {
-    const newData = { ...formData, [field]: value };
-    setFormData(newData);
-
-    if (typeof value === "boolean") {
-      return;
-    }
-
-    const fieldSchema =
-      eventFormSchema.shape[field as keyof typeof eventFormSchema.shape];
-    if (fieldSchema) {
-      const newErrors = validateField(eventFormSchema, field, value, newData);
-      setErrors((prev) => ({ ...prev, ...newErrors }));
-    }
-  };
-
-  // claude.ai
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    try {
-      setIsSubmitting(true);
-
-      const { templateId, ...requiredFields } = formData;
-      const finalSubmissionData = templateId
-        ? { ...requiredFields, templateId }
-        : requiredFields;
-
-      const submitSchema = templateId
-        ? eventFormSchema
-        : eventFormSchema.omit({ templateId: true });
-
-      const { isValid, errors: validationErrors } = validateForm(
-        submitSchema,
-        finalSubmissionData
-      );
-
-      if (!isValid) {
-        setErrors(validationErrors);
-        return;
-      }
-
-      const submitData = {
-        ...finalSubmissionData,
-        type: {
-          id: finalSubmissionData.typeId,
-          name:
-            types.find((t) => t.id === finalSubmissionData.typeId)?.name ?? "",
-        },
-      };
-
-      await onSubmit(submitData as Omit<Event, "id" | "status" | "waitlist">);
-      onClose();
-    } catch (error) {
-      console.error("Form submission error:", error);
-      setErrors({ _form: "Det oppstod en feil ved lagring av arrangementet" });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  // claude.ai
-  const applyTemplate = async (templateId: string) => {
-    if (!templateId) {
-      setFormData((prev) => ({
-        ...prev,
-        templateId: undefined,
-        capacity: 0,
-        price: 0,
-        allowWaitlist: false,
-        typeId: "",
-      }));
-      return;
-    }
-    try {
-      const template = templates.find((t) => t.id === templateId);
-      if (template) {
-        setFormData((prev) => ({
-          ...prev,
-          templateId,
-          capacity: template.maxCapacity,
-          price: template.price,
-          allowWaitlist: template.allowWaitlist,
-          typeId: template.typeId,
-        }));
-        const typeSelect = document.querySelector(
-          'select[name="typeId"]'
-        ) as HTMLSelectElement;
-        if (typeSelect) {
-          typeSelect.disabled = true;
-        }
-      }
-    } catch (error) {
-      console.error("Error applying template:", error);
-    }
-  };
+  const {
+    formData,
+    errors,
+    isSubmitting,
+    types,
+    templates,
+    handleInputChange,
+    handleSubmit,
+    applyTemplate,
+  } = useEventForm({ initialData, onSubmit, onClose });
 
   return (
     <div className="modal">

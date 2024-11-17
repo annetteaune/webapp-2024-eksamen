@@ -48,3 +48,5 @@ export type EventFormFields = RequiredEventFields & {
   templateId?: string;
   allowWaitlist: boolean;
 };
+
+export type TabType = "templates" | "events";

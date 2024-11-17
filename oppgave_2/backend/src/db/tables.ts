@@ -40,9 +40,10 @@ export const createTables = async (db: DB) => {
       type_id TEXT NOT NULL,
       capacity INTEGER NOT NULL,
       price DECIMAL(10, 2) NOT NULL,
-      template_id TEXT NOT NULL,
+      template_id TEXT,
       status TEXT NOT NULL,
       waitlist TEXT,
+       allow_waitlist BOOLEAN NOT NULL DEFAULT 0,
       FOREIGN KEY (template_id) REFERENCES templates(id),
       FOREIGN KEY (type_id) REFERENCES types(id)
     );
