@@ -5,7 +5,7 @@ import { ActionButtons } from "./ActionButtons";
 import { EventsList } from "./EventsList";
 import { TemplatesList } from "./TemplatesList";
 import { NewTemplateForm } from "./NewTemplateForm";
-import { EventForm } from "./EventForm";
+import EventForm from "./EventForm";
 import { Event } from "@/features/events/interfaces";
 import { fetcher } from "@/api/fetcher";
 import { Template } from "../interfaces";

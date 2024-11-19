@@ -19,11 +19,11 @@ interface EventFormProps {
   initialData?: Event;
 }
 
-export const EventForm = ({
+export default function EventForm({
   onClose,
   onSubmit,
   initialData,
-}: EventFormProps) => {
+}: EventFormProps) {
   const [formData, setFormData] = useState<EventFormFields>({
     slug: initialData?.slug ?? "",
     title: initialData?.title ?? "",
@@ -43,8 +43,17 @@ export const EventForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [types, setTypes] = useState<Type[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [minDate, setMinDate] = useState<string>("");
+  const [maxDate, setMaxDate] = useState<string>("");
 
   useEffect(() => {
+    const today = new Date();
+    const twoYearsFromNow = new Date();
+    twoYearsFromNow.setFullYear(today.getFullYear() + 2);
+
+    setMinDate(today.toISOString().split("T")[0]);
+    setMaxDate(twoYearsFromNow.toISOString().split("T")[0]);
+
     const fetchData = async () => {
       try {
         const [typesResponse, templatesResponse] = await Promise.all([
@@ -59,6 +68,43 @@ export const EventForm = ({
     };
     fetchData();
   }, []);
+
+  const isAllowedDay = (date: string, allowedDays: string[]): boolean => {
+    if (!date || !allowedDays?.length) return true;
+
+    const dayNames = [
+      "Søndag",
+      "Mandag",
+      "Tirsdag",
+      "Onsdag",
+      "Torsdag",
+      "Fredag",
+      "Lørdag",
+    ];
+
+    const selectedDate = new Date(date);
+    const dayName = dayNames[selectedDate.getDay()];
+    return allowedDays.includes(dayName);
+  };
+
+  const handleDateChange = (value: string) => {
+    const selectedTemplate = templates.find(
+      (t) => t.id === formData.templateId
+    );
+
+    if (
+      selectedTemplate &&
+      !isAllowedDay(value, selectedTemplate.allowedDays)
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        date: `Velg en tillatt dag`,
+      }));
+      return;
+    }
+
+    handleInputChange("date", value);
+  };
 
   // claude.ai
   const handleInputChange = (
@@ -134,11 +180,13 @@ export const EventForm = ({
         capacity: 0,
         price: 0,
         allowWaitlist: false,
-        isPrivate: false, // Reset isPrivate when template is cleared
+        isPrivate: false,
         typeId: "",
       }));
+      setErrors((prev) => ({ ...prev, date: "" }));
       return;
     }
+
     try {
       const template = templates.find((t) => t.id === templateId);
       if (template) {
@@ -148,22 +196,24 @@ export const EventForm = ({
           capacity: template.maxCapacity,
           price: template.price,
           allowWaitlist: template.allowWaitlist,
-          isPrivate: template.isPrivate, // Set isPrivate based on template
+          isPrivate: template.isPrivate,
           typeId: template.typeId,
+          date: isAllowedDay(prev.date, template.allowedDays) ? prev.date : "",
         }));
+        if (
+          formData.date &&
+          isAllowedDay(formData.date, template.allowedDays)
+        ) {
+          setErrors((prev) => ({ ...prev, date: "" }));
+        }
         const typeSelect = document.querySelector(
           'select[name="typeId"]'
         ) as HTMLSelectElement;
         const priceInput = document.querySelector(
           'input[name="price"]'
         ) as HTMLInputElement;
-
-        if (typeSelect) {
-          typeSelect.disabled = true;
-        }
-        if (priceInput) {
-          priceInput.disabled = template.fixedPrice;
-        }
+        if (typeSelect) typeSelect.disabled = true;
+        if (priceInput) priceInput.disabled = template.fixedPrice;
       }
     } catch (error) {
       console.error("Error applying template:", error);
@@ -263,12 +313,22 @@ export const EventForm = ({
               <input
                 type="datetime-local"
                 value={formData.date}
-                onChange={(e) => handleInputChange("date", e.target.value)}
+                onChange={(e) => handleDateChange(e.target.value)}
+                min={`${minDate}T00:00`}
+                max={`${maxDate}T23:59`}
                 className={errors.date ? "error" : ""}
                 disabled={isSubmitting}
               />
               {errors.date && (
                 <span className="error-message">{errors.date}</span>
+              )}
+              {formData.templateId && (
+                <span className="allowed-days">
+                  Tillatte dager:{" "}
+                  {templates
+                    .find((t) => t.id === formData.templateId)
+                    ?.allowedDays.join(", ")}
+                </span>
               )}
             </div>
 
@@ -397,4 +457,4 @@ export const EventForm = ({
       </div>
     </div>
   );
-};
+}

@@ -41,6 +41,10 @@
       font-size: 0.875rem;
       margin-top: 0.5rem;
     }
+    .allowed-days {
+      background-color: var(--iconbkgcolor);
+      font-size: small;
+    }
   }
   .form-row {
     display: grid;
