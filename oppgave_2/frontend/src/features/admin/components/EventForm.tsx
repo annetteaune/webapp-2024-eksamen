@@ -37,6 +37,7 @@ export default function EventForm({
     templateId: initialData?.templateId,
     allowWaitlist: false,
     isPrivate: initialData?.isPrivate ?? false,
+    allowSameDay: initialData?.allowSameDay ?? true,
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -87,11 +88,13 @@ export default function EventForm({
     return allowedDays.includes(dayName);
   };
 
-  const handleDateChange = (value: string) => {
+  // claude.ai
+  const handleDateChange = async (value: string) => {
+    setErrors((prev) => ({ ...prev, date: "" }));
+
     const selectedTemplate = templates.find(
       (t) => t.id === formData.templateId
     );
-
     if (
       selectedTemplate &&
       !isAllowedDay(value, selectedTemplate.allowedDays)
@@ -103,7 +106,71 @@ export default function EventForm({
       return;
     }
 
+    if (value) {
+      try {
+        const selectedDate = new Date(value).toISOString().split("T")[0];
+        const response = await fetcher<{ events: Event[] }>(
+          "/events?includePrivate=true"
+        );
+        const events = response.events.filter((e) => e.id !== initialData?.id);
+
+        const conflictingEvent = events.find((event) => {
+          const eventDate = new Date(event.date).toISOString().split("T")[0];
+          return eventDate === selectedDate && !event.allowSameDay;
+        });
+
+        if (conflictingEvent && !formData.allowSameDay) {
+          setErrors((prev) => ({
+            ...prev,
+            date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
+          }));
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking date availability:", error);
+        setErrors((prev) => ({
+          ...prev,
+          date: "Kunne ikke sjekke dato-tilgjengelighet",
+        }));
+        return;
+      }
+    }
     handleInputChange("date", value);
+  };
+
+  // claude.ai
+  const handleAllowSameDayChange = async (checked: boolean) => {
+    handleInputChange("allowSameDay", checked);
+
+    if (!checked && formData.date) {
+      try {
+        const selectedDate = new Date(formData.date)
+          .toISOString()
+          .split("T")[0];
+        const response = await fetcher<{ events: Event[] }>(
+          "/events?includePrivate=true"
+        );
+        const events = response.events.filter((e) => e.id !== initialData?.id);
+
+        const conflictingEvent = events.find((event) => {
+          const eventDate = new Date(event.date).toISOString().split("T")[0];
+          return eventDate === selectedDate && !event.allowSameDay;
+        });
+
+        if (conflictingEvent) {
+          setErrors((prev) => ({
+            ...prev,
+            date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
+          }));
+        }
+      } catch (error) {
+        console.error("Error checking date availability:", error);
+        setErrors((prev) => ({
+          ...prev,
+          date: "Kunne ikke sjekke dato-tilgjengelighet",
+        }));
+      }
+    }
   };
 
   // claude.ai
@@ -134,6 +201,26 @@ export default function EventForm({
     try {
       setIsSubmitting(true);
 
+      if (!formData.allowSameDay && formData.date) {
+        const selectedDate = new Date(formData.date)
+          .toISOString()
+          .split("T")[0];
+        const response = await fetcher<{ events: Event[] }>("/events");
+        const events = response.events.filter((e) => e.id !== initialData?.id);
+
+        const hasConflict = events.some((event) => {
+          const eventDate = new Date(event.date).toISOString().split("T")[0];
+          return eventDate === selectedDate && !event.allowSameDay;
+        });
+
+        if (hasConflict) {
+          setErrors({
+            date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
       const { templateId, ...requiredFields } = formData;
       const finalSubmissionData = templateId
         ? { ...requiredFields, templateId }
@@ -171,6 +258,7 @@ export default function EventForm({
       setIsSubmitting(false);
     }
   };
+
   // claude.ai
   const applyTemplate = async (templateId: string) => {
     if (!templateId) {
@@ -181,6 +269,7 @@ export default function EventForm({
         price: 0,
         allowWaitlist: false,
         isPrivate: false,
+        allowSameDay: true,
         typeId: "",
       }));
       setErrors((prev) => ({ ...prev, date: "" }));
@@ -197,6 +286,7 @@ export default function EventForm({
           price: template.price,
           allowWaitlist: template.allowWaitlist,
           isPrivate: template.isPrivate,
+          allowSameDay: template.allowSameDay,
           typeId: template.typeId,
           date: isAllowedDay(prev.date, template.allowedDays) ? prev.date : "",
         }));
@@ -428,6 +518,16 @@ export default function EventForm({
                   disabled={isSubmitting}
                 />
                 Tillat venteliste
+              </label>
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.allowSameDay}
+                  onChange={(e) => handleAllowSameDayChange(e.target.checked)}
+                  disabled={isSubmitting || Boolean(formData.templateId)}
+                />
+                Tillat på samme dag som andre arrangementer
               </label>
             </div>
           </div>

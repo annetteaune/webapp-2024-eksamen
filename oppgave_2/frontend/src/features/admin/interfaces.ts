@@ -54,10 +54,12 @@ export type RequiredEventFields = {
   price: number;
   allowWaitlist: boolean;
   isPrivate: boolean;
+  allowSameDay: boolean;
 };
 
 export type EventFormFields = RequiredEventFields & {
   templateId?: string;
   allowWaitlist: boolean;
   isPrivate: boolean;
+  allowSameDay: boolean;
 };

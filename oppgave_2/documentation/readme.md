@@ -2,6 +2,8 @@
 
 ## Endepunkter:
 
+# TODO: husk å fikse samme dag-tillatelser når create events settes opp - error trigger ikke riktig!
+
 ### /events - alle arrangementer
 
 - GET - hente alle arrangememnter

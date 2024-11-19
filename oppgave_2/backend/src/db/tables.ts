@@ -44,6 +44,7 @@ export const createTables = async (db: DB) => {
       template_id TEXT NOT NULL,
       status TEXT NOT NULL,
       is_private BOOLEAN NOT NULL DEFAULT 0,
+      allow_same_day BOOLEAN NOT NULL DEFAULT 1,
       waitlist TEXT,
       FOREIGN KEY (template_id) REFERENCES templates(id),
       FOREIGN KEY (type_id) REFERENCES types(id)

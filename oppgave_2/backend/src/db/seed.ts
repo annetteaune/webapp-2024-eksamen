@@ -45,9 +45,9 @@ export const seed = async (db: DB) => {
       INSERT INTO events (
         id, slug, title, description_short, description_long,
         date, location, type_id, capacity, price,
-        template_id, status, is_private, waitlist
+        template_id, status, is_private, allow_same_day, waitlist
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     data.events.forEach((event: any) => {
@@ -65,6 +65,7 @@ export const seed = async (db: DB) => {
         event.template_id,
         event.status,
         event.is_private ? 1 : 0,
+        event.allow_same_day ? 1 : 0,
         event.waitlist ? JSON.stringify(event.waitlist) : null
       );
     });

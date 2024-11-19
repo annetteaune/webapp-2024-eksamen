@@ -22,6 +22,7 @@ export const eventSchema = z.object({
   template_id: z.string().min(1),
   status: z.enum(["Ledige plasser", "Fullbooket"]),
   is_private: z.boolean(),
+  allow_same_day: z.boolean(),
   waitlist: z.array(waitlistItemSchema).nullable(),
 });
 

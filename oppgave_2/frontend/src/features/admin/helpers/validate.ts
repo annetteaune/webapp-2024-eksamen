@@ -67,6 +67,7 @@ export const eventFormSchema = z.object({
   templateId: z.string().optional(),
   allowWaitlist: z.boolean().optional(),
   isPrivate: z.boolean().optional(),
+  allowSameDay: z.boolean(),
 });
 
 export type TemplateFormData = z.infer<typeof templateFormSchema>;

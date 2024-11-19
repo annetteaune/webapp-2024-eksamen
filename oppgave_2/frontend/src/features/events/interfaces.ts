@@ -16,6 +16,7 @@ export interface Event {
   status: "Ledige plasser" | "Fullbooket";
   allowWaitlist: boolean;
   isPrivate: boolean;
+  allowSameDay: boolean;
   waitlist: Array<{
     name: string;
     email: string;

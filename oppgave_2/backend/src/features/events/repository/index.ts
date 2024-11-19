@@ -27,6 +27,7 @@ type DbEvent = {
   template_id: string;
   status: string;
   is_private: number;
+  allow_same_day: number;
   waitlist: string | null;
 };
 
@@ -83,6 +84,7 @@ export const findAllEvents = async (
       eventSchema.parse({
         ...event,
         is_private: Boolean(event.is_private),
+        allow_same_day: Boolean(event.allow_same_day),
         waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
         type: {
           id: event.type_id,
@@ -127,6 +129,8 @@ export const findEventById = async (
 
     const validatedEvent = eventSchema.parse({
       ...event,
+      is_private: Boolean(event.is_private),
+      allow_same_day: Boolean(event.allow_same_day),
       waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
     });
 
@@ -173,7 +177,8 @@ export const findEventBySlug = async (
 
     const validatedEvent = eventSchema.parse({
       ...event,
-      is_private: Boolean(event.is_private), // Convert to boolean
+      is_private: Boolean(event.is_private),
+      allow_same_day: Boolean(event.allow_same_day),
       waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
       type: {
         id: event.type_id,
@@ -205,13 +210,20 @@ export const createEvent = async (
     const id = generateUUID();
 
     let isPrivate = event.is_private;
+    let allowSameDay = event.allow_same_day;
+
     if (event.template_id) {
       const template = db
-        .prepare("SELECT is_private FROM templates WHERE id = ?")
-        .get(event.template_id) as { is_private: number } | undefined;
+        .prepare(
+          "SELECT is_private, allow_same_day FROM templates WHERE id = ?"
+        )
+        .get(event.template_id) as
+        | { is_private: number; allow_same_day: number }
+        | undefined;
 
       if (template) {
         isPrivate = Boolean(template.is_private);
+        allowSameDay = Boolean(template.allow_same_day);
       }
     }
 
@@ -220,6 +232,7 @@ export const createEvent = async (
       ...event,
       status: "Ledige plasser",
       is_private: isPrivate,
+      allow_same_day: allowSameDay,
       waitlist: null,
     });
 
@@ -228,9 +241,9 @@ export const createEvent = async (
       INSERT INTO events (
         id, slug, title, description_short, description_long,
         date, location, type_id, capacity, price,
-        template_id, status, is_private, waitlist
+        template_id, status, is_private, allow_same_day, waitlist
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
     ).run(
       newEvent.id,
@@ -246,6 +259,7 @@ export const createEvent = async (
       newEvent.template_id,
       newEvent.status,
       newEvent.is_private ? 1 : 0,
+      newEvent.allow_same_day ? 1 : 0,
       newEvent.waitlist ? JSON.stringify(newEvent.waitlist) : null
     );
 
@@ -285,7 +299,7 @@ export const updateEvent = async (
       UPDATE events 
       SET slug = ?, title = ?, description_short = ?, description_long = ?,
           date = ?, location = ?, type_id = ?, capacity = ?, price = ?,
-          template_id = ?, status = ?, is_private = ?
+          template_id = ?, status = ?, is_private = ?, allow_same_day = ?
       WHERE id = ?
     `
     ).run(
@@ -301,6 +315,7 @@ export const updateEvent = async (
       updatedEvent.template_id,
       updatedEvent.status,
       updatedEvent.is_private ? 1 : 0,
+      updatedEvent.allow_same_day ? 1 : 0,
       eventId
     );
 

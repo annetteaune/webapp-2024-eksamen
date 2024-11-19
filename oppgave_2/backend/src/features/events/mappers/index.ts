@@ -17,6 +17,7 @@ export const toEventResponse = (event: Event) => ({
   templateId: event.template_id,
   status: event.status,
   isPrivate: event.is_private,
+  allowSameDay: event.allow_same_day,
   waitlist: event.waitlist,
 });
 
