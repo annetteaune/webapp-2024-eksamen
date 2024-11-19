@@ -9,6 +9,7 @@ export const toTemplateResponse = (template: any) => ({
   isPrivate: template.is_private,
   allowWaitlist: template.allow_waitlist,
   allowSameDay: template.allow_same_day,
+  fixedPrice: template.fixed_price,
   createdAt: template.created_at,
   typeId: template.type_id,
 });

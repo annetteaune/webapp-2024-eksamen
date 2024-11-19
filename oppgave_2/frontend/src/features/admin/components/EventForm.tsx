@@ -151,8 +151,15 @@ export const EventForm = ({
         const typeSelect = document.querySelector(
           'select[name="typeId"]'
         ) as HTMLSelectElement;
+        const priceInput = document.querySelector(
+          'input[name="price"]'
+        ) as HTMLInputElement;
+
         if (typeSelect) {
           typeSelect.disabled = true;
+        }
+        if (priceInput) {
+          priceInput.disabled = template.fixedPrice;
         }
       }
     } catch (error) {
@@ -318,12 +325,18 @@ export const EventForm = ({
               <label>Pris</label>
               <input
                 type="number"
+                name="price"
                 value={formData.price}
                 onChange={(e) =>
                   handleInputChange("price", parseInt(e.target.value))
                 }
                 className={errors.price ? "error" : ""}
-                disabled={isSubmitting || !!formData.templateId}
+                disabled={Boolean(
+                  isSubmitting ||
+                    (formData.templateId &&
+                      templates.find((t) => t.id === formData.templateId)
+                        ?.fixedPrice)
+                )}
               />
               {errors.price && (
                 <span className="error-message">{errors.price}</span>

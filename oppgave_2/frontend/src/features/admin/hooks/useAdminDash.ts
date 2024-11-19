@@ -87,6 +87,7 @@ export const useAdminDashboard = () => {
       is_private: formData.isPrivate,
       allow_waitlist: formData.allowWaitlist,
       allow_same_day: formData.allowSameDay,
+      fixed_price: formData.fixedPrice,
       type_id: formData.typeId,
     };
     const response = await fetcher("/templates", {
@@ -116,6 +117,7 @@ export const useAdminDashboard = () => {
       is_private: formData.isPrivate,
       allow_waitlist: formData.allowWaitlist,
       allow_same_day: formData.allowSameDay,
+      fixed_price: formData.fixedPrice,
       type_id: formData.typeId,
     };
 

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Template, Type } from "../interfaces";
+import { DayOfWeek, Template, TemplateFormData, Type } from "../interfaces";
 import { FaTimes } from "react-icons/fa";
 import {
   templateFormSchema,
@@ -9,26 +9,6 @@ import {
   validateForm,
 } from "../helpers/validate";
 import { fetcher } from "@/api/fetcher";
-
-type DayOfWeek =
-  | "Mandag"
-  | "Tirsdag"
-  | "Onsdag"
-  | "Torsdag"
-  | "Fredag"
-  | "Lørdag"
-  | "Søndag";
-
-interface TemplateFormData {
-  name: string;
-  allowedDays: DayOfWeek[];
-  maxCapacity: number;
-  price: number;
-  isPrivate: boolean;
-  allowWaitlist: boolean;
-  allowSameDay: boolean;
-  typeId: string;
-}
 
 interface TemplateFormProps {
   onClose: () => void;
@@ -49,9 +29,9 @@ export const NewTemplateForm = ({
     isPrivate: initialData?.isPrivate ?? false,
     allowWaitlist: initialData?.allowWaitlist ?? false,
     allowSameDay: initialData?.allowSameDay ?? true,
+    fixedPrice: initialData?.fixedPrice ?? false,
     typeId: initialData?.typeId ?? "",
   });
-
   const [types, setTypes] = useState<Type[]>([]);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -318,7 +298,19 @@ export const NewTemplateForm = ({
                 }
                 disabled={isSubmitting}
               />
-              Tillat samme dag
+              Tillat på samme dag som andre arrangementer
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={formData.fixedPrice}
+                onChange={(e) =>
+                  handleInputChange("fixedPrice", e.target.checked)
+                }
+                disabled={isSubmitting}
+              />
+              Fast pris
             </label>
           </div>
 

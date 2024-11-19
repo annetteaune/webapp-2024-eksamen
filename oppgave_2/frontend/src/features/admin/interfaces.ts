@@ -6,21 +6,32 @@ export interface Template {
   maxCapacity: number;
   price: number;
   isPrivate: boolean;
+  fixedPrice: boolean;
   createdAt: string;
   allowedDays: string[];
   typeId: string;
 }
 
-export type TemplateFormData = {
+export interface TemplateFormData {
   name: string;
-  allowedDays: string[];
+  allowedDays: DayOfWeek[];
   maxCapacity: number;
   price: number;
   isPrivate: boolean;
+  fixedPrice: boolean;
   allowWaitlist: boolean;
   allowSameDay: boolean;
   typeId: string;
-};
+}
+
+export type DayOfWeek =
+  | "Mandag"
+  | "Tirsdag"
+  | "Onsdag"
+  | "Torsdag"
+  | "Fredag"
+  | "Lørdag"
+  | "Søndag";
 
 export interface Type {
   id: string;

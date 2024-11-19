@@ -21,6 +21,7 @@ type DbTemplate = {
   is_private: number;
   allow_waitlist: number;
   allow_same_day: number;
+  fixed_price: number;
   created_at: string;
 };
 
@@ -37,6 +38,7 @@ export const findAllTemplates = async (db: DB): Promise<Result<Template[]>> => {
         is_private: Boolean(template.is_private),
         allow_waitlist: Boolean(template.allow_waitlist),
         allow_same_day: Boolean(template.allow_same_day),
+        fixed_price: Boolean(template.fixed_price),
       })
     );
 
@@ -114,9 +116,9 @@ export const createTemplate = async (
       `
       INSERT INTO templates (
         id, name, allowed_days, max_capacity, price,
-        is_private, allow_waitlist, allow_same_day, created_at, type_id
+        is_private, allow_waitlist, allow_same_day, fixed_price, created_at, type_id
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
     ).run(
       newTemplate.id,
@@ -127,6 +129,7 @@ export const createTemplate = async (
       newTemplate.is_private ? 1 : 0,
       newTemplate.allow_waitlist ? 1 : 0,
       newTemplate.allow_same_day ? 1 : 0,
+      newTemplate.fixed_price ? 1 : 0,
       newTemplate.created_at,
       newTemplate.type_id
     );
@@ -166,7 +169,8 @@ export const updateTemplate = async (
       `
       UPDATE templates 
       SET name = ?, allowed_days = ?, max_capacity = ?, price = ?,
-          is_private = ?, allow_waitlist = ?, allow_same_day = ?, type_id = ?
+          is_private = ?, allow_waitlist = ?, allow_same_day = ?, 
+          fixed_price = ?, type_id = ?
       WHERE id = ?
     `
     ).run(
@@ -177,6 +181,7 @@ export const updateTemplate = async (
       updatedTemplate.is_private ? 1 : 0,
       updatedTemplate.allow_waitlist ? 1 : 0,
       updatedTemplate.allow_same_day ? 1 : 0,
+      updatedTemplate.fixed_price ? 1 : 0,
       updatedTemplate.type_id,
       templateId
     );

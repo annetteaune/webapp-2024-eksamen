@@ -29,6 +29,7 @@ export const templateFormSchema = z.object({
     .min(0, "Pris kan ikke være negativ")
     .max(10000, "Pris kan ikke være større enn 10000"),
   isPrivate: z.boolean(),
+  fixedPrice: z.boolean(),
   allowWaitlist: z.boolean(),
   allowSameDay: z.boolean(),
   typeId: z.string().min(1, "Velg en arrangementstype"),

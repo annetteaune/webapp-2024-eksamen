@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 // claude.ai
+
 export const templateSchema = z.object({
   id: z.string().min(1),
   name: z
@@ -20,6 +21,7 @@ export const templateSchema = z.object({
   is_private: z.boolean(),
   allow_waitlist: z.boolean(),
   allow_same_day: z.boolean(),
+  fixed_price: z.boolean(),
   created_at: z.string().datetime(),
   type_id: z.string().min(1, "Type er påkrevd"),
 });
@@ -33,7 +35,6 @@ export const updateTemplateSchema = templateSchema.partial().omit({
   id: true,
   created_at: true,
 });
-
 export type Template = z.infer<typeof templateSchema>;
 export type CreateTemplate = z.infer<typeof createTemplateSchema>;
 export type UpdateTemplate = z.infer<typeof updateTemplateSchema>;
