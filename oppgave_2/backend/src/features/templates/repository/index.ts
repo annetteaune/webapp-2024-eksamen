@@ -82,6 +82,7 @@ export const findTemplateById = async (
       is_private: Boolean(template.is_private),
       allow_waitlist: Boolean(template.allow_waitlist),
       allow_same_day: Boolean(template.allow_same_day),
+      fixed_price: Boolean(template.fixed_price),
     });
 
     return {

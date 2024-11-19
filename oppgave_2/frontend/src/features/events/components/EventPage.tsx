@@ -30,6 +30,10 @@ export default async function EventPage({ slug }: EventPageProps) {
         locale: nb,
       }
     );
+
+    const isEventFull = bookingCounts.total >= event.capacity;
+    const showWaitlistInfo = template?.allowWaitlist && isEventFull;
+
     return (
       <article className="event-page">
         <Link href="/" className="back-link">
@@ -78,7 +82,7 @@ export default async function EventPage({ slug }: EventPageProps) {
             </p>
           )}
 
-          {template?.allowWaitlist && (
+          {showWaitlistInfo && (
             <p className="waitlist-info">
               Dette arrangementet har venteliste. Ved avbestillinger vil de på
               ventelisten få tilbud om plass i den rekkefølgen de meldte seg på.
