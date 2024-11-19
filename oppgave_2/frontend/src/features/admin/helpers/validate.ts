@@ -66,6 +66,7 @@ export const eventFormSchema = z.object({
   price: z.number().min(0, "Pris kan ikke være negativ"),
   templateId: z.string().optional(),
   allowWaitlist: z.boolean().optional(),
+  isPrivate: z.boolean().optional(),
 });
 
 export type TemplateFormData = z.infer<typeof templateFormSchema>;

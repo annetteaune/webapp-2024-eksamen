@@ -81,6 +81,13 @@
             margin-bottom: 0.75rem;
             color: var(--font-normal);
           }
+          .private-badge {
+            background-color: var(--iconbkgcolor);
+            padding: 0.3rem;
+            width: 100%;
+            display: block;
+            font-size: medium;
+          }
           p {
             font-size: 0.875rem;
             margin-bottom: 0.5rem;
@@ -103,15 +110,15 @@
             font-size: 1.125rem;
             &.edit:hover {
               color: var(--btn);
-              background-color: rgba(177, 177, 177, 0.1);
+              background-color: var(--iconbkgcolor);
             }
             &.delete:hover {
               color: var(--error);
-              background-color: rgba(177, 177, 177, 0.1);
+              background-color: var(--iconbkgcolor);
             }
             &.users:hover {
               color: var(--btn);
-              background-color: rgba(177, 177, 177, 0.1);
+              background-color: var(--iconbkgcolor);
             }
           }
         }

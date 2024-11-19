@@ -16,6 +16,7 @@ export const toEventResponse = (event: Event) => ({
   price: event.price,
   templateId: event.template_id,
   status: event.status,
+  isPrivate: event.is_private,
   waitlist: event.waitlist,
 });
 

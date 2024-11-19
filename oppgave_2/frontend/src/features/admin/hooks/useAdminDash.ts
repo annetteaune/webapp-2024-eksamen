@@ -23,7 +23,7 @@ export const useAdminDashboard = () => {
         setIsLoading(true);
         const [templatesResponse, eventsResponse] = await Promise.all([
           fetcher("/templates"),
-          fetcher("/events"),
+          fetcher("/events?includePrivate=true"),
         ]);
         setTemplates(templatesResponse.templates);
         setEvents(eventsResponse.events);

@@ -13,13 +13,14 @@ import { createEventSchema, updateEventSchema } from "../helpers";
 const app = new Hono();
 
 app.get("/", async (c) => {
-  const { type, month, year, template } = c.req.query();
+  const { type, month, year, template, includePrivate } = c.req.query();
 
   const filters = {
     typeId: type,
     month: month,
     year: year,
     templateId: template,
+    includePrivate: includePrivate === "true",
   };
 
   const result = await getEvents(db, filters);

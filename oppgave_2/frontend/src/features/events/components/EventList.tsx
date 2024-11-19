@@ -40,7 +40,9 @@ export default function EventList() {
         const data = await fetcher<EventsResponse>(
           `/events${queryString ? `?${queryString}` : ""}`
         );
-        setEvents(data.events);
+
+        const publicEvents = data.events.filter((event) => !event.isPrivate);
+        setEvents(publicEvents);
       } catch (error) {
         console.error("Error fetching events:", error);
         setError(

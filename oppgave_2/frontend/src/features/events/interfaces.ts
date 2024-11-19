@@ -15,6 +15,7 @@ export interface Event {
   templateId: string;
   status: "Ledige plasser" | "Fullbooket";
   allowWaitlist: boolean;
+  isPrivate: boolean;
   waitlist: Array<{
     name: string;
     email: string;

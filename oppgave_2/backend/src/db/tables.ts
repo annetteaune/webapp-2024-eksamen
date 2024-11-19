@@ -43,6 +43,7 @@ export const createTables = async (db: DB) => {
       price DECIMAL(10, 2) NOT NULL,
       template_id TEXT NOT NULL,
       status TEXT NOT NULL,
+      is_private BOOLEAN NOT NULL DEFAULT 0,
       waitlist TEXT,
       FOREIGN KEY (template_id) REFERENCES templates(id),
       FOREIGN KEY (type_id) REFERENCES types(id)

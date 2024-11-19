@@ -21,6 +21,7 @@ export const eventSchema = z.object({
   price: z.number().min(0),
   template_id: z.string().min(1),
   status: z.enum(["Ledige plasser", "Fullbooket"]),
+  is_private: z.boolean(),
   waitlist: z.array(waitlistItemSchema).nullable(),
 });
 

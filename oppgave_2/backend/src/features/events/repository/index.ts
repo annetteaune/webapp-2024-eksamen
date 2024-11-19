@@ -26,11 +26,13 @@ type DbEvent = {
   price: number;
   template_id: string;
   status: string;
+  is_private: number;
   waitlist: string | null;
 };
 
 // har fått hjelp av claude.ai til å skrive queries for filtrering
-// filtrerer også på templateID, for å unngå error i console-loggen ved forsøk på sletting av template i bruk
+// filtrerer også på templateID, for å unngå error i console-loggen ved forsøk på sletting av template i bruk,
+// samt private arrangementer
 export const findAllEvents = async (
   db: DB,
   filters?: {
@@ -38,6 +40,7 @@ export const findAllEvents = async (
     month?: string;
     year?: string;
     templateId?: string;
+    includePrivate?: boolean;
   }
 ): Promise<Result<Event[]>> => {
   try {
@@ -49,6 +52,10 @@ export const findAllEvents = async (
     `;
 
     const queryParams: any[] = [];
+
+    if (!filters?.includePrivate) {
+      query += ` AND (events.is_private = 0 OR events.is_private IS NULL)`;
+    }
 
     if (filters?.typeId) {
       query += ` AND events.type_id = ?`;
@@ -64,6 +71,7 @@ export const findAllEvents = async (
       query += ` AND strftime('%Y', events.date) = ?`;
       queryParams.push(filters.year);
     }
+
     if (filters?.templateId) {
       query += ` AND events.template_id = ?`;
       queryParams.push(filters.templateId);
@@ -74,6 +82,7 @@ export const findAllEvents = async (
     const validatedEvents = events.map((event) =>
       eventSchema.parse({
         ...event,
+        is_private: Boolean(event.is_private),
         waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
         type: {
           id: event.type_id,
@@ -164,6 +173,7 @@ export const findEventBySlug = async (
 
     const validatedEvent = eventSchema.parse({
       ...event,
+      is_private: Boolean(event.is_private), // Convert to boolean
       waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
       type: {
         id: event.type_id,
@@ -176,6 +186,7 @@ export const findEventBySlug = async (
       data: validatedEvent,
     };
   } catch (error) {
+    console.error("Error in findEventBySlug:", error);
     return {
       success: false,
       error: {
@@ -192,10 +203,23 @@ export const createEvent = async (
 ): Promise<Result<Event>> => {
   try {
     const id = generateUUID();
+
+    let isPrivate = event.is_private;
+    if (event.template_id) {
+      const template = db
+        .prepare("SELECT is_private FROM templates WHERE id = ?")
+        .get(event.template_id) as { is_private: number } | undefined;
+
+      if (template) {
+        isPrivate = Boolean(template.is_private);
+      }
+    }
+
     const newEvent = eventSchema.parse({
       id,
       ...event,
       status: "Ledige plasser",
+      is_private: isPrivate,
       waitlist: null,
     });
 
@@ -204,9 +228,9 @@ export const createEvent = async (
       INSERT INTO events (
         id, slug, title, description_short, description_long,
         date, location, type_id, capacity, price,
-        template_id, status, waitlist
+        template_id, status, is_private, waitlist
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
     ).run(
       newEvent.id,
@@ -221,6 +245,7 @@ export const createEvent = async (
       newEvent.price,
       newEvent.template_id,
       newEvent.status,
+      newEvent.is_private ? 1 : 0,
       newEvent.waitlist ? JSON.stringify(newEvent.waitlist) : null
     );
 
@@ -260,7 +285,7 @@ export const updateEvent = async (
       UPDATE events 
       SET slug = ?, title = ?, description_short = ?, description_long = ?,
           date = ?, location = ?, type_id = ?, capacity = ?, price = ?,
-          template_id = ?, status = ?
+          template_id = ?, status = ?, is_private = ?
       WHERE id = ?
     `
     ).run(
@@ -275,6 +300,7 @@ export const updateEvent = async (
       updatedEvent.price,
       updatedEvent.template_id,
       updatedEvent.status,
+      updatedEvent.is_private ? 1 : 0,
       eventId
     );
 

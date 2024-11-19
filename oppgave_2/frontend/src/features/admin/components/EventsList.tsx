@@ -1,5 +1,5 @@
 import { Event } from "@/features/events/interfaces";
-import { FaEdit, FaTrash, FaUsers } from "react-icons/fa";
+import { FaEdit, FaTrash, FaUsers, FaRegEyeSlash } from "react-icons/fa";
 
 interface EventsListProps {
   events: Event[];
@@ -14,11 +14,17 @@ export const EventsList = ({ events, onDelete }: EventsListProps) => (
         <div key={event.id} className="a-event-card">
           <div className="event-info">
             <h4>{event.title}</h4>
+
             <p>{new Date(event.date).toLocaleDateString("no-NO")}</p>
             <p>
               Kapasitet: {event.capacity} | Status: {event.status}
             </p>
             <p>Type: {event.type.name}</p>
+            {event.isPrivate && (
+              <span className="private-badge">
+                <FaRegEyeSlash /> Privat arrangement
+              </span>
+            )}
           </div>
           <div className="event-actions">
             <button className="icon-btn edit">

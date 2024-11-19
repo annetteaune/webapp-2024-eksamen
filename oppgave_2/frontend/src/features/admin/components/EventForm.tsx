@@ -36,6 +36,7 @@ export const EventForm = ({
     price: initialData?.price ?? 0,
     templateId: initialData?.templateId,
     allowWaitlist: false,
+    isPrivate: initialData?.isPrivate ?? false,
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -133,6 +134,7 @@ export const EventForm = ({
         capacity: 0,
         price: 0,
         allowWaitlist: false,
+        isPrivate: false, // Reset isPrivate when template is cleared
         typeId: "",
       }));
       return;
@@ -146,6 +148,7 @@ export const EventForm = ({
           capacity: template.maxCapacity,
           price: template.price,
           allowWaitlist: template.allowWaitlist,
+          isPrivate: template.isPrivate, // Set isPrivate based on template
           typeId: template.typeId,
         }));
         const typeSelect = document.querySelector(
@@ -342,7 +345,19 @@ export const EventForm = ({
                 <span className="error-message">{errors.price}</span>
               )}
             </div>
+
             <div className="checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.isPrivate}
+                  onChange={(e) =>
+                    handleInputChange("isPrivate", e.target.checked)
+                  }
+                  disabled={isSubmitting || !!formData.templateId}
+                />
+                Privat arrangement
+              </label>
               <label>
                 <input
                   type="checkbox"

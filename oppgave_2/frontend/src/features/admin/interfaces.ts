@@ -53,9 +53,11 @@ export type RequiredEventFields = {
   capacity: number;
   price: number;
   allowWaitlist: boolean;
+  isPrivate: boolean;
 };
 
 export type EventFormFields = RequiredEventFields & {
   templateId?: string;
   allowWaitlist: boolean;
+  isPrivate: boolean;
 };

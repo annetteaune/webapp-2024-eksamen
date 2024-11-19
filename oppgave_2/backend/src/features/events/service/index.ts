@@ -19,18 +19,20 @@ type FilterParams = {
   typeId?: string;
   month?: string;
   year?: string;
+  includePrivate?: boolean;
 };
 
 export const getEvents = async (
   db: DB,
   filters?: FilterParams
 ): Promise<Result<EventsResponse>> => {
-  const result = await findAllEvents(db, filters);
-
+  const result = await findAllEvents(db, {
+    ...filters,
+    includePrivate: filters?.includePrivate,
+  });
   if (!result.success) {
     return result;
   }
-
   return {
     success: true,
     data: toEventsResponse(result.data),
