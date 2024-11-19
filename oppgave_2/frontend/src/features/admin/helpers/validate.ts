@@ -32,6 +32,7 @@ export const templateFormSchema = z.object({
   allowWaitlist: z.boolean(),
   allowSameDay: z.boolean(),
   typeId: z.string().min(1, "Velg en arrangementstype"),
+  firmPrice: z.boolean(),
 });
 
 export const eventFormSchema = z.object({
@@ -161,6 +162,7 @@ export const createEventSchema = z.object({
   capacity: z.number().positive("Kapasitet må være større enn 0").int(),
   price: z.number().min(0, "Pris kan ikke være negativ"),
   template_id: z.string().optional().nullable(),
+  firmPrice: z.boolean(),
 });
 
 export type CreateEventData = z.infer<typeof createEventSchema>;

@@ -22,12 +22,17 @@ export const templateSchema = z.object({
   allow_same_day: z.boolean(),
   created_at: z.string().datetime(),
   type_id: z.string().min(1, "Type er påkrevd"),
+  firm_price: z.boolean().default(false),
 });
 
-export const createTemplateSchema = templateSchema.omit({
-  id: true,
-  created_at: true,
-});
+export const createTemplateSchema = templateSchema
+  .omit({
+    id: true,
+    created_at: true,
+  })
+  .extend({
+    firm_price: z.boolean().default(false),
+  });
 
 export const updateTemplateSchema = templateSchema.partial().omit({
   id: true,

@@ -34,6 +34,9 @@ export const useEventForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [types, setTypes] = useState<Type[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,11 +85,14 @@ export const useEventForm = ({
         allowWaitlist: false,
         typeId: "",
       }));
+      setSelectedTemplate(null);
       return;
     }
+
     try {
       const template = templates.find((t) => t.id === templateId);
       if (template) {
+        setSelectedTemplate(template);
         setFormData((prev) => ({
           ...prev,
           templateId,
@@ -100,7 +106,6 @@ export const useEventForm = ({
       console.error("Error applying template:", error);
     }
   };
-
   // claude.ai
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,6 +154,7 @@ export const useEventForm = ({
     isSubmitting,
     types,
     templates,
+    selectedTemplate,
     handleInputChange,
     handleSubmit,
     applyTemplate,

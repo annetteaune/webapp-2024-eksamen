@@ -26,6 +26,7 @@ interface TemplateFormData {
   allowWaitlist: boolean;
   allowSameDay: boolean;
   typeId: string;
+  firmPrice: boolean;
 }
 
 interface UseTemplateFormProps {
@@ -48,6 +49,7 @@ export const useTemplateForm = ({
     allowWaitlist: initialData?.allowWaitlist ?? false,
     allowSameDay: initialData?.allowSameDay ?? true,
     typeId: initialData?.typeId ?? "",
+    firmPrice: initialData?.firmPrice ?? false,
   });
 
   const [types, setTypes] = useState<Type[]>([]);
@@ -158,6 +160,7 @@ export const useTemplateForm = ({
         maxCapacity: Number(formData.maxCapacity),
         price: Number(formData.price),
       };
+      console.log("Form data to validate:", dataToValidate); // Add this
 
       const { isValid, errors: validationErrors } = validateForm(
         templateFormSchema,

@@ -26,7 +26,9 @@ export const createTables = async (db: DB) => {
       allow_same_day BOOLEAN NOT NULL,
       created_at DATETIME NOT NULL,
       type_id TEXT NOT NULL,
+      firm_price BOOLEAN NOT NULL DEFAULT 0,
       FOREIGN KEY (type_id) REFERENCES types(id)
+      
     );
 
     CREATE TABLE events (

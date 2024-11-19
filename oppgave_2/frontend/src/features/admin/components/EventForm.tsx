@@ -20,6 +20,7 @@ export const EventForm = ({
     isSubmitting,
     types,
     templates,
+    selectedTemplate,
     handleInputChange,
     handleSubmit,
     applyTemplate,
@@ -188,10 +189,16 @@ export const EventForm = ({
                   handleInputChange("price", parseInt(e.target.value))
                 }
                 className={errors.price ? "error" : ""}
-                disabled={isSubmitting || !!formData.templateId}
+                disabled={
+                  isSubmitting ||
+                  (!!formData.templateId && selectedTemplate?.firmPrice)
+                }
               />
               {errors.price && (
                 <span className="error-message">{errors.price}</span>
+              )}
+              {formData.templateId && selectedTemplate?.firmPrice && (
+                <span className="info-message">Fast pris fra mal</span>
               )}
             </div>
             <div className="checkbox-group">

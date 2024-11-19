@@ -89,7 +89,11 @@ export const useAdminDashboard = () => {
       allow_waitlist: formData.allowWaitlist,
       allow_same_day: formData.allowSameDay,
       type_id: formData.typeId,
+      firm_price: formData.firmPrice,
     };
+
+    console.log("Sending template data:", backendData);
+
     const response = await fetcher("/templates", {
       method: "POST",
       body: JSON.stringify(backendData),

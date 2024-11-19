@@ -156,7 +156,19 @@ export const NewTemplateForm = ({
                 }
                 disabled={isSubmitting}
               />
-              Tillat samme dag
+              Tillat på samme dag som andre arrangementer
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={formData.firmPrice}
+                onChange={(e) =>
+                  handleInputChange("firmPrice", e.target.checked)
+                }
+                disabled={isSubmitting}
+              />
+              Fast pris
             </label>
           </div>
 
