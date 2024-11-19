@@ -9,6 +9,7 @@ export interface Template {
   createdAt: string;
   allowedDays: string[];
   typeId: string;
+  firmPrice: boolean;
 }
 
 export type TemplateFormData = {
@@ -20,6 +21,7 @@ export type TemplateFormData = {
   allowWaitlist: boolean;
   allowSameDay: boolean;
   typeId: string;
+  firmPrice: boolean;
 };
 
 export interface Type {
@@ -48,3 +50,5 @@ export type EventFormFields = RequiredEventFields & {
   templateId?: string;
   allowWaitlist: boolean;
 };
+
+export type TabType = "templates" | "events";

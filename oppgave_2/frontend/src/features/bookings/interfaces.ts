@@ -35,3 +35,14 @@ export const bookingDataSchema = z.object({
   email: z.string().email("Ugyldig e-postadresse"),
   event_id: z.string().uuid("Ugyldig arrangement-ID"),
 });
+
+export type Attendee = {
+  name: string;
+  email: string;
+};
+
+export interface UseBookingFormProps {
+  event: Event;
+  eventSlug: string;
+  eventTitle: string;
+}

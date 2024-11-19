@@ -23,6 +23,7 @@ export default async function EventPage({ slug }: EventPageProps) {
       getTemplateDetails(event.templateId),
     ]);
 
+    const isFull = bookingCounts.approved >= event.capacity;
     const formattedDate = format(
       new Date(event.date),
       "d. MMMM yyyy 'kl.' HH:mm",
@@ -30,12 +31,12 @@ export default async function EventPage({ slug }: EventPageProps) {
         locale: nb,
       }
     );
+
     return (
       <article className="event-page">
         <Link href="/" className="back-link">
           {"<"} Tilbake til arrangementer
         </Link>
-
         <div className="event-header">
           <h2 className="page-title">{event.title}</h2>
           <div className="event-meta">
@@ -44,16 +45,13 @@ export default async function EventPage({ slug }: EventPageProps) {
             <p>{event.location}</p>
           </div>
         </div>
-
         <div className="event-description">
           <h3>Om arrangementet</h3>
           <p>{event.descriptionLong}</p>
         </div>
-
         <div className="event-info">
           <h3>Praktisk informasjon</h3>
           <p>Status: {event.status}</p>
-
           {event.price > 0 ? (
             <>
               <p>Godkjente påmeldinger: {bookingCounts.approved}</p>
@@ -63,32 +61,27 @@ export default async function EventPage({ slug }: EventPageProps) {
           ) : (
             <p>Påmeldinger: {bookingCounts.approved}</p>
           )}
-
           {bookingCounts.waitlist > 0 && (
             <p>På venteliste: {bookingCounts.waitlist}</p>
           )}
-
           <p>Kapasitet: {event.capacity} personer</p>
           <p> {event.price === 0 ? "GRATIS" : `Pris: ${event.price} kr`}</p>
-
           {event.price > 0 && (
             <p className="payment-info">
               Påmeldingen din godkjennes av en administrator etter betaling er
               mottatt.
             </p>
           )}
-
-          {template?.allowWaitlist && (
+          {isFull && template?.allowWaitlist && (
             <p className="waitlist-info">
               Dette arrangementet har venteliste. Ved avbestillinger vil de på
               ventelisten få tilbud om plass i den rekkefølgen de meldte seg på.
             </p>
           )}
         </div>
-
         <section>
           <BookingForm
-            eventId={event.id}
+            event={event}
             eventTitle={event.title}
             eventSlug={slug}
           />

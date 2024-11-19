@@ -11,6 +11,7 @@ export const toTemplateResponse = (template: any) => ({
   allowSameDay: template.allow_same_day,
   createdAt: template.created_at,
   typeId: template.type_id,
+  firmPrice: template.firm_price,
 });
 
 export const toTemplatesResponse = (templates: any[]) => ({

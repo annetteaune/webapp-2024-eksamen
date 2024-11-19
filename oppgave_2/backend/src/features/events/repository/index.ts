@@ -2,32 +2,12 @@ import { type DB } from "../../../db/db";
 import { type Result } from "../../../types";
 import { generateUUID } from "../../../lib/uuid";
 import {
+  DbEvent,
   eventSchema,
-  type createEventSchema,
-  type updateEventSchema,
+  Event,
+  CreateEvent,
+  UpdateEvent,
 } from "../helpers";
-import { z } from "zod";
-
-export type Event = z.infer<typeof eventSchema>;
-export type CreateEvent = z.infer<typeof createEventSchema>;
-export type UpdateEvent = z.infer<typeof updateEventSchema>;
-
-type DbEvent = {
-  id: string;
-  slug: string;
-  title: string;
-  description_short: string;
-  description_long: string;
-  date: string;
-  location: string;
-  type_id: string;
-  type_name: string;
-  capacity: number;
-  price: number;
-  template_id: string;
-  status: string;
-  waitlist: string | null;
-};
 
 // har fått hjelp av claude.ai til å skrive queries for filtrering
 // filtrerer også på templateID, for å unngå error i console-loggen ved forsøk på sletting av template i bruk
@@ -42,9 +22,13 @@ export const findAllEvents = async (
 ): Promise<Result<Event[]>> => {
   try {
     let query = `
-      SELECT events.*, types.name as type_name 
+      SELECT 
+        events.*,
+        types.name as type_name,
+        templates.allow_waitlist as template_allow_waitlist
       FROM events 
-      JOIN types ON events.type_id = types.id
+      LEFT JOIN types ON events.type_id = types.id
+      LEFT JOIN templates ON events.template_id = templates.id
       WHERE 1=1
     `;
 
@@ -64,29 +48,44 @@ export const findAllEvents = async (
       query += ` AND strftime('%Y', events.date) = ?`;
       queryParams.push(filters.year);
     }
+
     if (filters?.templateId) {
       query += ` AND events.template_id = ?`;
       queryParams.push(filters.templateId);
     }
 
-    const events = db.prepare(query).all(...queryParams) as DbEvent[];
+    console.log("Executing query:", query, "with params:", queryParams);
 
-    const validatedEvents = events.map((event) =>
-      eventSchema.parse({
+    const events = db.prepare(query).all(...queryParams) as DbEvent[];
+    console.log("Raw events data:", events);
+
+    const validatedEvents = events.map((event) => {
+      const type = {
+        id: event.type_id,
+        name: event.type_name || "Unknown Type",
+      };
+
+      const transformedEvent = {
         ...event,
         waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
-        type: {
-          id: event.type_id,
-          name: event.type_name,
-        },
-      })
-    );
+        type,
+        template_id: event.template_id || null,
+        allow_waitlist: Boolean(event.allow_waitlist),
+      };
+
+      console.log("Transformed event before validation:", transformedEvent);
+
+      return eventSchema.parse(transformedEvent);
+    });
+
+    console.log("Validated events:", validatedEvents);
 
     return {
       success: true,
       data: validatedEvents,
     };
   } catch (error) {
+    console.error("Error in findAllEvents:", error);
     return {
       success: false,
       error: {
@@ -115,12 +114,10 @@ export const findEventById = async (
         },
       };
     }
-
     const validatedEvent = eventSchema.parse({
       ...event,
       waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
     });
-
     return {
       success: true,
       data: validatedEvent,
@@ -151,7 +148,6 @@ export const findEventBySlug = async (
       `
       )
       .get(slug) as DbEvent | undefined;
-
     if (!event) {
       return {
         success: false,
@@ -161,7 +157,6 @@ export const findEventBySlug = async (
         },
       };
     }
-
     const validatedEvent = eventSchema.parse({
       ...event,
       waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
@@ -170,7 +165,6 @@ export const findEventBySlug = async (
         name: event.type_name,
       },
     });
-
     return {
       success: true,
       data: validatedEvent,
@@ -192,43 +186,71 @@ export const createEvent = async (
 ): Promise<Result<Event>> => {
   try {
     const id = generateUUID();
-    const newEvent = eventSchema.parse({
+    const typeInfo = db
+      .prepare("SELECT name FROM types WHERE id = ?")
+      .get(event.type_id) as { name: string } | undefined;
+    if (!typeInfo) {
+      return {
+        success: false,
+        error: {
+          code: "TYPE_NOT_FOUND",
+          message: "Could not find event type",
+        },
+      };
+    }
+    let allowWaitlist = event.allow_waitlist || false;
+    if (event.template_id) {
+      const template = db
+        .prepare("SELECT allow_waitlist FROM templates WHERE id = ?")
+        .get(event.template_id) as { allow_waitlist: number } | undefined;
+      if (template) {
+        allowWaitlist = Boolean(template.allow_waitlist);
+      }
+    }
+    const newEvent = {
       id,
       ...event,
-      status: "Ledige plasser",
+      type_name: typeInfo.name,
+      allow_waitlist: allowWaitlist,
+      status: "Ledige plasser" as const,
       waitlist: null,
-    });
-
-    db.prepare(
-      `
-      INSERT INTO events (
-        id, slug, title, description_short, description_long,
-        date, location, type_id, capacity, price,
-        template_id, status, waitlist
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `
-    ).run(
-      newEvent.id,
-      newEvent.slug,
-      newEvent.title,
-      newEvent.description_short,
-      newEvent.description_long,
-      newEvent.date,
-      newEvent.location,
-      newEvent.type_id,
-      newEvent.capacity,
-      newEvent.price,
-      newEvent.template_id,
-      newEvent.status,
-      newEvent.waitlist ? JSON.stringify(newEvent.waitlist) : null
-    );
-
-    return {
-      success: true,
-      data: newEvent,
     };
+    try {
+      db.prepare(
+        `
+        INSERT INTO events (
+          id, slug, title, description_short, description_long,
+          date, location, type_id, capacity, price,
+          template_id, status, waitlist, allow_waitlist
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `
+      ).run(
+        newEvent.id,
+        newEvent.slug,
+        newEvent.title,
+        newEvent.description_short,
+        newEvent.description_long,
+        newEvent.date,
+        newEvent.location,
+        newEvent.type_id,
+        newEvent.capacity,
+        newEvent.price,
+        newEvent.template_id || null,
+        newEvent.status,
+        newEvent.waitlist ? JSON.stringify(newEvent.waitlist) : null,
+        newEvent.allow_waitlist ? 1 : 0
+      );
+      return {
+        success: true,
+        data: newEvent as Event,
+      };
+    } catch (insertError) {
+      console.error("Database insertion error:", insertError);
+      throw insertError;
+    }
   } catch (error) {
+    console.error("Event creation error:", error);
     return {
       success: false,
       error: {
@@ -249,12 +271,10 @@ export const updateEvent = async (
     if (!existingResult.success) {
       return existingResult;
     }
-
     const updatedEvent = eventSchema.parse({
       ...existingResult.data,
       ...update,
     });
-
     db.prepare(
       `
       UPDATE events 
@@ -277,7 +297,6 @@ export const updateEvent = async (
       updatedEvent.status,
       eventId
     );
-
     return {
       success: true,
       data: updatedEvent,
@@ -298,7 +317,17 @@ export const deleteEvent = async (
   eventId: string
 ): Promise<Result<void>> => {
   try {
-    // hvis bookings for eventet
+    const event = db.prepare("SELECT id FROM events WHERE id = ?").get(eventId);
+
+    if (!event) {
+      return {
+        success: false,
+        error: {
+          code: "EVENT_NOT_FOUND",
+          message: `Event ${eventId} not found`,
+        },
+      };
+    }
     const bookings = db
       .prepare("SELECT COUNT(*) as count FROM bookings WHERE event_id = ?")
       .get(eventId) as { count: number };
@@ -312,24 +341,14 @@ export const deleteEvent = async (
         },
       };
     }
-
-    const result = db.prepare("DELETE FROM events WHERE id = ?").run(eventId);
-
-    if (result.changes === 0) {
-      return {
-        success: false,
-        error: {
-          code: "EVENT_NOT_FOUND",
-          message: `Event ${eventId} not found`,
-        },
-      };
-    }
+    db.prepare("DELETE FROM events WHERE id = ?").run(eventId);
 
     return {
       success: true,
       data: undefined,
     };
   } catch (error) {
+    console.error("Database error during event deletion:", error);
     return {
       success: false,
       error: {

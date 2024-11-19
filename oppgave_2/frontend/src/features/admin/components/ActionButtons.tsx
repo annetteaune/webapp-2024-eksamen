@@ -1,5 +1,5 @@
 import { FaPlus } from "react-icons/fa";
-import { TabType } from "../hooks/useAdminDash";
+import { TabType } from "../interfaces";
 
 interface ActionButtonsProps {
   activeTab: TabType;

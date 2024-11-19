@@ -22,6 +22,7 @@ type DbTemplate = {
   allow_waitlist: number;
   allow_same_day: number;
   created_at: string;
+  firm_price: number;
 };
 
 export const findAllTemplates = async (db: DB): Promise<Result<Template[]>> => {
@@ -37,6 +38,7 @@ export const findAllTemplates = async (db: DB): Promise<Result<Template[]>> => {
         is_private: Boolean(template.is_private),
         allow_waitlist: Boolean(template.allow_waitlist),
         allow_same_day: Boolean(template.allow_same_day),
+        firm_price: Boolean(template.firm_price),
       })
     );
 
@@ -80,6 +82,7 @@ export const findTemplateById = async (
       is_private: Boolean(template.is_private),
       allow_waitlist: Boolean(template.allow_waitlist),
       allow_same_day: Boolean(template.allow_same_day),
+      firm_price: Boolean(template.firm_price),
     });
 
     return {
@@ -110,15 +113,15 @@ export const createTemplate = async (
       created_at,
     });
 
-    db.prepare(
-      `
+    const stmt = db.prepare(`
       INSERT INTO templates (
         id, name, allowed_days, max_capacity, price,
-        is_private, allow_waitlist, allow_same_day, created_at, type_id
+        is_private, allow_waitlist, allow_same_day, created_at, type_id, firm_price
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `
-    ).run(
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    stmt.run(
       newTemplate.id,
       newTemplate.name,
       JSON.stringify(newTemplate.allowed_days),
@@ -128,7 +131,8 @@ export const createTemplate = async (
       newTemplate.allow_waitlist ? 1 : 0,
       newTemplate.allow_same_day ? 1 : 0,
       newTemplate.created_at,
-      newTemplate.type_id
+      newTemplate.type_id,
+      newTemplate.firm_price ? 1 : 0
     );
 
     return {
@@ -136,6 +140,7 @@ export const createTemplate = async (
       data: newTemplate,
     };
   } catch (error) {
+    console.error("Template creation error:", error);
     return {
       success: false,
       error: {
@@ -166,7 +171,7 @@ export const updateTemplate = async (
       `
       UPDATE templates 
       SET name = ?, allowed_days = ?, max_capacity = ?, price = ?,
-          is_private = ?, allow_waitlist = ?, allow_same_day = ?, type_id = ?
+          is_private = ?, allow_waitlist = ?, allow_same_day = ?, type_id = ?, firm_price = ?
       WHERE id = ?
     `
     ).run(
@@ -178,6 +183,7 @@ export const updateTemplate = async (
       updatedTemplate.allow_waitlist ? 1 : 0,
       updatedTemplate.allow_same_day ? 1 : 0,
       updatedTemplate.type_id,
+      updatedTemplate.firm_price,
       templateId
     );
 

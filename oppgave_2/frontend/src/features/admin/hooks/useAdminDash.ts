@@ -1,10 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { fetcher } from "@/api/fetcher";
-import { Template } from "../interfaces";
+import { TabType, Template } from "../interfaces";
 import { Event } from "@/features/events/interfaces";
-
-export type TabType = "templates" | "events";
 
 export const useAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>("events");
@@ -35,17 +33,20 @@ export const useAdminDashboard = () => {
   }, []);
 
   const deleteEvent = async (eventId: string) => {
-    const response = await fetcher(`/events/${eventId}`, {
-      method: "DELETE",
-    });
-    if (!response?.error) {
+    try {
+      const response = await fetcher(`/events/${eventId}`, {
+        method: "DELETE",
+      });
       setEvents(events.filter((event) => event.id !== eventId));
       return { success: true };
+    } catch (error) {
+      console.error("Error deleting event:", error);
+
+      return {
+        success: false,
+        message: "Det oppstod en uventet feil under sletting av arrangementet.",
+      };
     }
-    return {
-      success: false,
-      message: "Kunne ikke slette arrangementet.",
-    };
   };
 
   // claude.ai
@@ -88,7 +89,11 @@ export const useAdminDashboard = () => {
       allow_waitlist: formData.allowWaitlist,
       allow_same_day: formData.allowSameDay,
       type_id: formData.typeId,
+      firm_price: formData.firmPrice,
     };
+
+    console.log("Sending template data:", backendData);
+
     const response = await fetcher("/templates", {
       method: "POST",
       body: JSON.stringify(backendData),

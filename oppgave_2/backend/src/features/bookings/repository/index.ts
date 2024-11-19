@@ -26,6 +26,8 @@ type EventDetails = {
   capacity: number;
   template_id: string;
   status: string;
+  allow_waitlist: number;
+  template_allow_waitlist: number | null;
 };
 
 export const findAllBookings = async (db: DB): Promise<Result<Booking[]>> => {
@@ -103,26 +105,19 @@ const getEventDetails = (db: DB, eventId: string): EventDetails | undefined => {
   return db
     .prepare(
       `
-      SELECT e.price, e.capacity, e.template_id, e.status,
-             t.allow_waitlist
+      SELECT 
+        e.price, 
+        e.capacity, 
+        e.template_id, 
+        e.status,
+        e.allow_waitlist,
+        t.allow_waitlist as template_allow_waitlist
       FROM events e
-      JOIN templates t ON e.template_id = t.id
+      LEFT JOIN templates t ON e.template_id = t.id
       WHERE e.id = ?
     `
     )
     .get(eventId) as EventDetails;
-};
-
-const getTemplateDetails = (db: DB, templateId: string) => {
-  return db
-    .prepare(
-      `
-      SELECT allow_waitlist
-      FROM templates
-      WHERE id = ?
-    `
-    )
-    .get(templateId) as { allow_waitlist: number };
 };
 
 export const createBooking = async (
@@ -143,12 +138,12 @@ export const createBooking = async (
       };
     }
 
-    const templateDetails = getTemplateDetails(db, eventDetails.template_id);
-    const allowWaitlist = Boolean(templateDetails?.allow_waitlist);
+    const allowWaitlist = eventDetails.template_id
+      ? Boolean(eventDetails.template_allow_waitlist)
+      : Boolean(eventDetails.allow_waitlist);
 
     const currentBookings = getApprovedBookingsCount(db, booking.event_id);
     const hasCapacity = currentBookings < eventDetails.capacity;
-
     // har fått hjelp til å sette opp håndtering av venteliste av claude.ai
     let status: string;
     if (hasCapacity) {
@@ -164,14 +159,12 @@ export const createBooking = async (
         },
       };
     }
-
     const newBooking = {
       id,
       ...booking,
       has_paid: eventDetails.price === 0 && status === "Godkjent",
       status,
     };
-
     db.prepare(
       `
       INSERT INTO bookings (id, event_id, name, email, has_paid, status)
@@ -193,7 +186,6 @@ export const createBooking = async (
         booking.event_id
       );
     }
-
     return {
       success: true,
       data: bookingSchema.parse({
@@ -232,12 +224,10 @@ export const updateBooking = async (
         },
       };
     }
-
     const updatedBooking = {
       ...existingBooking,
       ...update,
     };
-
     db.prepare(
       `
       UPDATE bookings 
@@ -245,7 +235,6 @@ export const updateBooking = async (
       WHERE id = ?
     `
     ).run(update.status, update.has_paid ? 1 : 0, bookingId);
-
     return {
       success: true,
       data: bookingSchema.parse(updatedBooking),
@@ -269,7 +258,6 @@ export const deleteBooking = async (
     const result = db
       .prepare("DELETE FROM bookings WHERE id = ?")
       .run(bookingId);
-
     if (result.changes === 0) {
       return {
         success: false,
@@ -279,7 +267,6 @@ export const deleteBooking = async (
         },
       };
     }
-
     return {
       success: true,
       data: undefined,

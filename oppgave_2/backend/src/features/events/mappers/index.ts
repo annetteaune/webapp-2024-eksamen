@@ -1,4 +1,4 @@
-import { type Event } from "../repository";
+import { Event } from "../helpers";
 
 export const toEventResponse = (event: Event) => ({
   id: event.id,

@@ -6,11 +6,10 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
-  type CreateEvent,
-  type UpdateEvent,
 } from "../repository";
 import { toEventResponse, toEventsResponse } from "../mappers";
 import { type Result } from "@/types";
+import { CreateEvent, UpdateEvent } from "../helpers";
 
 type EventResponse = ReturnType<typeof toEventResponse>;
 type EventsResponse = ReturnType<typeof toEventsResponse>;
