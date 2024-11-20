@@ -138,3 +138,11 @@ export const formatDateForInput = (date: string) => {
     .toISOString()
     .slice(0, 16);
 };
+
+export const manualBookingSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Navn må være minst 2 tegn")
+    .regex(/^[a-zA-ZæøåÆØÅ\s-]+$/, "Navn kan kun inneholde bokstaver"),
+  email: z.string().email("Ugyldig e-postadresse"),
+});

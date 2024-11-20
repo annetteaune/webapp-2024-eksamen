@@ -29,6 +29,12 @@ type EventDetails = {
   allow_waitlist: string;
 };
 
+type DbEvent = {
+  id: string;
+  capacity: number;
+  status: string;
+};
+
 export const findAllBookings = async (db: DB): Promise<Result<Booking[]>> => {
   try {
     const bookings = db.prepare("SELECT * FROM bookings").all() as DbBooking[];
@@ -284,16 +290,19 @@ export const updateBooking = async (
   }
 };
 
+// claude.ai har skrevet store deler av denne koden
 export const deleteBooking = async (
   db: DB,
   bookingId: string
 ): Promise<Result<void>> => {
-  try {
-    const result = db
-      .prepare("DELETE FROM bookings WHERE id = ?")
-      .run(bookingId);
+  let transaction = false;
 
-    if (result.changes === 0) {
+  try {
+    const booking = db
+      .prepare("SELECT * FROM bookings WHERE id = ?")
+      .get(bookingId) as DbBooking | undefined;
+
+    if (!booking) {
       return {
         success: false,
         error: {
@@ -303,16 +312,60 @@ export const deleteBooking = async (
       };
     }
 
+    const event = db
+      .prepare("SELECT * FROM events WHERE id = ?")
+      .get(booking.event_id) as DbEvent;
+
+    db.prepare("BEGIN").run();
+    transaction = true;
+
+    const deleteResult = db
+      .prepare("DELETE FROM bookings WHERE id = ?")
+      .run(bookingId);
+
+    if (deleteResult.changes === 0) {
+      throw new Error("No booking was deleted");
+    }
+
+    const remainingBookings = db
+      .prepare(
+        "SELECT COUNT(*) as count FROM bookings WHERE event_id = ? AND status = 'Godkjent'"
+      )
+      .get(booking.event_id) as { count: number };
+
+    if (
+      event.status === "Fullbooket" &&
+      remainingBookings.count < event.capacity
+    ) {
+      db.prepare(
+        "UPDATE events SET status = 'Ledige plasser' WHERE id = ?"
+      ).run(booking.event_id);
+    }
+
+    db.prepare("COMMIT").run();
+    transaction = false;
+
     return {
       success: true,
       data: undefined,
     };
   } catch (error) {
+    console.error("Error in deleteBooking:", error);
+
+    if (transaction) {
+      try {
+        db.prepare("ROLLBACK").run();
+      } catch (rollbackError) {
+        console.error("Error during rollback:", rollbackError);
+      }
+    }
+
     return {
       success: false,
       error: {
         code: "BOOKING_DELETE_FAILED",
-        message: `Could not delete booking ${bookingId}`,
+        message:
+          error instanceof Error ? error.message : "Could not delete booking",
       },
     };
   }

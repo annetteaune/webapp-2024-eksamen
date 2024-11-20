@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "../styles/main.css";
+import React from "react";
+import Footer from "@/components/Footer";
+import Nav from "@/components/Nav";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,7 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Del 2",
+  title: "Arrangementer",
   description: "Arrangement med booking",
   icons: {
     icon: "/favicon.ico",
@@ -36,6 +39,3 @@ export default function RootLayout({
     </html>
   );
 }
-import React from "react";
-import Footer from "@/components/Footer";
-import Nav from "@/components/Nav";

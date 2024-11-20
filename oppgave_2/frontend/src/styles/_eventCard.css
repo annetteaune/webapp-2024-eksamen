@@ -12,7 +12,7 @@
   transition: all 0.2s ease;
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    box-shadow: var(--shadow-y);
   }
   .card-header {
     display: flex;
@@ -24,6 +24,8 @@
       font-size: 1.25rem;
       font-weight: 600;
       color: var(--font-normal);
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
     }
     .card-type {
       font-size: 0.875rem;

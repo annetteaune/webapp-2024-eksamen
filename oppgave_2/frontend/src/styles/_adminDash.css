@@ -71,7 +71,7 @@
         box-shadow: var(--shadow-sm);
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+          box-shadow: var(--shadow-y);
         }
         .event-info {
           flex: 1;
@@ -141,7 +141,7 @@
         box-shadow: var(--shadow-sm);
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+          box-shadow: var(--shadow-y);
         }
         .template-info {
           h4 {
@@ -204,22 +204,7 @@
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-      .close-btn {
-        position: absolute;
-        top: 1.25rem;
-        right: 1.25rem;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.25rem;
-        color: var(--font-normal);
-        padding: 0.5rem;
-        border-radius: 4px;
-        transition: all 0.2s ease;
-        &:hover {
-          background-color: var(--accentcolor);
-        }
-      }
+
       h3 {
         font-size: 1.5rem;
         font-weight: 600;

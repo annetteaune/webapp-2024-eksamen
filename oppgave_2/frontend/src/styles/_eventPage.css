@@ -2,16 +2,7 @@
   max-width: 800px;
   margin: 2rem auto;
   padding: 0 1rem;
-  .back-link {
-    display: inline-block;
-    margin-bottom: 2rem;
-    color: var(--btn);
-    text-decoration: none;
-    transition: color 0.2s ease;
-    &:hover {
-      color: var(--btn-hover);
-    }
-  }
+
   .event-header {
     margin-bottom: 2rem;
     .event-meta {

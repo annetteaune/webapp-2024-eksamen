@@ -118,17 +118,42 @@ app.patch("/:bookingId", async (c) => {
 });
 
 app.delete("/:bookingId", async (c) => {
-  const bookingId = c.req.param("bookingId");
-  const result = await removeBooking(db, bookingId);
-
-  if (!result.success) {
+  try {
+    const bookingId = c.req.param("bookingId");
+    if (!bookingId) {
+      return c.json(
+        {
+          error: {
+            code: "INVALID_ID",
+            message: "Invalid booking ID",
+          },
+        },
+        { status: 400 }
+      );
+    }
+    const result = await removeBooking(db, bookingId);
+    if (!result.success) {
+      const statusCode =
+        result.error.code === "BOOKING_NOT_FOUND"
+          ? 404
+          : result.error.code === "INVALID_ID"
+          ? 400
+          : 500;
+      return c.json({ error: result.error }, { status: statusCode });
+    }
+    return c.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Unexpected error in delete booking endpoint:", error);
     return c.json(
-      { error: result.error },
-      { status: result.error.code === "BOOKING_NOT_FOUND" ? 404 : 500 }
+      {
+        error: {
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred while deleting the booking",
+        },
+      },
+      { status: 500 }
     );
   }
-
-  return c.json(null, { status: 204 });
 });
 
 export default app;

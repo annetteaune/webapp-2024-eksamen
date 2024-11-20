@@ -1,10 +1,13 @@
-export default function Admin() {
+import BookingsAdminPage from "@/features/admin/components/BookingsAdminPage";
+
+type Params = {
+  slug: string;
+};
+
+export default function BookingsAdmin({ params }: { params: Params }) {
   return (
     <>
-      <h2>
-        her kan admin kontrollere og se påmeldinger til det spesifgike
-        arrangementet
-      </h2>
+      <BookingsAdminPage params={params} />
     </>
   );
 }
