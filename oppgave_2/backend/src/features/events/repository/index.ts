@@ -226,15 +226,14 @@ export const createEvent = async (
         allowSameDay = Boolean(template.allow_same_day);
       }
     }
-
-    const newEvent = eventSchema.parse({
+    const newEvent = {
       id,
       ...event,
       status: "Ledige plasser",
       is_private: isPrivate,
       allow_same_day: allowSameDay,
       waitlist: null,
-    });
+    };
 
     db.prepare(
       `
@@ -263,9 +262,18 @@ export const createEvent = async (
       newEvent.waitlist ? JSON.stringify(newEvent.waitlist) : null
     );
 
+    // konverterer tilbake til camelCase from frontend
     return {
       success: true,
-      data: newEvent,
+      data: {
+        ...newEvent,
+        descriptionShort: newEvent.description_short,
+        descriptionLong: newEvent.description_long,
+        typeId: newEvent.type_id,
+        templateId: newEvent.template_id,
+        isPrivate: Boolean(newEvent.is_private),
+        allowSameDay: Boolean(newEvent.allow_same_day),
+      } as unknown as Event,
     };
   } catch (error) {
     return {
@@ -353,9 +361,7 @@ export const deleteEvent = async (
         },
       };
     }
-
     const result = db.prepare("DELETE FROM events WHERE id = ?").run(eventId);
-
     if (result.changes === 0) {
       return {
         success: false,
@@ -365,7 +371,6 @@ export const deleteEvent = async (
         },
       };
     }
-
     return {
       success: true,
       data: undefined,

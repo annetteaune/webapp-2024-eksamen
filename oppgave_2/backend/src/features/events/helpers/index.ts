@@ -30,6 +30,7 @@ export const createEventSchema = eventSchema.omit({
   id: true,
   status: true,
   waitlist: true,
+  type_name: true,
 });
 
 export const updateEventSchema = eventSchema.partial().omit({

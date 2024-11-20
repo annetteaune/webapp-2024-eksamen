@@ -33,10 +33,32 @@ const AdminDashboard = () => {
     eventData: Omit<Event, "id" | "status" | "waitlist">
   ) => {
     try {
+      const backendData = {
+        slug: eventData.slug,
+        title: eventData.title,
+        description_short: eventData.descriptionShort,
+        description_long: eventData.descriptionLong,
+        date: new Date(eventData.date).toISOString(),
+        location: eventData.location,
+        type_id: eventData.type.id,
+        capacity: Number(eventData.capacity),
+        price: Number(eventData.price),
+        template_id: eventData.templateId || null,
+        is_private: Boolean(eventData.isPrivate),
+        allow_same_day: Boolean(eventData.allowSameDay),
+        allow_waitlist: Boolean(eventData.allowWaitlist),
+      };
+
+      console.log("Sending to backend:", backendData);
       const response = await fetcher("/events", {
         method: "POST",
-        body: JSON.stringify(eventData),
+        body: JSON.stringify(backendData),
       });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
       window.location.reload();
       return response;
     } catch (error) {
