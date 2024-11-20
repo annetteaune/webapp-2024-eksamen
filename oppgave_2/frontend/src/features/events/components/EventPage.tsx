@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import BookingForm from "@/features/bookings/components/BookingForm";
 import { getEvent } from "@/features/events/hooks/useEvent";
 import { getBookingCounts, getTemplateDetails } from "../helpers";
+import { FaRegEyeSlash, FaExclamationCircle } from "react-icons/fa";
 
 interface EventPageProps {
   slug: string;
@@ -77,6 +78,7 @@ export default async function EventPage({ slug }: EventPageProps) {
 
           {event.price > 0 && (
             <p className="payment-info">
+              <FaExclamationCircle />
               Påmeldingen din godkjennes av en administrator etter betaling er
               mottatt.
             </p>
@@ -84,8 +86,17 @@ export default async function EventPage({ slug }: EventPageProps) {
 
           {showWaitlistInfo && (
             <p className="waitlist-info">
+              <FaExclamationCircle />
               Dette arrangementet har venteliste. Ved avbestillinger vil de på
               ventelisten få tilbud om plass i den rekkefølgen de meldte seg på.
+            </p>
+          )}
+
+          {event.isPrivate && (
+            <p className="waitlist-info">
+              <FaRegEyeSlash />
+              Dette arrangementet er privat, og er kun tilgjengelig for de med
+              direkte tilgang til linken.
             </p>
           )}
         </div>
