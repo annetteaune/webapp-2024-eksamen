@@ -38,12 +38,13 @@ export const useEventForm = ({
     allowSameDay: initialData?.allowSameDay ?? true,
   });
 
-  // claude.ai - hele resten av koden
+  // claude.ai - hele resten av koden i større eller mindre grad
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [types, setTypes] = useState<Type[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [existingEvents, setExistingEvents] = useState<Event[]>([]);
   const [minDate, setMinDate] = useState<string>("");
   const [maxDate, setMaxDate] = useState<string>("");
 
@@ -57,18 +58,23 @@ export const useEventForm = ({
 
     const fetchData = async () => {
       try {
-        const [typesResponse, templatesResponse] = await Promise.all([
-          fetcher<TypesResponse>("/types"),
-          fetcher<{ templates: Template[] }>("/templates"),
-        ]);
+        const [typesResponse, templatesResponse, eventsResponse] =
+          await Promise.all([
+            fetcher<TypesResponse>("/types"),
+            fetcher<{ templates: Template[] }>("/templates"),
+            fetcher<{ events: Event[] }>("/events?includePrivate=true"),
+          ]);
         setTypes(typesResponse.types);
         setTemplates(templatesResponse.templates);
+        setExistingEvents(
+          eventsResponse.events.filter((e) => e.id !== initialData?.id)
+        );
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [initialData?.id]);
 
   const isAllowedDay = (date: string, allowedDays: string[]): boolean => {
     if (!date || !allowedDays?.length) return true;
@@ -88,84 +94,62 @@ export const useEventForm = ({
     return allowedDays.includes(dayName);
   };
 
+  const checkDateConflicts = (selectedDate: string): boolean => {
+    if (!selectedDate) return false;
+
+    const dateToCheck = new Date(selectedDate).toISOString().split("T")[0];
+    const conflictingEvent = existingEvents.find((event) => {
+      const eventDate = new Date(event.date).toISOString().split("T")[0];
+      return eventDate === dateToCheck && !event.allowSameDay;
+    });
+
+    return !!conflictingEvent;
+  };
+
   const handleDateChange = async (value: string) => {
     setErrors((prev) => ({ ...prev, date: "" }));
+
+    if (!value) {
+      handleInputChange("date", "");
+      return;
+    }
 
     const selectedTemplate = templates.find(
       (t) => t.id === formData.templateId
     );
+
     if (
       selectedTemplate &&
       !isAllowedDay(value, selectedTemplate.allowedDays)
     ) {
       setErrors((prev) => ({
         ...prev,
-        date: `Velg en tillatt dag`,
+        date: `Velg en tillatt dag: ${selectedTemplate.allowedDays.join(", ")}`,
       }));
       return;
     }
 
-    if (value) {
-      try {
-        const selectedDate = new Date(value).toISOString().split("T")[0];
-        const response = await fetcher<{ events: Event[] }>(
-          "/events?includePrivate=true"
-        );
-        const events = response.events.filter((e) => e.id !== initialData?.id);
-
-        const conflictingEvent = events.find((event) => {
-          const eventDate = new Date(event.date).toISOString().split("T")[0];
-          return eventDate === selectedDate && !event.allowSameDay;
-        });
-
-        if (conflictingEvent && !formData.allowSameDay) {
-          setErrors((prev) => ({
-            ...prev,
-            date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
-          }));
-          return;
-        }
-      } catch (error) {
-        console.error("Error checking date availability:", error);
-        setErrors((prev) => ({
-          ...prev,
-          date: "Kunne ikke sjekke dato-tilgjengelighet",
-        }));
-        return;
-      }
+    const hasConflict = checkDateConflicts(value);
+    if (hasConflict && (!formData.allowSameDay || !initialData?.allowSameDay)) {
+      setErrors((prev) => ({
+        ...prev,
+        date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
+      }));
+      return;
     }
+
     handleInputChange("date", value);
   };
 
-  const handleAllowSameDayChange = async (checked: boolean) => {
+  const handleAllowSameDayChange = (checked: boolean) => {
     handleInputChange("allowSameDay", checked);
 
     if (!checked && formData.date) {
-      try {
-        const selectedDate = new Date(formData.date)
-          .toISOString()
-          .split("T")[0];
-        const response = await fetcher<{ events: Event[] }>(
-          "/events?includePrivate=true"
-        );
-        const events = response.events.filter((e) => e.id !== initialData?.id);
-
-        const conflictingEvent = events.find((event) => {
-          const eventDate = new Date(event.date).toISOString().split("T")[0];
-          return eventDate === selectedDate && !event.allowSameDay;
-        });
-
-        if (conflictingEvent) {
-          setErrors((prev) => ({
-            ...prev,
-            date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
-          }));
-        }
-      } catch (error) {
-        console.error("Error checking date availability:", error);
+      const hasConflict = checkDateConflicts(formData.date);
+      if (hasConflict) {
         setErrors((prev) => ({
           ...prev,
-          date: "Kunne ikke sjekke dato-tilgjengelighet",
+          date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
         }));
       }
     }

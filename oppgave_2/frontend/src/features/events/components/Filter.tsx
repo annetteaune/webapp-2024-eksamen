@@ -123,7 +123,7 @@ export default function Filter() {
         ))}
       </select>
 
-      <button onClick={resetFilters} className="filter-reset-btn">
+      <button onClick={resetFilters} className="btn primary-btn">
         Nullstill filtre
       </button>
     </div>

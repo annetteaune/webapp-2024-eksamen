@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { IoPeopleCircleOutline } from "react-icons/io5";
 
 export default function Nav() {
   const router = useRouter();
@@ -15,7 +16,9 @@ export default function Nav() {
   return (
     <header>
       <Link href="/" onClick={handleLogoClick}>
-        <h1>LOGO</h1>
+        <h1 className="logo">
+          <IoPeopleCircleOutline />
+        </h1>
       </Link>
       <nav>
         <ul>

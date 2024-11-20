@@ -2,16 +2,18 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 0.7rem;
   background-color: var(--backgroundcolor);
   border-bottom: 1px solid var(--border);
   margin-bottom: 2rem;
   a {
     text-decoration: none;
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--font-normal);
+    .logo {
+      font-size: 3rem;
+      color: var(--btn);
+      &:hover {
+        color: var(--btn-hover);
+      }
     }
   }
 
@@ -19,7 +21,6 @@ header {
     ul {
       display: flex;
       gap: 1rem;
-
       li {
         a {
           padding: 0.75rem 1rem;
@@ -27,7 +28,6 @@ header {
           text-decoration: none;
           border-radius: 6px;
           transition: all 0.2s ease;
-
           &:hover {
             text-decoration: underline;
           }
