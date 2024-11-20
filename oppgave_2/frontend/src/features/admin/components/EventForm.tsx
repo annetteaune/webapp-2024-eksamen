@@ -57,20 +57,6 @@ export default function EventForm({
           </div>
 
           <div className="form-group">
-            <label>URL-slug</label>
-            <input
-              type="text"
-              value={formData.slug}
-              onChange={(e) => handleInputChange("slug", e.target.value)}
-              className={errors.slug ? "error" : ""}
-              disabled={isSubmitting}
-            />
-            {errors.slug && (
-              <span className="error-message">{errors.slug}</span>
-            )}
-          </div>
-
-          <div className="form-group">
             <label>Tittel</label>
             <input
               type="text"

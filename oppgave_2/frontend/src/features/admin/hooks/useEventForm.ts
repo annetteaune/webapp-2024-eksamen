@@ -9,6 +9,7 @@ import {
   validateForm,
   formatDateForInput,
 } from "../helpers/validate";
+import { generateUniqueSlug } from "@/features/events/helpers/generateUniqueSlug";
 
 interface UseEventFormProps {
   onSubmit: (data: Omit<Event, "id" | "status" | "waitlist">) => Promise<void>;
@@ -196,6 +197,8 @@ export const useEventForm = ({
     try {
       setIsSubmitting(true);
 
+      const slug = await generateUniqueSlug(formData.title, formData.date);
+
       if (!formData.allowSameDay && formData.date) {
         const selectedDate = new Date(formData.date)
           .toISOString()
@@ -219,8 +222,8 @@ export const useEventForm = ({
 
       const { templateId, ...requiredFields } = formData;
       const finalSubmissionData = templateId
-        ? { ...requiredFields, templateId }
-        : requiredFields;
+        ? { ...requiredFields, templateId, slug }
+        : { ...requiredFields, slug };
 
       const submitSchema = templateId
         ? eventFormSchema
