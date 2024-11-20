@@ -27,9 +27,24 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
   const [template, setTemplate] = useState<Template | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
 
+  const createDefaultTemplate = (): Template => ({
+    id: "default",
+    name: "Default Template",
+    allowedDays: [],
+    maxCapacity: event?.capacity || 0,
+    price: event?.price || 0,
+    isPrivate: event?.isPrivate || false,
+    allowWaitlist: event?.allowWaitlist || false,
+    allowSameDay: event?.allowSameDay || true,
+    fixedPrice: false,
+    createdAt: new Date().toISOString(),
+    typeId: event?.type.id || "",
+  });
+
   const { createBooking } = useBookings();
-  const bookingHandler =
-    event && template ? useBookingHandler(event, template, bookings) : null;
+  const bookingHandler = event
+    ? useBookingHandler(event, template || createDefaultTemplate(), bookings)
+    : null;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,11 +54,16 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
           throw new Error("Event not found");
         }
         setEvent(eventData);
+
         try {
+          // Only fetch template if we have a templateId
           const [templateData, bookingsResponse] = await Promise.all([
-            fetcher<Template>(`/templates/${eventData.templateId}`),
+            eventData.templateId
+              ? fetcher<Template>(`/templates/${eventData.templateId}`)
+              : Promise.resolve(null),
             fetcher<{ bookings: Booking[] }>(`/bookings/${eventSlug}`),
           ]);
+
           setTemplate(templateData);
           setBookings(
             bookingsResponse?.bookings

@@ -11,7 +11,7 @@ import { Template } from "@/features/admin/interfaces";
 // har fått hjelp av claude.ai til store deler av denne hooken
 export const useBookingHandler = (
   event: Event,
-  template: Template,
+  template: Template | null,
   existingBookings: Booking[] = []
 ) => {
   const getBookingsCount = () =>
@@ -22,11 +22,6 @@ export const useBookingHandler = (
         ).length
       : 0;
 
-  const getWaitlistCount = () =>
-    Array.isArray(existingBookings)
-      ? existingBookings.filter((booking) => booking.status === "På venteliste")
-          .length
-      : 0;
   const getApprovedBookingsCount = () =>
     existingBookings.filter((booking) => booking.status === "Godkjent").length;
 
@@ -62,7 +57,10 @@ export const useBookingHandler = (
       };
     }
 
-    if (template.allowWaitlist) {
+    // Use event's allowWaitlist if no template exists
+    const allowWaitlist = template?.allowWaitlist ?? event.allowWaitlist;
+
+    if (allowWaitlist) {
       return {
         canBook: true,
         availableSpots: 0,
@@ -89,6 +87,16 @@ export const useBookingHandler = (
   > => {
     try {
       const validated = bookingDataSchema.parse(data);
+      const status = getBookingStatus(1);
+
+      // Ensure we can actually accept this booking
+      if (!status.canBook && !status.mustUseWaitlist) {
+        return {
+          success: false,
+          error: "Ingen ledige plasser",
+        };
+      }
+
       return { success: true, data: validated };
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -110,6 +118,5 @@ export const useBookingHandler = (
     getAvailableSpots,
     calculateTotalPrice,
     getBookingsCount,
-    getWaitlistCount,
   };
 };

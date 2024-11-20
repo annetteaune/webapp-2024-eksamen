@@ -234,7 +234,7 @@ export default function EventForm({
                   onChange={(e) =>
                     handleInputChange("allowWaitlist", e.target.checked)
                   }
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || Boolean(formData.templateId)}
                 />
                 Tillat venteliste
               </label>

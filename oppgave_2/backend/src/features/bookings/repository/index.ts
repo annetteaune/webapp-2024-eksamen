@@ -26,6 +26,7 @@ type EventDetails = {
   capacity: number;
   template_id: string;
   status: string;
+  allow_waitlist: string;
 };
 
 export const findAllBookings = async (db: DB): Promise<Result<Booking[]>> => {
@@ -125,13 +126,23 @@ const getTemplateDetails = (db: DB, templateId: string) => {
     .get(templateId) as { allow_waitlist: number };
 };
 
+// claude.ai har skrevet store deler av denne koden
 export const createBooking = async (
   db: DB,
   booking: CreateBooking
 ): Promise<Result<Booking>> => {
   try {
     const id = generateUUID();
-    const eventDetails = getEventDetails(db, booking.event_id);
+    const eventDetails = db
+      .prepare(
+        `
+      SELECT e.*, t.allow_waitlist as template_allow_waitlist 
+      FROM events e 
+      LEFT JOIN templates t ON e.template_id = t.id 
+      WHERE e.id = ?
+    `
+      )
+      .get(booking.event_id) as any;
 
     if (!eventDetails) {
       return {
@@ -143,13 +154,22 @@ export const createBooking = async (
       };
     }
 
-    const templateDetails = getTemplateDetails(db, eventDetails.template_id);
-    const allowWaitlist = Boolean(templateDetails?.allow_waitlist);
+    const currentBookings = db
+      .prepare(
+        `
+      SELECT COUNT(*) as count 
+      FROM bookings 
+      WHERE event_id = ? AND status IN ('Godkjent', 'Til behandling')
+    `
+      )
+      .get(booking.event_id) as { count: number };
 
-    const currentBookings = getApprovedBookingsCount(db, booking.event_id);
-    const hasCapacity = currentBookings < eventDetails.capacity;
+    const hasCapacity = currentBookings.count < eventDetails.capacity;
 
-    // har fått hjelp til å sette opp håndtering av venteliste av claude.ai
+    const allowWaitlist = eventDetails.template_id
+      ? Boolean(eventDetails.template_allow_waitlist)
+      : Boolean(eventDetails.allow_waitlist);
+
     let status: string;
     if (hasCapacity) {
       status = eventDetails.price === 0 ? "Godkjent" : "Til behandling";
@@ -167,8 +187,10 @@ export const createBooking = async (
 
     const newBooking = {
       id,
-      ...booking,
-      has_paid: eventDetails.price === 0 && status === "Godkjent",
+      event_id: booking.event_id,
+      name: booking.name,
+      email: booking.email,
+      has_paid: eventDetails.price === 0 && status === "Godkjent" ? 1 : 0,
       status,
     };
 
@@ -182,12 +204,13 @@ export const createBooking = async (
       newBooking.event_id,
       newBooking.name,
       newBooking.email,
-      newBooking.has_paid ? 1 : 0,
+      newBooking.has_paid,
       newBooking.status
     );
+
     if (
       status === "Godkjent" &&
-      currentBookings + 1 === eventDetails.capacity
+      currentBookings.count + 1 === eventDetails.capacity
     ) {
       db.prepare(`UPDATE events SET status = 'Fullbooket' WHERE id = ?`).run(
         booking.event_id
@@ -196,10 +219,10 @@ export const createBooking = async (
 
     return {
       success: true,
-      data: bookingSchema.parse({
+      data: {
         ...newBooking,
         has_paid: Boolean(newBooking.has_paid),
-      }),
+      } as Booking,
     };
   } catch (error) {
     console.error("Booking creation error:", error);

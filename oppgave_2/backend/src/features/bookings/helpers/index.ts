@@ -9,10 +9,10 @@ export const bookingSchema = z.object({
   status: z.enum(["Godkjent", "Til behandling", "På venteliste", "Avslått"]),
 });
 
-export const createBookingSchema = bookingSchema.omit({
-  id: true,
-  has_paid: true,
-  status: true,
+export const createBookingSchema = z.object({
+  event_id: z.string().min(1),
+  name: z.string().min(1),
+  email: z.string().email(),
 });
 
 export const updateBookingSchema = z.object({

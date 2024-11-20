@@ -43,10 +43,10 @@ const AdminDashboard = () => {
         type_id: eventData.type.id,
         capacity: Number(eventData.capacity),
         price: Number(eventData.price),
-        template_id: eventData.templateId || null,
         is_private: Boolean(eventData.isPrivate),
         allow_same_day: Boolean(eventData.allowSameDay),
         allow_waitlist: Boolean(eventData.allowWaitlist),
+        ...(eventData.templateId && { template_id: eventData.templateId }),
       };
 
       console.log("Sending to backend:", backendData);

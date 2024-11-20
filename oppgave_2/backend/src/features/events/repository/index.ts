@@ -24,11 +24,12 @@ type DbEvent = {
   type_name: string;
   capacity: number;
   price: number;
-  template_id: string;
+  template_id: string | null;
   status: string;
   is_private: number;
   allow_same_day: number;
   waitlist: string | null;
+  allow_waitlist: string;
 };
 
 // har fått hjelp av claude.ai til å skrive queries for filtrering
@@ -80,18 +81,25 @@ export const findAllEvents = async (
 
     const events = db.prepare(query).all(...queryParams) as DbEvent[];
 
-    const validatedEvents = events.map((event) =>
-      eventSchema.parse({
-        ...event,
-        is_private: Boolean(event.is_private),
-        allow_same_day: Boolean(event.allow_same_day),
-        waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
-        type: {
-          id: event.type_id,
-          name: event.type_name,
-        },
-      })
-    );
+    const validatedEvents = events.map((event) => {
+      try {
+        return eventSchema.parse({
+          ...event,
+          is_private: Boolean(event.is_private),
+          allow_same_day: Boolean(event.allow_same_day),
+          allow_waitlist: Boolean(event.allow_waitlist),
+          waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
+          template_id: event.template_id || null,
+          type: {
+            id: event.type_id,
+            name: event.type_name,
+          },
+        });
+      } catch (error) {
+        console.error("Validation error for event:", event.id, error);
+        throw error;
+      }
+    });
 
     return {
       success: true,
@@ -149,6 +157,7 @@ export const findEventById = async (
   }
 };
 
+// fått hjelp av claude.ai til å håndtere venteliste
 export const findEventBySlug = async (
   db: DB,
   slug: string
@@ -179,6 +188,7 @@ export const findEventBySlug = async (
       ...event,
       is_private: Boolean(event.is_private),
       allow_same_day: Boolean(event.allow_same_day),
+      allow_waitlist: Boolean(event.allow_waitlist),
       waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
       type: {
         id: event.type_id,
@@ -211,27 +221,31 @@ export const createEvent = async (
 
     let isPrivate = event.is_private;
     let allowSameDay = event.allow_same_day;
+    let allowWaitlist = event.allow_waitlist || false;
 
     if (event.template_id) {
       const template = db
         .prepare(
-          "SELECT is_private, allow_same_day FROM templates WHERE id = ?"
+          "SELECT is_private, allow_same_day, allow_waitlist FROM templates WHERE id = ?"
         )
         .get(event.template_id) as
-        | { is_private: number; allow_same_day: number }
+        | { is_private: number; allow_same_day: number; allow_waitlist: number }
         | undefined;
 
       if (template) {
         isPrivate = Boolean(template.is_private);
         allowSameDay = Boolean(template.allow_same_day);
+        allowWaitlist = Boolean(template.allow_waitlist);
       }
     }
+
     const newEvent = {
       id,
       ...event,
       status: "Ledige plasser",
       is_private: isPrivate,
       allow_same_day: allowSameDay,
+      allow_waitlist: allowWaitlist,
       waitlist: null,
     };
 
@@ -240,9 +254,9 @@ export const createEvent = async (
       INSERT INTO events (
         id, slug, title, description_short, description_long,
         date, location, type_id, capacity, price,
-        template_id, status, is_private, allow_same_day, waitlist
+        template_id, status, is_private, allow_same_day, allow_waitlist, waitlist
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
     ).run(
       newEvent.id,
@@ -259,23 +273,22 @@ export const createEvent = async (
       newEvent.status,
       newEvent.is_private ? 1 : 0,
       newEvent.allow_same_day ? 1 : 0,
+      newEvent.allow_waitlist ? 1 : 0,
       newEvent.waitlist ? JSON.stringify(newEvent.waitlist) : null
     );
 
-    // konverterer tilbake til camelCase from frontend
     return {
       success: true,
       data: {
         ...newEvent,
-        descriptionShort: newEvent.description_short,
-        descriptionLong: newEvent.description_long,
-        typeId: newEvent.type_id,
-        templateId: newEvent.template_id,
-        isPrivate: Boolean(newEvent.is_private),
-        allowSameDay: Boolean(newEvent.allow_same_day),
+        type: {
+          id: newEvent.type_id,
+          name: "", // Will be filled in by the service layer
+        },
       } as unknown as Event,
     };
   } catch (error) {
+    console.error("Event creation error:", error);
     return {
       success: false,
       error: {

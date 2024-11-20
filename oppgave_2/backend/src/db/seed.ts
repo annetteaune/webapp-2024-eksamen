@@ -19,11 +19,11 @@ export const seed = async (db: DB) => {
 
     const insertTemplate = db.prepare(`
       INSERT INTO templates (
-    id, name, allowed_days, max_capacity, price,
-    is_private, allow_waitlist, allow_same_day, fixed_price, created_at, type_id
-     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`);
+        id, name, allowed_days, max_capacity, price,
+        is_private, allow_waitlist, allow_same_day, fixed_price, created_at, type_id
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
 
     data.templates.forEach((template: any) => {
       insertTemplate.run(
@@ -45,9 +45,9 @@ export const seed = async (db: DB) => {
       INSERT INTO events (
         id, slug, title, description_short, description_long,
         date, location, type_id, capacity, price,
-        template_id, status, is_private, allow_same_day, waitlist
+        template_id, status, is_private, allow_same_day, allow_waitlist, waitlist
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     data.events.forEach((event: any) => {
@@ -66,6 +66,7 @@ export const seed = async (db: DB) => {
         event.status,
         event.is_private ? 1 : 0,
         event.allow_same_day ? 1 : 0,
+        event.allow_waitlist ? 1 : 0,
         event.waitlist ? JSON.stringify(event.waitlist) : null
       );
     });

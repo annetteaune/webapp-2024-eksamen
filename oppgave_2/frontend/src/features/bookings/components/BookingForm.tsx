@@ -18,7 +18,6 @@ export default function BookingForm({
     submitError,
     submitSuccess,
     event,
-    template,
     bookingHandler,
     addAttendee,
     removeAttendee,
@@ -27,18 +26,24 @@ export default function BookingForm({
     resetForm,
   } = useBookingForm({ eventId, eventSlug });
 
-  if (!event || !template || !bookingHandler) {
+  if (!event) {
     return <div>Laster inn...</div>;
   }
-
-  const bookingStatus = bookingHandler.getBookingStatus(attendees.length);
-
-  if (!bookingStatus.canBook && !template.allowWaitlist) {
+  const bookingStatus = bookingHandler
+    ? bookingHandler.getBookingStatus(attendees.length)
+    : {
+        canBook: true,
+        availableSpots: event.capacity,
+        mustUseWaitlist: false,
+        message:
+          event.price > 0 ? `Pris: ${event.price} kr` : "Gratis arrangement",
+        totalPrice: event.price * attendees.length,
+      };
+  if (!bookingStatus.canBook && !event.allowWaitlist) {
     return (
       <div className="booking-closed">Det er ingen ledige plasser igjen.</div>
     );
   }
-
   if (submitSuccess) {
     return (
       <div className="booking-success">
@@ -59,10 +64,8 @@ export default function BookingForm({
           ? "Påmelding til venteliste"
           : "Påmeldingsskjema"}
       </h2>
-
       <form onSubmit={handleSubmit} className="booking-form">
         {submitError && <div className="error-message">{submitError}</div>}
-
         <div className="attendees-section">
           {attendees.map((attendee, index) => (
             <div key={index} className="attendee-form">
@@ -120,12 +123,10 @@ export default function BookingForm({
             )}
           {event.price > 0 && (
             <div className="price-info">
-              Total pris: {bookingHandler.calculateTotalPrice(attendees.length)}{" "}
-              kr
+              Total pris: {bookingStatus.totalPrice} kr
             </div>
           )}
         </div>
-
         <button
           type="submit"
           className="submit-btn btn"
