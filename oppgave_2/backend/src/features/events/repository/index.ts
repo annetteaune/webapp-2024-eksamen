@@ -110,7 +110,7 @@ export const findAllEvents = async (
       success: false,
       error: {
         code: "EVENTS_NOT_FOUND",
-        message: "Could not fetch events",
+        message: "Kunne ikke hente arrangementer",
       },
     };
   }
@@ -130,7 +130,7 @@ export const findEventById = async (
         success: false,
         error: {
           code: "EVENT_NOT_FOUND",
-          message: `Event ${eventId} not found`,
+          message: `Arrangement ${eventId} kunne ikke finnes`,
         },
       };
     }
@@ -151,7 +151,7 @@ export const findEventById = async (
       success: false,
       error: {
         code: "EVENT_FETCH_FAILED",
-        message: `Could not fetch event ${eventId}`,
+        message: `Kunne ikke hente ${eventId}`,
       },
     };
   }
@@ -179,7 +179,7 @@ export const findEventBySlug = async (
         success: false,
         error: {
           code: "EVENT_NOT_FOUND",
-          message: `Event with slug ${slug} not found`,
+          message: `Arrangement med slug ${slug} ikke funnet`,
         },
       };
     }
@@ -206,7 +206,7 @@ export const findEventBySlug = async (
       success: false,
       error: {
         code: "EVENT_FETCH_FAILED",
-        message: `Could not fetch event with slug ${slug}`,
+        message: `Kunne ikke hente arrangement med slug ${slug}`,
       },
     };
   }
@@ -283,7 +283,7 @@ export const createEvent = async (
         ...newEvent,
         type: {
           id: newEvent.type_id,
-          name: "", // Will be filled in by the service layer
+          name: "",
         },
       } as unknown as Event,
     };
@@ -293,7 +293,7 @@ export const createEvent = async (
       success: false,
       error: {
         code: "EVENT_CREATE_FAILED",
-        message: "Could not create event",
+        message: "Kunne ikke opprette arrangement",
       },
     };
   }
@@ -349,7 +349,7 @@ export const updateEvent = async (
       success: false,
       error: {
         code: "EVENT_UPDATE_FAILED",
-        message: `Could not update event ${eventId}`,
+        message: `Kunne ikke oppdatere arrangement ${eventId}`,
       },
     };
   }
@@ -360,7 +360,6 @@ export const deleteEvent = async (
   eventId: string
 ): Promise<Result<void>> => {
   try {
-    // hvis bookings for eventet
     const bookings = db
       .prepare("SELECT COUNT(*) as count FROM bookings WHERE event_id = ?")
       .get(eventId) as { count: number };
@@ -370,31 +369,28 @@ export const deleteEvent = async (
         success: false,
         error: {
           code: "EVENT_HAS_BOOKINGS",
-          message: "Cannot delete event that has bookings",
+          message: "Kan ikke slette arrangementer som har påmeldinger.",
         },
       };
     }
     const result = db.prepare("DELETE FROM events WHERE id = ?").run(eventId);
+
     if (result.changes === 0) {
       return {
         success: false,
         error: {
           code: "EVENT_NOT_FOUND",
-          message: `Event ${eventId} not found`,
+          message: `Arrangement ${eventId} ikke funnet.`,
         },
       };
     }
+
     return {
       success: true,
       data: undefined,
     };
   } catch (error) {
-    return {
-      success: false,
-      error: {
-        code: "EVENT_DELETE_FAILED",
-        message: `Could not delete event ${eventId}`,
-      },
-    };
+    console.error("Error in deleteEvent:", error);
+    throw error;
   }
 };

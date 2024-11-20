@@ -108,5 +108,17 @@ export const removeEvent = async (
   db: DB,
   eventId: string
 ): Promise<Result<void>> => {
-  return await deleteEvent(db, eventId);
+  try {
+    const result = await deleteEvent(db, eventId);
+    return result;
+  } catch (error) {
+    console.error("Error in removeEvent:", error);
+    return {
+      success: false,
+      error: {
+        code: "EVENT_DELETE_FAILED",
+        message: `Kunne ikke slette arrangementet ${eventId}`,
+      },
+    };
+  }
 };

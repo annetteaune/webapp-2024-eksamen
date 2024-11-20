@@ -150,7 +150,7 @@ app.delete("/:eventId", async (c) => {
     return c.json({ error: result.error }, { status });
   }
 
-  return c.json(null, { status: 204 });
+  return c.json({ success: true }, { status: 200 });
 });
 
 export default app;

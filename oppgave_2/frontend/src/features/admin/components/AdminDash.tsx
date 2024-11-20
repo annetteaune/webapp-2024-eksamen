@@ -9,6 +9,7 @@ import EventForm from "./EventForm";
 import { Event } from "@/features/events/interfaces";
 import { fetcher } from "@/api/fetcher";
 import { Template } from "../interfaces";
+import { useState } from "react";
 
 const AdminDashboard = () => {
   const {
@@ -28,6 +29,8 @@ const AdminDashboard = () => {
     createTemplate,
     updateTemplate,
   } = useAdminDashboard();
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleCreateEvent = async (
     eventData: Omit<Event, "id" | "status" | "waitlist">
@@ -49,7 +52,6 @@ const AdminDashboard = () => {
         ...(eventData.templateId && { template_id: eventData.templateId }),
       };
 
-      console.log("Sending to backend:", backendData);
       const response = await fetcher("/events", {
         method: "POST",
         body: JSON.stringify(backendData),
@@ -68,9 +70,17 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteEvent = async (eventId: string) => {
-    const result = await deleteEvent(eventId);
-    if (!result.success && result.message) {
-      alert(result.message);
+    try {
+      const result = await deleteEvent(eventId);
+      if (!result.success) {
+        setErrorMessage(result.message || "Kunne ikke slette arrangementet");
+        setTimeout(() => setErrorMessage(null), 5000);
+      }
+    } catch (error) {
+      setErrorMessage(
+        "En uventet feil oppstod under sletting av arrangementet"
+      );
+      setTimeout(() => setErrorMessage(null), 5000);
     }
   };
 
@@ -96,6 +106,26 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
+      {errorMessage && (
+        <div
+          //claude.ai
+          className="error-message"
+          style={{
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#fee2e2",
+            color: "black",
+            padding: "1rem",
+            borderRadius: "6px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            zIndex: 1000,
+          }}
+        >
+          {errorMessage}
+        </div>
+      )}
       <div className="dashboard-header">
         <h2 className="page-title">Administrasjonspanel</h2>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />

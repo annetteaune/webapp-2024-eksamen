@@ -35,17 +35,34 @@ export const useAdminDashboard = () => {
   }, []);
 
   const deleteEvent = async (eventId: string) => {
-    const response = await fetcher(`/events/${eventId}`, {
-      method: "DELETE",
-    });
-    if (!response?.error) {
-      setEvents(events.filter((event) => event.id !== eventId));
-      return { success: true };
+    try {
+      const response = await fetcher(`/events/${eventId}`, {
+        method: "DELETE",
+        ignoreResponseError: true,
+      });
+
+      if (response?.success) {
+        setEvents((prev) => prev.filter((event) => event.id !== eventId));
+        return { success: true };
+      }
+      return {
+        success: false,
+        message: response?.error?.message || "Kunne ikke slette arrangementet",
+      };
+    } catch (error: any) {
+      console.error("Delete event error:", error);
+
+      if (error.response?.status === 400) {
+        return {
+          success: false,
+          message: "Kan ikke slette arrangement som har påmeldinger.",
+        };
+      }
+      return {
+        success: false,
+        message: "En uventet feil oppstod under sletting av arrangementet",
+      };
     }
-    return {
-      success: false,
-      message: "Kunne ikke slette arrangementet.",
-    };
   };
 
   // claude.ai

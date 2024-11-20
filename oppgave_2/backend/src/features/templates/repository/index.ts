@@ -71,7 +71,7 @@ export const findTemplateById = async (
         success: false,
         error: {
           code: "TEMPLATE_NOT_FOUND",
-          message: `Template ${templateId} not found`,
+          message: `Mal ${templateId} kunne ikke finnes`,
         },
       };
     }
@@ -94,7 +94,7 @@ export const findTemplateById = async (
       success: false,
       error: {
         code: "TEMPLATE_FETCH_FAILED",
-        message: `Could not fetch template ${templateId}`,
+        message: `Kunne ikke hente malen ${templateId}`,
       },
     };
   }
@@ -144,7 +144,7 @@ export const createTemplate = async (
       success: false,
       error: {
         code: "TEMPLATE_CREATE_FAILED",
-        message: "Could not create template",
+        message: "Kunne ikke opprette mal.",
       },
     };
   }
@@ -196,7 +196,7 @@ export const updateTemplate = async (
       success: false,
       error: {
         code: "TEMPLATE_UPDATE_FAILED",
-        message: `Could not update template ${templateId}`,
+        message: `Kunne ikke oppdatere ${templateId}`,
       },
     };
   }
@@ -216,7 +216,7 @@ export const deleteTemplate = async (
         success: false,
         error: {
           code: "TEMPLATE_IN_USE",
-          message: "Cannot delete template that is being used by events",
+          message: "Kan ikke slette maler som er i bruk.",
         },
       };
     }
@@ -230,7 +230,7 @@ export const deleteTemplate = async (
         success: false,
         error: {
           code: "TEMPLATE_NOT_FOUND",
-          message: `Template ${templateId} not found`,
+          message: `Malen ${templateId} kan ikke finnes.`,
         },
       };
     }
@@ -244,7 +244,7 @@ export const deleteTemplate = async (
       success: false,
       error: {
         code: "TEMPLATE_DELETE_FAILED",
-        message: `Could not delete template ${templateId}`,
+        message: `Kunne ikke slette malen ${templateId}`,
       },
     };
   }
