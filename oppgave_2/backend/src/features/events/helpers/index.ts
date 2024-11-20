@@ -39,7 +39,21 @@ export const createEventSchema = eventSchema
     allow_waitlist: z.boolean().optional(),
   });
 
-export const updateEventSchema = eventSchema.partial().omit({
-  id: true,
-  waitlist: true,
-});
+export const updateEventSchema = z
+  .object({
+    slug: z.string().min(1),
+    title: z.string().min(1),
+    description_short: z.string().min(1),
+    description_long: z.string().min(1),
+    date: z.string(),
+    location: z.string().min(1),
+    type_id: z.string().min(1),
+    capacity: z.number().int().positive(),
+    price: z.number().min(0),
+    template_id: z.string().nullable(),
+    status: z.enum(["Ledige plasser", "Fullbooket"]),
+    is_private: z.boolean(),
+    allow_same_day: z.boolean(),
+    allow_waitlist: z.boolean(),
+  })
+  .partial();

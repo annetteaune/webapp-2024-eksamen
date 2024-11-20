@@ -7,6 +7,7 @@ import {
   type ValidationErrors,
   validateField,
   validateForm,
+  formatDateForInput,
 } from "../helpers/validate";
 
 interface UseEventFormProps {
@@ -25,7 +26,7 @@ export const useEventForm = ({
     title: initialData?.title ?? "",
     descriptionShort: initialData?.descriptionShort ?? "",
     descriptionLong: initialData?.descriptionLong ?? "",
-    date: initialData?.date ?? "",
+    date: initialData?.date ? formatDateForInput(initialData.date) : "",
     location: initialData?.location ?? "",
     typeId: initialData?.type.id ?? "",
     capacity: initialData?.capacity ?? 0,

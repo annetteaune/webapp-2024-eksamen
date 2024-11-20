@@ -95,15 +95,37 @@ app.post("/", async (c) => {
   }
 });
 
+// src/features/events/controller/index.ts
+
 app.patch("/:eventId", async (c) => {
   try {
     const eventId = c.req.param("eventId");
     const body = await c.req.json();
-    const validatedData = updateEventSchema.parse(body);
+    console.log("Raw request body:", body);
 
-    const result = await modifyEvent(db, eventId, validatedData);
+    const validatedData = updateEventSchema.safeParse(body);
+    console.log("Validation result:", validatedData);
+
+    if (!validatedData.success) {
+      console.log("Validation errors:", validatedData.error.format());
+      return c.json(
+        {
+          error: {
+            code: "VALIDATION_ERROR",
+            message: validatedData.error.errors
+              .map((e) => e.message)
+              .join(", "),
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    const result = await modifyEvent(db, eventId, validatedData.data);
+    console.log("Update result:", result);
 
     if (!result.success) {
+      console.log("Update failed:", result.error);
       return c.json(
         { error: result.error },
         { status: result.error.code === "EVENT_NOT_FOUND" ? 404 : 400 }
@@ -112,22 +134,12 @@ app.patch("/:eventId", async (c) => {
 
     return c.json(result.data);
   } catch (error) {
-    if (error instanceof Error) {
-      return c.json(
-        {
-          error: {
-            code: "VALIDATION_ERROR",
-            message: error.message,
-          },
-        },
-        { status: 400 }
-      );
-    }
+    console.error("Unexpected error:", error);
     return c.json(
       {
         error: {
-          code: "UNKNOWN_ERROR",
-          message: "An unexpected error occurred",
+          code: "UPDATE_FAILED",
+          message: error instanceof Error ? error.message : "Update failed",
         },
       },
       { status: 500 }

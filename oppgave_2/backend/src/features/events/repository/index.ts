@@ -122,36 +122,42 @@ export const findEventById = async (
 ): Promise<Result<Event>> => {
   try {
     const event = db
-      .prepare("SELECT * FROM events WHERE id = ?")
+      .prepare(
+        `
+      SELECT events.*, types.name as type_name
+      FROM events 
+      JOIN types ON events.type_id = types.id
+      WHERE events.id = ?
+    `
+      )
       .get(eventId) as DbEvent | undefined;
-
     if (!event) {
       return {
         success: false,
         error: {
           code: "EVENT_NOT_FOUND",
-          message: `Arrangement ${eventId} kunne ikke finnes`,
+          message: `Event ${eventId} not found`,
         },
       };
     }
-
-    const validatedEvent = eventSchema.parse({
-      ...event,
-      is_private: Boolean(event.is_private),
-      allow_same_day: Boolean(event.allow_same_day),
-      waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
-    });
-
     return {
       success: true,
-      data: validatedEvent,
+      data: {
+        ...event,
+        is_private: Boolean(event.is_private),
+        allow_same_day: Boolean(event.allow_same_day),
+        allow_waitlist: Boolean(event.allow_waitlist),
+        waitlist: event.waitlist ? JSON.parse(event.waitlist) : null,
+        type_name: event.type_name,
+      } as Event,
     };
   } catch (error) {
+    console.error("Error finding event:", error);
     return {
       success: false,
       error: {
         code: "EVENT_FETCH_FAILED",
-        message: `Kunne ikke hente ${eventId}`,
+        message: `Could not fetch event ${eventId}`,
       },
     };
   }
@@ -309,18 +315,25 @@ export const updateEvent = async (
     if (!existingResult.success) {
       return existingResult;
     }
-
-    const updatedEvent = eventSchema.parse({
+    const updatedEvent = {
       ...existingResult.data,
       ...update,
-    });
+      template_id: update.template_id ?? existingResult.data.template_id,
+      is_private: update.is_private ?? existingResult.data.is_private,
+      allow_same_day:
+        update.allow_same_day ?? existingResult.data.allow_same_day,
+      allow_waitlist:
+        update.allow_waitlist ?? existingResult.data.allow_waitlist,
+      status: update.status ?? existingResult.data.status,
+    };
 
     db.prepare(
       `
       UPDATE events 
       SET slug = ?, title = ?, description_short = ?, description_long = ?,
           date = ?, location = ?, type_id = ?, capacity = ?, price = ?,
-          template_id = ?, status = ?, is_private = ?, allow_same_day = ?
+          template_id = ?, status = ?, is_private = ?, allow_same_day = ?,
+          allow_waitlist = ?
       WHERE id = ?
     `
     ).run(
@@ -337,19 +350,27 @@ export const updateEvent = async (
       updatedEvent.status,
       updatedEvent.is_private ? 1 : 0,
       updatedEvent.allow_same_day ? 1 : 0,
+      updatedEvent.allow_waitlist ? 1 : 0,
       eventId
     );
 
+    const type = db
+      .prepare("SELECT name FROM types WHERE id = ?")
+      .get(updatedEvent.type_id) as { name: string };
     return {
       success: true,
-      data: updatedEvent,
+      data: {
+        ...updatedEvent,
+        type_name: type.name,
+      } as Event,
     };
   } catch (error) {
+    console.error("Update event error:", error);
     return {
       success: false,
       error: {
         code: "EVENT_UPDATE_FAILED",
-        message: `Kunne ikke oppdatere arrangement ${eventId}`,
+        message: `Could not update event ${eventId}`,
       },
     };
   }
