@@ -92,6 +92,22 @@ code {
   }
 }
 
+.error-message-container {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(235, 235, 235);
+  color: var(--error);
+  text-shadow: var(--shadow-sm);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  z-index: 999;
+  max-width: 60%;
+  text-align: center;
+}
+
 /*tablet - har breakpoints her for enkel kopiering*/
 @media (min-width: 768px) and (max-width: 1200px) {
 }
