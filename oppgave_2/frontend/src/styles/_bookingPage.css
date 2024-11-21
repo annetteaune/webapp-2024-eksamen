@@ -157,11 +157,9 @@
       }
     }
     .error-message {
-      background-color: rgb(254, 226, 226);
       color: var(--error);
-      padding: 0.75rem;
-      border-radius: 6px;
-      margin-bottom: 1.5rem;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
     }
 
     h3 {

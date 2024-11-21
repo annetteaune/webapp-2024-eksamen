@@ -161,19 +161,28 @@ export const useEventForm = ({
   ) => {
     const newData = { ...formData, [field]: value };
     setFormData(newData);
-
     if (typeof value === "boolean") {
       return;
     }
-
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
     const fieldSchema =
       eventFormSchema.shape[field as keyof typeof eventFormSchema.shape];
     if (fieldSchema) {
-      const newErrors = validateField(eventFormSchema, field, value, newData);
-      setErrors((prev) => ({ ...prev, ...newErrors }));
+      try {
+        const validationResult = validateField(
+          eventFormSchema,
+          field,
+          value,
+          newData
+        );
+        if (Object.keys(validationResult).length > 0) {
+          setErrors((prev) => ({ ...prev, ...validationResult }));
+        }
+      } catch (error) {
+        console.error(`Validation error for field ${field}:`, error);
+      }
     }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});

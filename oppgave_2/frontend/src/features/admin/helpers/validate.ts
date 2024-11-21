@@ -20,12 +20,18 @@ export const templateFormSchema = z.object({
     )
     .min(1, "Velg minst én tillatt dag"),
   maxCapacity: z
-    .number()
+    .number({
+      invalid_type_error: "Kapasitet må være et tall",
+      required_error: "Kapasitet er påkrevd",
+    })
     .int("Kapasitet må være et helt tall")
     .positive("Kapasitet må være større enn 0")
     .max(1000, "Kapasitet kan ikke være større enn 1000"),
   price: z
-    .number()
+    .number({
+      invalid_type_error: "Pris må være et tall",
+      required_error: "Pris er påkrevd",
+    })
     .min(0, "Pris kan ikke være negativ")
     .max(10000, "Pris kan ikke være større enn 10000"),
   isPrivate: z.boolean(),
@@ -62,8 +68,19 @@ export const eventFormSchema = z.object({
   }, "Dato må være i fremtiden"),
   location: z.string().min(1, "Lokasjon er påkrevd"),
   typeId: z.string().min(1, "Velg en arrangementstype"),
-  capacity: z.number().positive("Kapasitet må være større enn 0"),
-  price: z.number().min(0, "Pris kan ikke være negativ"),
+  capacity: z
+    .number({
+      invalid_type_error: "Vennligst skriv inn et gyldig tall for kapasitet",
+      required_error: "Kapasitet er påkrevd",
+    })
+    .int("Kapasitet må være et helt tall")
+    .positive("Kapasitet må være større enn 0"),
+  price: z
+    .number({
+      invalid_type_error: "Vennligst skriv inn et gyldig tall for pris",
+      required_error: "Pris er påkrevd",
+    })
+    .min(0, "Pris kan ikke være negativ"),
   templateId: z.string().optional(),
   allowWaitlist: z.boolean().optional(),
   isPrivate: z.boolean().optional(),
