@@ -22,7 +22,7 @@ const generateDateSuffix = (date: string): string => {
 
 const checkSlugExists = async (slug: string): Promise<boolean> => {
   try {
-    await fetcher(`/events/slug/${slug}`);
+    await fetcher(`/events/${slug}`);
     return true;
   } catch {
     return false;

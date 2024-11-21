@@ -31,10 +31,9 @@ app.get("/", async (c) => {
   return c.json(result.data);
 });
 
-app.get("/:eventId", async (c) => {
+app.get("/by-id/:eventId", async (c) => {
   const eventId = c.req.param("eventId");
   const result = await getEvent(db, eventId);
-
   if (!result.success) {
     return c.json(
       { error: result.error },
@@ -45,7 +44,7 @@ app.get("/:eventId", async (c) => {
   return c.json(result.data);
 });
 
-app.get("/slug/:slug", async (c) => {
+app.get("/:slug", async (c) => {
   const slug = c.req.param("slug");
   const result = await getEventBySlug(db, slug);
 
@@ -94,8 +93,6 @@ app.post("/", async (c) => {
     );
   }
 });
-
-// src/features/events/controller/index.ts
 
 app.patch("/:eventId", async (c) => {
   try {

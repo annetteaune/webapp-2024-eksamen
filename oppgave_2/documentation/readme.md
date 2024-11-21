@@ -1,81 +1,221 @@
-# Oppgave 2 - Grov planlegging
+# Oppgave 2
 
-## Endepunkter:
+## 1: Wireframes
 
-# TODO: husk å fikse samme dag-tillatelser når create events settes opp - error trigger ikke riktig!
+[Se Wireframes(PDF)](./files/wireframes.pdf)
+
+## 2,3,4: Endepunkter, verb og responser:
 
 ### /events - alle arrangementer
 
-- GET - hente alle arrangememnter
+- GET
+  - Formål: Hente alle arrangementer, mulighet for filtrering basert på parametere
+  - Respons: Array med arrangement-objekter
+  - Statuskoder:
+    - 200: Success
+    - 500: Server error
+- POST:
+  - Formål: Opprette nytt arrangement
+  - Statuskoder:
+    - 201: Created successfully
+    - 400: Validation error
+    - 500: Server error
 
-### /events/:slug - et spesifikt arrangement
+### /events/:slug
 
-- GET - henter detaljer om arrangementet
-- POST - oppretter nytt arrangement (admin)
-- PATCH - oppdatere eksisterende (admin)
-- DELETE - slette arrangmenet (admin)
+- GET
+  - Formål: Henter et arrangement basert på slug, som gir en penere url enn å hente ut med id
+  - Respons: Ett enkelt arrangement-objekt
+  - Statuskoder:
+    - 200: Success
+    - 404: Event not found
+    - 500: Server error
 
-### /templates - håndterer maler og deres regler
+### /events/by-id/:eventId
 
-- GET - henter alle maler, responsen må være en lsite med alle maler
-- POST - opprette ny mal
-- DELETE - slette en mal (men kan ikke slette en som er i bruk! husk på)
-- PATCH - opddatere en mal?
+- GET
 
-### /bookings - Påmeldinger
+  - Fårmål: Henter spesifikke arrangementer basert på ID
+  - Brukes i hovedsak internt i applikasjonen
+  - Respons: Ett enkelt arrangement-objekt
+  - Statuskoder:
+    - 200: Success
+    - 404: Event not found
+    - 500: Server error
 
-- GET - hente alle påmedlinger
-- POST - opprette påmelding
+- PATCH
 
-### /bookings/:slug - påmeldinger til et spesifikt arrangement
+  - Formål: Oppdatere utvalgte elementer ved et arrangement
+  - Respons: Ett enkelt arrangement-objekt
+  - Statuskoder:
+    - 200: Updated successfully
+    - 400: Validation error
+    - 404: Event not found
+    - 500: Server error
 
-- GET - hente påmedlingen
-- PACTH - oppdatere en påmelding (godkjent/avslått?)
-- DELETE - slette en påmelding
+- DELETE
+  - Formål: Slette arrangement fra databasen
+  - Respons: Suksessmelding 200
+  - Statuskoder:
+    - 200: Deleted successfully
+    - 400: Event has bookings
+    - 404: Event not found
+    - 500: Server error
 
-### /type - Arrangementstyper
+### /bookings
 
-- GET - henter alle typer
+- GET
 
-TODO: Skal til hvert api-endepunkt dokumentere responsen og statuskoden for de ulike verbene. Hva slags data skal returneres når det går riktig / feil.
+  - Formål: Hente alle påmeldinger
+  - Respons: Array med påmelding-objekter
+  - Statuskoder:
+    - 200: Success
+    - 500: Server error
 
-## Sidestruktur
+- POST
 
-### /events: Landingsside for arrangementer
+  - Formål: Opprette ny påmelding
+  - Respons: Ett enkelt påmeldingsobjekt (ved flere på en gang håndteres de hver for seg)
+  - Statuskoder:
+    - 201: Created successfully
+    - 400: Validation error/Event full
+    - 500: Server error
+
+  ### /bookings/:slug
+
+- GET
+  - Formål: Hente påmeldiger for ett arrangement
+  - Respons: Array med påmeldingsobjekter
+  - Statuskoder:
+    - 200: Success
+    - 404: Event not found
+    - 500: Server error
+
+### /bookings/:bookingId
+
+- PATCH
+
+  - Formål: Oppdatere påmeldingsstatus
+  - Respons:
+    ```typescript
+    {
+      status: "Godkjent" | "Til behandling" | "På venteliste" | "Avslått";
+      has_paid?: boolean;
+    }
+    ```
+  - Statuskoder:
+    - 200: Updated successfully
+    - 404: Booking not found
+    - 500: Server error
+
+- DELETE
+  - Formål: Slette påmelding
+  - Respons: Suksessmelding 200
+  - Statuskoder:
+    - 200: Deleted successfully
+    - 404: Booking not found
+    - 500: Server error
+
+### /templates
+
+- GET
+
+  - Formål: hente alle maler
+  - Respons: Array med mal-objekter
+  - Statuskoder:
+    - 200: Success
+    - 500: Server error
+
+- POST
+  - Formål: Opprette ny mal
+  - Respons: Statuskode 201
+  - Statuskoder:
+    - 201: Created successfully
+    - 400: Validation error
+    - 500: Server error
+
+### /templates/:templateId
+
+- GET
+
+  - Formål: Hente en spesifikk mal via mal-id
+  - Respons: Ett enkelt malobjekt
+  - Statuskoder:
+    - 200: Success
+    - 404: Template not found
+    - 500: Server error
+
+- PATCH
+
+  - Formål: Oppdatere mal
+  - Body: Updated template fields
+  - Respons: Updated template object
+  - Statuskoder:
+    - 200: Updated successfully
+    - 404: Template not found
+    - 500: Server error
+
+- DELETE
+  - Formål: Slette mal
+  - Respons: Statuskode 200
+  - Statuskoder:
+    - 200: Deleted successfully
+    - 409: Template in use
+    - 404: Template not found
+    - 500: Server error
+
+### /types
+
+- GET
+  - Formål: Hente alle arrangementtyper
+  - Respons: Array med type-objekter
+  - Statuskoder:
+    - 200: Success
+    - 500: Server error
+
+## 5: Sidestruktur
+
+### / (Hjem)
+
+- Viser liste over alle ikke-private arrangementer
+- Kan filtrere på måned, år og type
+- Linker til individuelle arrangement-sider
+
+### /events
 
 - Viser liste over alle arrangmeneter
 - Filtrering på type arrangment, måned og år
 - Status fullbooket/ledige plasser
 
-### /events:slug - detaljer
+### /[slug]
 
 - Detaljer om et spesifikt arrangement som tittel, tidspunkt, sted, pris, antall plasser
 - Statusindikator fullbooket/ledige plasser
 - Påmeldingsskjema:
   - Om gratis kan man melde seg på og automatisk få godkjent så lenge det er plass på arrangementet
-  - Er det et betalt arrangement, får man status "til behandling", og admin må godkjenne denne manuelt da det antas as betaling foregår analogt.
+  - Om venteliste er aktivert for arrangementet, blir yttligere påmeldinger lagt der
+  - Er det et betalt arrangement, får man status "til behandling", og admin må godkjenne denne manuelt
 
-### /admin - landingsside admin
+### /admin
 
-- kan se alle arrangementer
-- kan opprette nytt arrangement (linker til /new med satte regler?)
-- kan slette et arrangment
+- Arrangementer:
+  - kan se alle arrangementer
+  - kan opprette nytt arrangement, redigere et eksisterende arrangememnt, eller slette et arrangeemnt som ikke har påmeldinger
+- Maler:
+  - Kan se alle maler
+  - Kan opprette nye maler, eller slette maler som ikke er i bruk
+- Påmeldinger:
+  - Kan laste ned en excel-fil med alle påmeldinger per år
+  - Kan se alle arrangementer og en oversikt over dets påmeldinger, linker til håndtering av påmeldinger
 
-### /admin/:slug
+### /admin/[slug]/bookings
 
-- kan endre/oppdatere eventet
-- viser liste over påmeldinger, knapp som linker til /admin/:slug/bookings
+- Håndterer påmeldinger for det individuelle arrangementet
+- Kan legge til en påmelding manuelt
+- Kan godkjenne, avslå og slette eksisterende påmeldinger
+- Kan markere et betalt arrangement som betalt eller ikke per påmelding
 
-### /admin/:slug/bookings
-
-- kan godkjenne, avslå, slette, manuelt legge til en påmelding
-
-### /admin/new
-
-- kan opprette ny mal
-- kan opprette event basert på mal eller fra bunnen av
-
-## Filtrering:
+## 6: Filtrering:
 
 #### Frontend:
 
@@ -86,34 +226,28 @@ Når URL-en endres, fetcher EventList-komponenten ny data basert på parameterne
 
 Endepuktet `/events` tar imot query-parametere fra frontend. Controlleren skiller ut parameterne,og sender dem til servicelaget. Repoen bygger en dynamisk SQL-query basert på de valgte filterne, og returnerer data som mathcer disse filterne.
 
-## Datamodell:
+## 7: Datamodell:
 
-### Arrangement
+<img src="files/datamodell.png" width="500" alt="Datamodell">
 
-- id(int), slug(string), title(string), description(string), date(datetime), location(string), type(string), capacity(int), price(dec), waitlist?(array)
+### Begrunnelse:
 
-### Mal
+- Separerer data inn i naturlige entiteter, hvor hver entitet har en tydelig rolle i dataflyten.
+- Events og Templates har en viss overlapp i felter, for å kunne operere både i samsvar og separat.
+- Redundans kan yttligere unngås ved å opprette oppslagstabeller for statuser, tillate dager o.l., slik som "Types" fungerer som. Datamodellen er derfor fremtidsrettet og kan utvides ved behov.
 
-- id(int), name(string), allowed_days(array), max_capacity(int), price(dec), is_private(bool), allow_same_day(bool), allow_waitlist(bool), created_at(datetime)
-  TODO
+## 8: Malsystemet:
 
-### Påmelding
+- Opprettes gjennom administrasjonpanelet. Navn og type velges. Ukedager kan velges for å opprettholde regler rundt dager. Avhukingsbokser låser et arrangement til å benytte samme innstillinger om malen brukes som grunnlag for arrangementet.
 
-- id(int), name(string), has_paid(bool)
+- Gjenbruk: Kan velges fra en drop-down i arrangementskjema. Om en mal velges, vil enkelte felter, som type, kapasitet og pris auto-fylles. Dato må samsvare med dager satt i malen. Enkelte felter kan overstyres, basert på den enkelte malens innstillinger. I till skal ikke maler som er i bruk kunne slettes eller endres.
 
-### Type
+## 9: Databasemodell og relasjoner:
 
-- id(int), name(string)
+Fire hovedtabeller: Events, Templates, Types og Bookings, basert på datamodellens entiteter.
+Fremmednøkler benyttes for å refere mellom tabeller.
 
-## Malsystemet:
-
-TODO
-
-## Databasemodell og relasjoner:
-
-Fire hovedtabeller: Events, Templates, Types og Bookings.
-
-Event og Templates har en én-til-mange-relasjon siden mange arrangementer kan opprettes fra én mal, men en mal kan benyttes til mange arrangementer.
-Event og Bookings har en én-til-mange-relasjon, siden mange påmeldinger kan tilhøre ett arrangement, men en individuell påmelding kun gjelder det ene arrangementet.
-Types og Events har en én-til-mange-relasjon, siden et arrangement kan bare ha én type, men en type kan tulhøre mange arrangmeneter.
-Begrunnelse: TODO
+- Event og Templates har en én-til-mange-relasjon siden mange arrangementer kan opprettes fra én mal, men en mal kan benyttes til mange arrangementer. `template_id` i Events referer til Templates.
+- Event og Bookings har en én-til-mange-relasjon, siden mange påmeldinger kan tilhøre ett arrangement, men en individuell påmelding kun gjelder det ene arrangementet. `event_id` i Bookings referer til Events.
+- Types og Events har en én-til-mange-relasjon, siden et arrangement kan bare ha én type, men en type kan tulhøre mange arrangmeneter.
+- Types og Templates har en én-til-mange-relasjon, da en type kan tilhøre mange maler, men en mal kan kun ha én type. `type_id` i både Events og Templates referer til Types.

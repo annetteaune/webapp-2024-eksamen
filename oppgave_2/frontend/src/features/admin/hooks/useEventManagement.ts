@@ -11,7 +11,7 @@ export const useEventManagement = () => {
     onDeleteCallback: (id: string) => void
   ) => {
     try {
-      const event = await fetcher<Event>(`/events/${eventId}`);
+      const event = await fetcher<Event>(`/events/by-id/${eventId}`);
       const bookingsResponse = await fetcher<{ bookings: any[] }>(
         `/bookings/${event.slug}`
       );

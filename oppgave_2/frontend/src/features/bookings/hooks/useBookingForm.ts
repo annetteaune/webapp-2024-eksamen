@@ -49,7 +49,7 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventData = await fetcher<Event>(`/events/slug/${eventSlug}`);
+        const eventData = await fetcher<Event>(`/events/${eventSlug}`);
         if (!eventData) {
           throw new Error("Event not found");
         }

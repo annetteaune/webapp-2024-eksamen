@@ -33,7 +33,9 @@ export const BookingAdminForm = ({
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const eventData = await fetcher<Event>(`/events/${booking.eventId}`);
+        const eventData = await fetcher<Event>(
+          `/events/by-id/${booking.eventId}`
+        );
         setEvent(eventData);
       } catch (error) {
         console.error("Error fetching event:", error);

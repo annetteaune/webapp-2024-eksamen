@@ -30,7 +30,7 @@ export default function BookingsAdminPage({
   const fetchData = async () => {
     try {
       const [eventData, bookingsData] = await Promise.all([
-        fetcher<Event>(`/events/slug/${params.slug}`),
+        fetcher<Event>(`/events/${params.slug}`),
         fetcher<{ bookings: Booking[] }>(`/bookings/${params.slug}`),
       ]);
       setEvent(eventData);
