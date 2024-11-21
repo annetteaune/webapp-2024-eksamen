@@ -99,7 +99,7 @@ const AdminDashboard = () => {
   };
 
   if (isLoading) {
-    return <div className="loading">Laster inn...</div>;
+    return <div className="loading-text">Laster inn...</div>;
   }
 
   return (

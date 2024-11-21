@@ -56,9 +56,10 @@ export default function EventList() {
     getEvents();
   }, [searchParams, types]);
 
-  if (isLoading) return <div>Laster inn...</div>;
-  if (error) return <div>Feil under innlasting</div>;
-  if (!events.length) return <div>Ingen arrangementer funnet</div>;
+  if (isLoading) return <div className="loading-text">Laster inn...</div>;
+  if (error) return <div className="loading-text">Feil under innlasting</div>;
+  if (!events.length)
+    return <div className="loading-text">Ingen arrangementer funnet</div>;
 
   return (
     <>

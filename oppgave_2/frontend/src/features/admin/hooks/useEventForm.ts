@@ -47,6 +47,8 @@ export const useEventForm = ({
   const [existingEvents, setExistingEvents] = useState<Event[]>([]);
   const [minDate, setMinDate] = useState<string>("");
   const [maxDate, setMaxDate] = useState<string>("");
+  const [canTogglePrivate, setCanTogglePrivate] = useState(true);
+  const [canToggleWaitlist, setCanToggleWaitlist] = useState(true);
 
   useEffect(() => {
     const today = new Date();
@@ -124,7 +126,9 @@ export const useEventForm = ({
     ) {
       setErrors((prev) => ({
         ...prev,
-        date: `Velg en tillatt dag: ${selectedTemplate.allowedDays.join(", ")}`,
+        date: `Malen tillater kun følgende dager: ${selectedTemplate.allowedDays.join(
+          ", "
+        )}`,
       }));
       return;
     }
@@ -262,6 +266,8 @@ export const useEventForm = ({
         allowSameDay: true,
         typeId: "",
       }));
+      setCanTogglePrivate(true);
+      setCanToggleWaitlist(true);
       setErrors((prev) => ({ ...prev, date: "" }));
       return;
     }
@@ -280,6 +286,8 @@ export const useEventForm = ({
           typeId: template.typeId,
           date: isAllowedDay(prev.date, template.allowedDays) ? prev.date : "",
         }));
+        setCanTogglePrivate(!template.isPrivate);
+        setCanToggleWaitlist(!template.allowWaitlist);
         if (
           formData.date &&
           isAllowedDay(formData.date, template.allowedDays)
@@ -305,5 +313,7 @@ export const useEventForm = ({
     handleInputChange,
     handleSubmit,
     applyTemplate,
+    canTogglePrivate,
+    canToggleWaitlist,
   };
 };

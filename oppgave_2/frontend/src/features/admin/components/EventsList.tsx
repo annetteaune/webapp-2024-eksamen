@@ -47,6 +47,7 @@ export const EventsList = ({ events, onDelete }: EventsListProps) => {
                 onClick={() => handleEdit(event)}
               >
                 <FaEdit />
+                <span className="tooltip">Rediger arrangement</span>
               </button>
               <button
                 className="icon-btn users"
@@ -55,12 +56,14 @@ export const EventsList = ({ events, onDelete }: EventsListProps) => {
                 }
               >
                 <FaUsers />
+                <span className="tooltip">Håndter påmeldinger</span>
               </button>
               <button
                 className="icon-btn delete"
                 onClick={() => handleDelete(event.id, onDelete)}
               >
                 <FaTrash />
+                <span className="tooltip">Slett arrangement</span>
               </button>
             </div>
           </div>

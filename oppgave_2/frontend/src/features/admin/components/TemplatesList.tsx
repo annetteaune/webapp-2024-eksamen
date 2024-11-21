@@ -24,7 +24,6 @@ export const TemplatesList = ({
     handleEditClick,
     handleDeleteClick,
   } = useTemplateManagement();
-
   return (
     <div className="templates-section">
       <h3>Maler</h3>
@@ -46,6 +45,7 @@ export const TemplatesList = ({
                 disabled={loading === template.id}
               >
                 <FaEdit />
+                <span className="tooltip">Rediger mal</span>
               </button>
               <button
                 className="icon-btn delete"
@@ -53,6 +53,7 @@ export const TemplatesList = ({
                 disabled={loading === template.id}
               >
                 <FaTrash />
+                <span className="tooltip">Slett mal</span>
               </button>
             </div>
           </div>

@@ -27,7 +27,7 @@ export default function BookingForm({
   } = useBookingForm({ eventId, eventSlug });
 
   if (!event) {
-    return <div>Laster inn...</div>;
+    return <div className="loading-text">Laster inn...</div>;
   }
   const bookingStatus = bookingHandler
     ? bookingHandler.getBookingStatus(attendees.length)

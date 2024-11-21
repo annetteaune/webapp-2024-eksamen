@@ -1,264 +1,234 @@
 .admin-dashboard {
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 1rem;
+  max-width: 80%;
   margin: 0 auto;
   .dashboard-header {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin: 0.5rem 0;
-      .tab-btn {
-        padding: 0.75rem 2rem;
-        border: 1px solid var(--border);
-        background: white;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        &:hover {
-          background-color: var(--btn-hover);
-          color: var(--font-light);
-        }
-        &.active {
-          background-color: var(--btn);
-          color: var(--font-light);
-          border-color: var(--btn);
-          &:hover {
-            background-color: var(--btn-hover);
-          }
-        }
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .tabs {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 0.5rem 0 2rem 0;
+  }
+  .tab-btn {
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    &:hover {
+      background-color: var(--btn-hover);
+      color: var(--font-light);
+    }
+    &.active {
+      background-color: var(--btn);
+      color: var(--font-light);
+      border-color: var(--btn);
+      &:hover {
+        background-color: var(--btn-hover);
       }
     }
-    .admin-btn-wrapper {
+  }
+  .admin-btn-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    .admin-btn {
+      width: 100%;
       display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      .admin-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-      }
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
     }
   }
   .events-section,
   .templates-section {
     h3 {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       font-weight: 600;
       margin-bottom: 1.5rem;
       color: var(--font-normal);
     }
   }
-  .events-section {
-    .events-grid {
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      .a-event-card {
-        background-color: white;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        transition: all 0.2s ease;
-        box-shadow: var(--shadow-sm);
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-y);
-        }
-        .event-info {
-          flex: 1;
-          h4 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--font-normal);
-          }
-          .private-badge {
-            background-color: var(--iconbkgcolor);
-            padding: 0.3rem;
-            width: 100%;
-            display: block;
-            font-size: medium;
-          }
-          p {
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-            color: var(--font-normal);
-            line-height: 1.4;
-          }
-        }
-        .event-actions {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          margin-left: 1rem;
-          .icon-btn {
-            padding: 0.5rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: none;
-            transition: all 0.2s ease;
-            font-size: 1.125rem;
-            &.edit:hover {
-              color: var(--btn);
-              background-color: var(--iconbkgcolor);
-            }
-            &.delete:hover {
-              color: var(--error);
-              background-color: var(--iconbkgcolor);
-            }
-            &.users:hover {
-              color: var(--btn);
-              background-color: var(--iconbkgcolor);
-            }
-          }
-        }
-      }
+  .events-grid,
+  .templates-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  .a-event-card,
+  .template-card {
+    background-color: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-y);
     }
   }
-  .templates-section {
-    .templates-grid {
-      display: grid;
-      gap: 1rem;
-      .template-card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        background-color: white;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        transition: all 0.2s ease;
-        box-shadow: var(--shadow-sm);
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-y);
-        }
-        .template-info {
-          h4 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--font-normal);
-          }
-          p {
-            font-size: 0.875rem;
-            color: var(--font-normal);
-            line-height: 1.4;
-          }
-        }
+  .event-info,
+  .template-info {
+    margin-bottom: 1rem;
+    margin-left: 1rem;
 
-        .template-actions {
-          display: flex;
-          gap: 0.75rem;
-          margin-left: 1rem;
-          .icon-btn {
-            padding: 0.5rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: none;
-            transition: all 0.2s ease;
-            font-size: 1.125rem;
-            &.edit:hover {
-              color: var(--btn);
-              background-color: rgba(37, 99, 235, 0.1);
-            }
-            &.delete:hover {
-              color: var(--error);
-              background-color: rgba(220, 38, 38, 0.1);
-            }
-          }
-        }
+    h4 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: var(--font-normal);
+    }
+    p {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      color: var(--font-normal);
+      line-height: 1.4;
+    }
+    .private-badge {
+      background-color: var(--iconbkgcolor);
+      padding: 0.3rem;
+      width: 100%;
+      display: block;
+      font-size: medium;
+    }
+  }
+  .event-actions {
+    .icon-btn {
+      .tooltip {
+        right: -2rem !important;
       }
     }
   }
-  /*claude.ai*/
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+  .event-actions,
+  .template-actions {
     display: flex;
     justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    .modal-content {
-      background-color: white;
-      padding: 2.5rem;
-      border-radius: 8px;
+    gap: 0.75rem;
+    flex-direction: column;
+    margin-right: 1rem;
+    .icon-btn {
       position: relative;
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      padding: 0.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+      transition: all 0.2s ease;
+      font-size: 1.7rem;
+      .tooltip {
+        visibility: hidden;
+        position: absolute;
+        right: auto;
+        left: 100%;
+        margin-left: 10px;
+        width: max-content;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.5rem 0.75rem;
+        color: white;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        z-index: 1000;
+      }
+      &:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+      }
+      &.edit {
+        &:hover {
+          color: var(--btn);
+          background-color: var(--iconbkgcolor);
+        }
+        .tooltip {
+          background-color: var(--btn);
+        }
+      }
+      &.delete {
+        &:hover {
+          color: var(--error);
+          background-color: var(--iconbkgcolor);
+        }
+        .tooltip {
+          background-color: var(--error);
+        }
+      }
 
-      h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 2rem;
-        color: var(--font-normal);
+      &.users {
+        &:hover {
+          color: var(--btn);
+          background-color: var(--iconbkgcolor);
+        }
+        .tooltip {
+          background-color: var(--btn);
+        }
       }
     }
   }
 }
 
-@media (max-width: 768px) {
+/* Tablet - laptop*/
+@media (min-width: 768px) and (max-width: 1919px) {
   .admin-dashboard {
-    padding: 1rem;
-    .dashboard-header {
-      gap: 1rem;
-      margin-bottom: 2rem;
-      .admin-btn-wrapper {
-        flex-direction: column;
-        .admin-btn {
-          width: 100%;
-          justify-content: center;
-        }
+    .admin-btn-wrapper {
+      flex-direction: row;
+      justify-content: flex-end;
+      .admin-btn {
+        width: auto;
       }
     }
-    .events-section {
-      .events-grid {
-        grid-template-columns: 1fr;
-        .a-event-card {
-          .event-actions {
-            flex-direction: row;
-            margin-left: 0;
-            margin-top: 1rem;
-          }
-        }
-      }
+    .events-grid,
+    .templates-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
     }
-    .templates-section {
-      .templates-grid {
-        .template-card {
-          flex-direction: column;
-          text-align: center;
+  }
+}
 
-          .template-actions {
-            margin-left: 0;
-            margin-top: 1rem;
-            justify-content: center;
-          }
-        }
+/* Desktop */
+@media (min-width: 1920px) {
+  .admin-dashboard {
+    max-width: 75%;
+    .admin-btn-wrapper {
+      flex-direction: row;
+      justify-content: flex-end;
+      .admin-btn {
+        width: auto;
       }
     }
-    .modal {
-      .modal-content {
-        padding: 1.5rem;
-        width: 95%;
+    .events-grid,
+    .templates-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .template-card,
+    .a-event-card {
+      .event-info,
+      .template-info {
+        margin-left: 0.3rem;
+      }
+    }
+    .event-actions,
+    .template-actions {
+      flex-direction: column;
+      margin-left: 1rem;
+      justify-content: center;
+      .icon-btn {
+        font-size: 1.2rem;
       }
     }
   }

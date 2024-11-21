@@ -239,9 +239,10 @@ export const createEvent = async (
         | undefined;
 
       if (template) {
-        isPrivate = Boolean(template.is_private);
+        isPrivate = template.is_private === 1 ? true : event.is_private;
         allowSameDay = Boolean(template.allow_same_day);
-        allowWaitlist = Boolean(template.allow_waitlist);
+        allowWaitlist =
+          template.allow_waitlist === 1 ? true : event.allow_waitlist ?? false;
       }
     }
 
@@ -315,15 +316,34 @@ export const updateEvent = async (
     if (!existingResult.success) {
       return existingResult;
     }
+
+    let isPrivate = update.is_private;
+    let allowWaitlist = update.allow_waitlist;
+
+    if (update.template_id) {
+      const template = db
+        .prepare(
+          "SELECT is_private, allow_same_day, allow_waitlist FROM templates WHERE id = ?"
+        )
+        .get(update.template_id) as
+        | { is_private: number; allow_same_day: number; allow_waitlist: number }
+        | undefined;
+
+      if (template) {
+        isPrivate = template.is_private === 1 ? true : update.is_private;
+        allowWaitlist =
+          template.allow_waitlist === 1 ? true : update.allow_waitlist;
+      }
+    }
+
     const updatedEvent = {
       ...existingResult.data,
       ...update,
       template_id: update.template_id ?? existingResult.data.template_id,
-      is_private: update.is_private ?? existingResult.data.is_private,
+      is_private: isPrivate,
       allow_same_day:
         update.allow_same_day ?? existingResult.data.allow_same_day,
-      allow_waitlist:
-        update.allow_waitlist ?? existingResult.data.allow_waitlist,
+      allow_waitlist: allowWaitlist,
       status: update.status ?? existingResult.data.status,
     };
 

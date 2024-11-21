@@ -2,6 +2,7 @@
 import { FaTimes } from "react-icons/fa";
 import { Event } from "@/features/events/interfaces";
 import { useEventForm } from "../hooks/useEventForm";
+import ErrorMessage from "@/components/ErrorMessage";
 
 interface EventFormProps {
   onClose: () => void;
@@ -27,6 +28,8 @@ export default function EventForm({
     handleInputChange,
     handleSubmit,
     applyTemplate,
+    canTogglePrivate,
+    canToggleWaitlist,
   } = useEventForm({ onSubmit, onClose, initialData });
 
   return (
@@ -112,11 +115,9 @@ export default function EventForm({
                 min={`${minDate}T00:00`}
                 max={`${maxDate}T23:59`}
                 className={errors.date ? "error" : ""}
-                disabled={isSubmitting}
+                disabled={Boolean(initialData) || isSubmitting}
               />
-              {errors.date && (
-                <span className="error-message">{errors.date}</span>
-              )}
+              {errors.date && <ErrorMessage message={errors.date} />}
               {formData.templateId && (
                 <span className="allowed-days">
                   Tillatte dager:{" "}
@@ -209,10 +210,13 @@ export default function EventForm({
                   onChange={(e) =>
                     handleInputChange("isPrivate", e.target.checked)
                   }
-                  disabled={isSubmitting || !!formData.templateId}
+                  disabled={Boolean(
+                    isSubmitting || (formData.templateId && !canTogglePrivate)
+                  )}
                 />
                 Privat arrangement
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -220,7 +224,9 @@ export default function EventForm({
                   onChange={(e) =>
                     handleInputChange("allowWaitlist", e.target.checked)
                   }
-                  disabled={isSubmitting || Boolean(formData.templateId)}
+                  disabled={Boolean(
+                    isSubmitting || (formData.templateId && !canToggleWaitlist)
+                  )}
                 />
                 Tillat venteliste
               </label>

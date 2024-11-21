@@ -132,7 +132,7 @@ export default function BookingsAdminPage({
   };
 
   if (!event) {
-    return <div>Laster...</div>;
+    return <div className="loading-text">Laster inn...</div>;
   }
 
   // claude.ai
