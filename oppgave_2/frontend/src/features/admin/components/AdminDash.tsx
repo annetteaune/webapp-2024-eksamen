@@ -1,7 +1,7 @@
 "use client";
 import { useAdminDashboard } from "../hooks/useAdminDash";
 import { Tabs } from "./Tabs";
-import { ActionButtons } from "./ActionButtons";
+import { AdminButtons } from "./AdminButtons";
 import { EventsList } from "./EventsList";
 import { TemplatesList } from "./TemplatesList";
 import { NewTemplateForm } from "./NewTemplateForm";
@@ -11,6 +11,8 @@ import { fetcher } from "@/api/fetcher";
 import { Template } from "../interfaces";
 import { useState } from "react";
 import ErrorMessage from "@/components/ErrorMessage";
+import ExportBookings from "./ExportBookings";
+import BookingsList from "./BookingsList";
 
 const AdminDashboard = () => {
   const {
@@ -82,6 +84,7 @@ const AdminDashboard = () => {
       );
     }
   };
+
   const handleSubmitTemplate = async (
     data: Omit<Template, "id" | "createdAt">
   ) => {
@@ -102,6 +105,28 @@ const AdminDashboard = () => {
     return <div className="loading-text">Laster inn...</div>;
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "templates":
+        return (
+          <TemplatesList
+            templates={templates}
+            onDelete={deleteTemplate}
+            onEdit={setSelectedTemplate}
+          />
+        );
+      case "bookings":
+        return (
+          <>
+            <ExportBookings />
+            <BookingsList />
+          </>
+        );
+      default:
+        return <EventsList events={events} onDelete={handleDeleteEvent} />;
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       <ErrorMessage
@@ -111,21 +136,15 @@ const AdminDashboard = () => {
       <div className="dashboard-header">
         <h2 className="page-title">Administrasjonspanel</h2>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        <ActionButtons
-          activeTab={activeTab}
-          onNewTemplate={() => setShowNewTemplateForm(true)}
-          onNewEvent={() => setShowNewEventForm(true)}
-        />
+        {activeTab !== "bookings" && (
+          <AdminButtons
+            activeTab={activeTab}
+            onNewTemplate={() => setShowNewTemplateForm(true)}
+            onNewEvent={() => setShowNewEventForm(true)}
+          />
+        )}
       </div>
-      {activeTab === "templates" ? (
-        <TemplatesList
-          templates={templates}
-          onDelete={deleteTemplate}
-          onEdit={setSelectedTemplate}
-        />
-      ) : (
-        <EventsList events={events} onDelete={handleDeleteEvent} />
-      )}
+      {renderContent()}
       {showNewTemplateForm && (
         <NewTemplateForm
           onClose={() => setShowNewTemplateForm(false)}

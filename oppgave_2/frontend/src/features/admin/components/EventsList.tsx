@@ -1,5 +1,5 @@
 import { Event } from "@/features/events/interfaces";
-import { FaEdit, FaTrash, FaUsers, FaRegEyeSlash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaRegEyeSlash } from "react-icons/fa";
 import EventForm from "./EventForm";
 import { useEventManagement } from "../hooks/useEventManagement";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -49,15 +49,7 @@ export const EventsList = ({ events, onDelete }: EventsListProps) => {
                 <FaEdit />
                 <span className="tooltip">Rediger arrangement</span>
               </button>
-              <button
-                className="icon-btn users"
-                onClick={() =>
-                  (window.location.href = `/admin/${event.slug}/bookings`)
-                }
-              >
-                <FaUsers />
-                <span className="tooltip">Håndter påmeldinger</span>
-              </button>
+
               <button
                 className="icon-btn delete"
                 onClick={() => handleDelete(event.id, onDelete)}

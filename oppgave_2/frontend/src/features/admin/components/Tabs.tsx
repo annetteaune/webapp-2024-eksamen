@@ -19,5 +19,11 @@ export const Tabs = ({ activeTab, setActiveTab }: TabProps) => (
     >
       Maler
     </button>
+    <button
+      className={`tab-btn ${activeTab === "bookings" ? "active" : ""}`}
+      onClick={() => setActiveTab("bookings")}
+    >
+      Påmeldinger
+    </button>
   </div>
 );

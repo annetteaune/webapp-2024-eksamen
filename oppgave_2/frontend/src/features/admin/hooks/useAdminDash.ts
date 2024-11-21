@@ -4,7 +4,7 @@ import { fetcher } from "@/api/fetcher";
 import { Template } from "../interfaces";
 import { Event } from "@/features/events/interfaces";
 
-export type TabType = "templates" | "events";
+export type TabType = "templates" | "events" | "bookings";
 
 export const useAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>("events");
