@@ -213,16 +213,11 @@ export const createBooking = async (
       newBooking.has_paid,
       newBooking.status
     );
-
-    if (
-      status === "Godkjent" &&
-      currentBookings.count + 1 === eventDetails.capacity
-    ) {
+    if (currentBookings.count + 1 >= eventDetails.capacity) {
       db.prepare(`UPDATE events SET status = 'Fullbooket' WHERE id = ?`).run(
         booking.event_id
       );
     }
-
     return {
       success: true,
       data: {

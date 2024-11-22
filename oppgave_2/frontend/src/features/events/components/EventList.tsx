@@ -42,7 +42,11 @@ export default function EventList() {
           `/events${queryString ? `?${queryString}` : ""}`
         );
 
-        const publicEvents = data.events.filter((event) => !event.isPrivate);
+        const publicEvents = data.events
+          .filter((event) => !event.isPrivate)
+          .sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
         setEvents(publicEvents);
       } catch (error) {
         console.error("Error fetching events:", error);

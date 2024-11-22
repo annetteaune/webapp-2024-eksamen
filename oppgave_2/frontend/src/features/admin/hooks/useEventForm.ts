@@ -100,19 +100,39 @@ export const useEventForm = ({
     if (!selectedDate) return false;
 
     const dateToCheck = new Date(selectedDate).toISOString().split("T")[0];
-    const conflictingEvent = existingEvents.find((event) => {
+    let hasConflict = false;
+
+    const existingEventOnDate = existingEvents.find((event) => {
+      if (event.id === initialData?.id) return false;
       const eventDate = new Date(event.date).toISOString().split("T")[0];
       return eventDate === dateToCheck && !event.allowSameDay;
     });
 
-    return !!conflictingEvent;
+    if (existingEventOnDate) {
+      hasConflict = true;
+    }
+
+    if (!formData.allowSameDay) {
+      const anyEventOnDate = existingEvents.find((event) => {
+        if (event.id === initialData?.id) return false;
+        const eventDate = new Date(event.date).toISOString().split("T")[0];
+        return eventDate === dateToCheck;
+      });
+
+      if (anyEventOnDate) {
+        hasConflict = true;
+      }
+    }
+
+    return hasConflict;
   };
 
   const handleDateChange = async (value: string) => {
-    setErrors((prev) => ({ ...prev, date: "" }));
+    setErrors((prev) => ({ ...prev, date: undefined }));
 
     if (!value) {
       handleInputChange("date", "");
+      setErrors((prev) => ({ ...prev, date: "Dato er påkrevd" }));
       return;
     }
 
@@ -134,10 +154,10 @@ export const useEventForm = ({
     }
 
     const hasConflict = checkDateConflicts(value);
-    if (hasConflict && (!formData.allowSameDay || !initialData?.allowSameDay)) {
+    if (hasConflict) {
       setErrors((prev) => ({
         ...prev,
-        date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
+        date: "Denne datoen er utilgjengelig",
       }));
       return;
     }
@@ -187,6 +207,7 @@ export const useEventForm = ({
       }
     }
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -194,28 +215,22 @@ export const useEventForm = ({
     try {
       setIsSubmitting(true);
 
-      const slug = await generateUniqueSlug(formData.title, formData.date);
-
-      if (!formData.allowSameDay && formData.date) {
-        const selectedDate = new Date(formData.date)
-          .toISOString()
-          .split("T")[0];
-        const response = await fetcher<{ events: Event[] }>("/events");
-        const events = response.events.filter((e) => e.id !== initialData?.id);
-
-        const hasConflict = events.some((event) => {
-          const eventDate = new Date(event.date).toISOString().split("T")[0];
-          return eventDate === selectedDate && !event.allowSameDay;
-        });
-
-        if (hasConflict) {
-          setErrors({
-            date: "Det finnes allerede et arrangement på denne datoen som ikke tillater andre arrangementer samme dag",
-          });
-          setIsSubmitting(false);
-          return;
-        }
+      if (!formData.date) {
+        setErrors({ date: "Dato er påkrevd" });
+        setIsSubmitting(false);
+        return;
       }
+
+      const hasConflict = checkDateConflicts(formData.date);
+      if (hasConflict) {
+        setErrors({
+          date: "Denne datoen er utilgjengelig",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      const slug = await generateUniqueSlug(formData.title, formData.date);
 
       const { templateId, ...requiredFields } = formData;
       const finalSubmissionData = templateId
@@ -225,6 +240,7 @@ export const useEventForm = ({
       const submitSchema = templateId
         ? eventFormSchema
         : eventFormSchema.omit({ templateId: true });
+
       const { isValid, errors: validationErrors } = validateForm(
         submitSchema,
         finalSubmissionData
@@ -232,6 +248,7 @@ export const useEventForm = ({
 
       if (!isValid) {
         setErrors(validationErrors);
+        setIsSubmitting(false);
         return;
       }
 
@@ -248,7 +265,10 @@ export const useEventForm = ({
       onClose();
     } catch (error) {
       console.error("Form submission error:", error);
-      setErrors({ _form: "Det oppstod en feil ved lagring av arrangementet" });
+      setErrors((prev) => ({
+        ...prev,
+        _form: "Det oppstod en feil ved lagring av arrangementet",
+      }));
     } finally {
       setIsSubmitting(false);
     }

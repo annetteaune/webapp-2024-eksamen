@@ -1,6 +1,9 @@
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
 import Link from "next/link";
+import { getTypeIcon, getStatusIcon } from "../helpers/getIcons";
+import { FaCalendarAlt } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
 type EventCardProps = {
   id: string;
@@ -32,24 +35,44 @@ export default function EventCard({
     locale: nb,
   });
 
+  const TypeIcon = getTypeIcon(type.name);
+  const StatusIcon = getStatusIcon(status);
+
   return (
     <article className="event-card">
       <div className="card-header">
         <h3 className="card-title">{title}</h3>
-        <span className="card-type">{type.name}</span>
+        <div className="card-type-container">
+          {" "}
+          <span className="card-type">{type.name}</span>{" "}
+          <TypeIcon className="card-icon" />
+        </div>
       </div>
 
       <div className="card-meta">
-        <span className="card-date">{formattedDate}</span>
-        <span className="card-place">{location}</span>
+        <span className="card-date">
+          <FaCalendarAlt />
+          {formattedDate}
+        </span>
+        <span className="card-place">
+          <FaLocationDot />
+          {location}
+        </span>
       </div>
 
       <p className="card-desc">{description}</p>
 
-      <span className="card-status">Status: {status}</span>
+      <div className="card-status">
+        <StatusIcon
+          className={`status-icon ${
+            status === "Ledige plasser" ? "available" : "booked"
+          }`}
+        />
+        <span> {status}</span>
+      </div>
 
       <Link href={`/${slug}`} className="card-btn">
-        <button className="btn">Les mer</button>
+        <button className="btn primary-btn">Les mer</button>
       </Link>
     </article>
   );

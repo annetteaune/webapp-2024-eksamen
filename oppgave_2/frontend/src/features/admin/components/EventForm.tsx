@@ -115,7 +115,7 @@ export default function EventForm({
                 min={`${minDate}T00:00`}
                 max={`${maxDate}T23:59`}
                 className={errors.date ? "error" : ""}
-                disabled={Boolean(initialData) || isSubmitting}
+                disabled={isSubmitting}
               />
               {errors.date && <ErrorMessage message={errors.date} />}
               {formData.templateId && (

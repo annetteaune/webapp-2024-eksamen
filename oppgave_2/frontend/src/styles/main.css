@@ -89,7 +89,9 @@ code {
 .loading-text {
   text-align: center;
 }
-
+.bold {
+  font-weight: 600;
+}
 /*tablet*/
 @media (min-width: 768px) {
   .error-message-container {

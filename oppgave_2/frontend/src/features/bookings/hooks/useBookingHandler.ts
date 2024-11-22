@@ -57,7 +57,6 @@ export const useBookingHandler = (
       };
     }
 
-    // Use event's allowWaitlist if no template exists
     const allowWaitlist = template?.allowWaitlist ?? event.allowWaitlist;
 
     if (allowWaitlist) {
