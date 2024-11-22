@@ -35,7 +35,7 @@
 
 - GET
 
-  - Fårmål: Henter spesifikke arrangementer basert på ID
+  - Formål: Henter spesifikke arrangementer basert på ID
   - Brukes i hovedsak internt i applikasjonen
   - Respons: Ett enkelt arrangement-objekt
   - Statuskoder:

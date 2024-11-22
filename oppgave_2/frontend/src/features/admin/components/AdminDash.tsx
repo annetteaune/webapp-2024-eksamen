@@ -13,6 +13,7 @@ import { useState } from "react";
 import ErrorMessage from "@/components/ErrorMessage";
 import ExportBookings from "./ExportBookings";
 import BookingsList from "./BookingsList";
+import Loader from "@/components/Loader";
 
 const AdminDashboard = () => {
   const {
@@ -102,7 +103,7 @@ const AdminDashboard = () => {
   };
 
   if (isLoading) {
-    return <div className="loading-text">Laster inn...</div>;
+    return <Loader />;
   }
 
   const renderContent = () => {

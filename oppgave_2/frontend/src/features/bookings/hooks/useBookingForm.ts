@@ -56,7 +56,6 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
         setEvent(eventData);
 
         try {
-          // Only fetch template if we have a templateId
           const [templateData, bookingsResponse] = await Promise.all([
             eventData.templateId
               ? fetcher<Template>(`/templates/${eventData.templateId}`)
@@ -145,6 +144,9 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
 
       setSubmitSuccess(true);
       setAttendees([{ name: "", email: "" }]);
+      setTimeout(() => {
+        window.location.reload();
+      }, 3500);
     } catch (error) {
       setSubmitError(
         error instanceof Error ? error.message : "Feil ved påmelding"

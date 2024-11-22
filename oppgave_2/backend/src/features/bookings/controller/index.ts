@@ -24,21 +24,35 @@ app.get("/", async (c) => {
 app.get("/:slug", async (c) => {
   const slug = c.req.param("slug");
 
-  const event = (await db
-    .prepare("SELECT id FROM events WHERE slug = ?")
-    .get(slug)) as { id: string } | undefined;
+  try {
+    const event = (await db
+      .prepare("SELECT id FROM events WHERE slug = ?")
+      .get(slug)) as { id: string } | undefined;
 
-  if (!event) {
-    return c.json({ bookings: [] }, { status: 404 });
+    if (!event) {
+      return c.json({ error: "Event not found" }, { status: 404 });
+    }
+
+    const result = await getBookingsByEvent(db, event.id);
+
+    if (!result.success) {
+      return c.json(
+        {
+          error: result.error,
+        },
+        { status: 500 }
+      );
+    }
+
+    return c.json(result.data);
+  } catch (error) {
+    return c.json(
+      {
+        error: "Failed to fetch bookings",
+      },
+      { status: 500 }
+    );
   }
-
-  const result = await getBookingsByEvent(db, event.id);
-
-  if (!result.success) {
-    return c.json({ bookings: [] }, { status: 404 });
-  }
-
-  return c.json(result.data);
 });
 
 app.post("/", async (c) => {

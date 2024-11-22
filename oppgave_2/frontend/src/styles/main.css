@@ -10,6 +10,7 @@
 @import "_adminForms.css";
 @import "_bookingPage.css";
 @import "_buttons.css";
+@import "_loader.css";
 html {
   font-size: calc(0.5em + 0.5vw);
 }

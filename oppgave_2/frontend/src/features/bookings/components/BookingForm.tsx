@@ -1,4 +1,5 @@
 "use client";
+import Loader from "@/components/Loader";
 import { useBookingForm } from "../hooks/useBookingForm";
 
 type BookingFormProps = {
@@ -27,7 +28,7 @@ export default function BookingForm({
   } = useBookingForm({ eventId, eventSlug });
 
   if (!event) {
-    return <div className="loading-text">Laster inn...</div>;
+    return <Loader />;
   }
   const bookingStatus = bookingHandler
     ? bookingHandler.getBookingStatus(attendees.length)
@@ -50,9 +51,7 @@ export default function BookingForm({
         <h3>Påmelding mottatt!</h3>
         <p>Takk for din påmelding til {eventTitle}.</p>
         <p>Du vil motta en bekreftelse på e-post.</p>
-        <button onClick={resetForm} className="new-booking-btn btn">
-          Registrer ny påmelding
-        </button>
+        <Loader />
       </div>
     );
   }
@@ -84,6 +83,7 @@ export default function BookingForm({
                   />
                 </label>
               </div>
+
               <div className="form-row">
                 <label>
                   E-post:

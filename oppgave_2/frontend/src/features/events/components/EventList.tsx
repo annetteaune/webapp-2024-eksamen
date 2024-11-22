@@ -5,6 +5,7 @@ import { Event, EventsResponse } from "../interfaces";
 import EventCard from "./EventCard";
 import { fetcher } from "@/api/fetcher";
 import { useTypes } from "@/features/types/hooks/useTypes";
+import Loader from "@/components/Loader";
 
 const getTypeSlug = (name: string) => {
   return name
@@ -56,7 +57,7 @@ export default function EventList() {
     getEvents();
   }, [searchParams, types]);
 
-  if (isLoading) return <div className="loading-text">Laster inn...</div>;
+  if (isLoading) return <Loader />;
   if (error) return <div className="loading-text">Feil under innlasting</div>;
   if (!events.length)
     return <div className="loading-text">Ingen arrangementer funnet</div>;

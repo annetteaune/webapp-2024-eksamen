@@ -8,6 +8,11 @@ export async function getBookingCounts(slug: string): Promise<BookingCounts> {
     const response = await fetcher<{ bookings: Booking[] }>(
       `/bookings/${slug}`
     );
+
+    if (!response || !response.bookings) {
+      throw new Error("No bookings data received");
+    }
+
     const bookings = response.bookings;
 
     return {

@@ -5,6 +5,7 @@ import { Booking } from "@/features/bookings/interfaces";
 import { fetcher } from "@/api/fetcher";
 import Link from "next/link";
 import { FaUsers } from "react-icons/fa";
+import Loader from "@/components/Loader";
 
 type EventBookings = {
   event: Event;
@@ -61,7 +62,7 @@ const BookingsList = () => {
     fetchData();
   }, []);
 
-  if (isLoading) return <div className="loading-text">Laster inn...</div>;
+  if (isLoading) return <Loader />;
 
   return (
     <div className="bookings-section">

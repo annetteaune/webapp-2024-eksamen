@@ -9,6 +9,7 @@ import { BookingsCard } from "./BookingsCard";
 import { BookingAdminForm } from "./BookingAdminForm";
 import AddManualBooking from "./AddManualBooking";
 import { ManualBookingForm } from "./ManualBookingForm";
+import Loader from "@/components/Loader";
 
 type BookingStatus =
   | "Godkjent"
@@ -132,7 +133,7 @@ export default function BookingsAdminPage({
   };
 
   if (!event) {
-    return <div className="loading-text">Laster inn...</div>;
+    return <Loader />;
   }
 
   // claude.ai
