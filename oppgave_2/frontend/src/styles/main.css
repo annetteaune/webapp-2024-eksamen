@@ -1,0 +1,103 @@
+@import "reset.css";
+@import "_colors.css";
+@import "_navigation.css";
+@import "_footer.css";
+@import "_eventCard.css";
+@import "_eventList.css";
+@import "_eventPage.css";
+@import "_filter.css";
+@import "_adminDash.css";
+@import "_adminForms.css";
+@import "_bookingPage.css";
+@import "_buttons.css";
+@import "_loader.css";
+html {
+  font-size: calc(0.5em + 0.5vw);
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 90%;
+  margin: 0 auto;
+  background-color: var(--backgroundcolor);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* Text */
+.page-title {
+  text-align: center;
+  padding: 1rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--btn-hover);
+}
+.loading-text {
+  text-align: center;
+}
+.bold {
+  font-weight: 600;
+}
+
+/* 404 */
+.not-found {
+  text-align: center;
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background-color: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--font-normal);
+  }
+  p {
+    margin-bottom: 1.5rem;
+    color: var(--font-normal);
+  }
+  a {
+    color: var(--btn);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Error banner */
+.error-message-container {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(235, 235, 235);
+  color: var(--error);
+  text-shadow: var(--shadow-sm);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  z-index: 999;
+  max-width: 60%;
+  text-align: center;
+  font-size: 2rem;
+}
+
+/*tablet*/
+@media (min-width: 768px) {
+  .error-message-container {
+    font-size: 1rem;
+  }
+}

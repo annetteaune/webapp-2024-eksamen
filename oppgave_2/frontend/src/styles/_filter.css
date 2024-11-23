@@ -1,0 +1,32 @@
+.filter-container {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  margin: 1rem auto;
+  max-width: 800px;
+  justify-content: center;
+  .filter-select {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 200px;
+    background-color: white;
+    color: var(--font-normal);
+    transition: all 0.2s ease;
+    &:focus {
+      outline: none;
+      border-color: var(--btn);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: center;
+    .filter-select {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+}

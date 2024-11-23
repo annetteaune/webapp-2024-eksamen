@@ -1,4 +1,12 @@
-export default function Home() {
-  return <h1>Oppgave 2</h1>;
-}
+import EventList from "@/features/events/components/EventList";
+import Filter from "@/features/events/components/Filter";
 import React from "react";
+
+export default function Home() {
+  return (
+    <>
+      <Filter />
+      <EventList />
+    </>
+  );
+}

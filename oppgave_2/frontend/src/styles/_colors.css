@@ -1,0 +1,22 @@
+:root {
+  --backgroundcolor: #fcfcfc;
+  --accentcolor: #ffffff;
+
+  --iconbkgcolor: rgba(177, 177, 177, 0.1);
+
+  --font-normal: #111827;
+  --font-light: white;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #dc2626;
+
+  --border: #d1d5db;
+  --border-focus: #2563eb;
+
+  --btn: #007090;
+  --btn-hover: #005269;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-y: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}

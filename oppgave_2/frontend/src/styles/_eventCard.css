@@ -1,0 +1,123 @@
+.event-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--accentcolor);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 100%;
+  min-height: 15rem;
+  margin: 0 auto;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-y);
+  }
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem 1.5rem 0.75rem;
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--font-normal);
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-type-container {
+      display: flex;
+      justify-content: space-between;
+      .card-type {
+        font-size: 1.1rem;
+        color: var(--btn);
+        font-weight: 500;
+      }
+      .card-icon {
+        font-size: 1.7rem;
+        color: var(--btn);
+        padding: 0rem 1rem;
+      }
+    }
+  }
+  .card-meta {
+    display: flex;
+    padding: 0.75rem 1.5rem;
+    justify-content: flex-start;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: var(--font-normal);
+    .card-date,
+    .card-place {
+      display: flex;
+      gap: 0.2rem;
+    }
+  }
+  .card-desc {
+    padding: 0.75rem 1.5rem;
+    line-height: 1.5;
+    color: var(--font-normal);
+    flex-grow: 1;
+    background-color: var(--iconbkgcolor);
+    width: 90%;
+    margin: 0 auto;
+    border-radius: 8px;
+  }
+  .card-status {
+    padding: 0.75rem 1.5rem;
+    color: var(--font-normal);
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    .status-icon {
+      font-size: 1.2rem;
+      &.available {
+        color: var(--success);
+      }
+      &.booked {
+        color: var(--error);
+      }
+    }
+  }
+  .card-btn {
+    padding: 0.75rem 1.5rem 1.5rem;
+    button {
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+/*tablet*/
+@media (min-width: 768px) and (max-width: 1200px) {
+  .event-card {
+    width: 45%;
+    .card-desc {
+      max-width: 80%;
+    }
+  }
+}
+/*laptop*/
+@media (min-width: 1200px) {
+  .event-card {
+    width: 30%;
+    .card-header {
+      .card-type-container {
+        .card-type {
+          font-size: 1rem;
+        }
+        .card-icon {
+          font-size: 1.3rem;
+          padding: 0rem 0.5rem;
+        }
+      }
+    }
+    .card-desc {
+      max-width: 80%;
+    }
+  }
+}
