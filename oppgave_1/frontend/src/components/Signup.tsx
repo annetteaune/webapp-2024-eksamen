@@ -1,67 +1,8 @@
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import {
-  FormFields,
-  FormSubmitEvent,
-  InputChangeEvent,
-  User,
-} from "@/interfaces/types";
-import { fetcher } from "@/api/fetcher";
+import { useSignup } from "@/hooks/useSignup";
 
 export default function SignUp() {
-  const [success, setSuccess] = useState(false);
-  const [formError, setFormError] = useState(false);
-  const [fields, setFields] = useState<FormFields>({
-    name: "",
-    email: "",
-    admin: false,
-  });
-  const router = useRouter();
-
-  const formIsValid = Object.values(fields).filter((val) => val?.length === 0);
-
-  const handleSubmit = async (event: FormSubmitEvent) => {
-    event.preventDefault();
-    setFormError(false);
-    setSuccess(false);
-
-    // måtte legge til dette da valideringen ikke trigget feilmeldingen etter implementasjon av lagring til db
-    if (!fields.name || !fields.email) {
-      setFormError(true);
-      return;
-    }
-
-    if (formIsValid.length === 0) {
-      setSuccess(true);
-      try {
-        const response = await fetcher<{ success: boolean; data: User }>(
-          "/brukere",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              name: fields.name,
-              email: fields.email,
-            }),
-          }
-        );
-
-        if (response.success) {
-          // redirect til kurs
-          setTimeout(() => {
-            router.push("/kurs");
-          }, 1000);
-        }
-      } catch (error) {
-        console.error("Failed to create user:", error);
-        setFormError(true);
-      }
-    }
-  };
-
-  const handleChange = (event: InputChangeEvent) => {
-    const { name, value } = event.target;
-    setFields((prev) => ({ ...prev, [name]: value }));
-  };
+  const { success, formError, fields, handleSubmit, handleChange } =
+    useSignup();
 
   return (
     <section className="mx-auto max-w-xl" data-testid="sign_up">

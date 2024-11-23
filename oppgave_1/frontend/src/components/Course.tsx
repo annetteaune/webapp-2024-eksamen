@@ -1,4 +1,3 @@
-import { Course as CourseType } from "@/interfaces/types";
 import Link from "next/link";
 import UsersList from "./UsersList";
 import Lesson from "./Lesson";

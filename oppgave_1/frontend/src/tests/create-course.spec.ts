@@ -1,20 +1,8 @@
-import {
-  test,
-  expect,
-  type Page,
-  type Locator,
-  type BrowserContext,
-} from "@playwright/test";
+import { test, expect, type Page, type BrowserContext } from "@playwright/test";
 import { waitForPageReady } from "./helpers";
 
 let page: Page;
 let context: BrowserContext;
-
-/*TODO: Flaky tests
-      Har brukt 2 dager på å forsøke å feilrette i flaky tester. Enkelte tester feiler, men bare noen ganger, men ingen tester
-      feiler om --trace on-flagget er på, så feilretting er veldig vanskelig. Om de ulike testblokkene kjøres med .only, feiler heller ingen per blokk,
-      untatt den aller siste - som foreøvrig bestandig passerer når ALLE kjøres. 
-      Ellers er det 1-3 tester som flagges som flaky per testrunde når alle blokkene kjøres. Lar stå som det er, og kommer tilbake til det om jeg får tid før innlevering.  */
 
 test.describe("Oppgave 1 Create", () => {
   test.beforeAll(async ({ browser }) => {
@@ -255,23 +243,38 @@ test.describe("Oppgave 1 Create", () => {
   test.describe("When creating multiple lessons with multiple textboxes", () => {
     test.beforeEach(async () => {
       await page.goto("/ny");
+      await waitForPageReady(page);
       await page.getByTestId("form_title").fill("Test Title");
       await page.getByTestId("form_slug").fill("test-slug");
       await page.getByTestId("form_description").fill("Test description");
       await page.getByTestId("form_category").selectOption("Code");
-      await page.click('button:has-text("Leksjoner")');
+      const leksjonerButton = page.getByRole("button", { name: "Leksjoner" });
+      await leksjonerButton.waitFor({ state: "visible" });
+      await leksjonerButton.click();
       await waitForPageReady(page);
-      await page.click('button:has-text("+ Ny leksjon")');
+      const nyLeksjonButton = page.getByRole("button", {
+        name: "+ Ny leksjon",
+      });
+      await nyLeksjonButton.waitFor({ state: "visible", timeout: 5000 });
+      await nyLeksjonButton.click();
+      await waitForPageReady(page);
     });
 
     test("Should have enabled publish button if all text fields are valid", async () => {
       await page.getByTestId("form_lesson_title").fill("Lesson 1");
       await page.getByTestId("form_lesson_slug").fill("lesson-1");
       await page.getByTestId("form_lesson_preAmble").fill("Test preamble 1");
-      await page.locator("textarea").first().fill("Test content 1");
-      await page.getByTestId("form_lesson_add_text").click();
-      await page.locator("textarea").nth(1).fill("Additional content");
-      const submitBtn = await page.getByTestId("form_submit");
+      const firstTextarea = page.locator("textarea").first();
+      await firstTextarea.waitFor({ state: "visible" });
+      await firstTextarea.fill("Test content 1");
+      const addTextButton = page.getByTestId("form_lesson_add_text");
+      await addTextButton.waitFor({ state: "visible" });
+      await addTextButton.click();
+      const secondTextarea = page.locator("textarea").nth(1);
+      await secondTextarea.waitFor({ state: "visible" });
+      await secondTextarea.fill("Additional content");
+      const submitBtn = page.getByTestId("form_submit");
+      await submitBtn.waitFor({ state: "visible" });
       await expect(submitBtn).toBeEnabled();
     });
   });

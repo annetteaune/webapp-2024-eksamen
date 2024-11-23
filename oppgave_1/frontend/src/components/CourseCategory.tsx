@@ -1,52 +1,24 @@
-import { useState } from "react";
 import { Category } from "@/interfaces/types";
-import { fetcher } from "@/api/fetcher";
+import { useCourseCategory } from "@/hooks/useCourseCategory";
 
 interface CourseCategoryProps {
   courseSlug: string;
   currentCategory: string;
   categories: Category[];
 }
-// har fått hjelp av claude.ai til å håndtere oppdatering av kategori
 export default function CourseCategory({
   courseSlug,
   currentCategory,
   categories,
 }: CourseCategoryProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [updateError, setUpdateError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const {
+    isEditing,
+    updateError,
+    selectedCategory,
+    handleCategoryChange,
+    startEditing,
+  } = useCourseCategory(courseSlug);
 
-  const handleCategoryChange = async (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newCategory = event.target.value;
-
-    if (newCategory === "") {
-      return;
-    }
-
-    setSelectedCategory(newCategory);
-
-    try {
-      const response = await fetcher(`/kurs/${courseSlug}/category`, {
-        method: "PATCH",
-        body: JSON.stringify({ category: newCategory.toLowerCase() }),
-      });
-
-      if (response.success) {
-        window.location.reload();
-      } else {
-        throw new Error(response.error?.message || "Failed to update category");
-      }
-    } catch (error) {
-      setUpdateError(
-        error instanceof Error ? error.message : "Failed to update category"
-      );
-    } finally {
-      setIsEditing(false);
-    }
-  };
   return (
     <div className="flex flex-col items-end gap-2">
       <span data-testid="course_category">
@@ -56,7 +28,7 @@ export default function CourseCategory({
       {isEditing ? (
         <select
           value={selectedCategory || currentCategory}
-          onChange={handleCategoryChange}
+          onChange={(e) => handleCategoryChange(e.target.value)}
           className="w-[200px] rounded border border-slate-300 px-2 py-1"
           data-testid="category-select"
         >
@@ -69,10 +41,7 @@ export default function CourseCategory({
         </select>
       ) : (
         <button
-          onClick={() => {
-            setIsEditing(true);
-            setSelectedCategory(currentCategory);
-          }}
+          onClick={startEditing}
           className="text-sm font-semibold underline"
           data-testid="edit-category-button"
         >
