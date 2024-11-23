@@ -94,7 +94,7 @@ app.post("/", async (c) => {
   }
 });
 
-app.patch("/:eventId", async (c) => {
+app.patch("/by-id/:eventId", async (c) => {
   try {
     const eventId = c.req.param("eventId");
     const body = await c.req.json();
@@ -144,7 +144,7 @@ app.patch("/:eventId", async (c) => {
   }
 });
 
-app.delete("/:eventId", async (c) => {
+app.delete("/by-id/:eventId", async (c) => {
   const eventId = c.req.param("eventId");
   const result = await removeEvent(db, eventId);
 
