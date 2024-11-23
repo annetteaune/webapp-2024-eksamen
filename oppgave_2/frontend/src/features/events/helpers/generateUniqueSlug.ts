@@ -20,38 +20,39 @@ const generateDateSuffix = (date: string): string => {
   return format(new Date(date), "dd-MM-yy");
 };
 
-const checkSlugExists = async (slug: string): Promise<boolean> => {
-  try {
-    await fetcher(`/events/${slug}`);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 const generateUniqueIdentifier = (): string => {
   return Math.random().toString(36).substring(2, 7);
 };
 
 export const generateUniqueSlug = async (
   title: string,
-  date: string,
-  existingEvents?: Event[]
+  date: string
 ): Promise<string> => {
-  const baseSlug = sanitizeTitle(title);
-  const dateSuffix = generateDateSuffix(date);
-  let slug = `${baseSlug}-${dateSuffix}`;
+  try {
+    const response = await fetcher<{ events: Event[] }>(
+      "/events?includePrivate=true"
+    );
+    const existingEvents = response.events;
 
-  if (existingEvents?.some((event) => event.slug === slug)) {
-    slug = `${baseSlug}-${dateSuffix}-${generateUniqueIdentifier()}`;
-  } else {
-    const exists = await checkSlugExists(slug);
-    if (exists) {
+    const baseSlug = sanitizeTitle(title);
+    const dateSuffix = generateDateSuffix(date);
+    let slug = `${baseSlug}-${dateSuffix}`;
+
+    const slugExists = existingEvents.some((event) => event.slug === slug);
+
+    if (slugExists) {
       slug = `${baseSlug}-${dateSuffix}-${generateUniqueIdentifier()}`;
     }
-  }
 
-  return slug;
+    return slug;
+  } catch (error) {
+    console.warn(
+      "Could not check existing slugs, generating unique slug with identifier"
+    );
+    const baseSlug = sanitizeTitle(title);
+    const dateSuffix = generateDateSuffix(date);
+    return `${baseSlug}-${dateSuffix}-${generateUniqueIdentifier()}`;
+  }
 };
 
 export const getSlugErrorMessage = (slug: string): string | undefined => {

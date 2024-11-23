@@ -21,6 +21,7 @@ const AdminDashboard = () => {
     setActiveTab,
     templates,
     events,
+    setEvents,
     showNewTemplateForm,
     setShowNewTemplateForm,
     showNewEventForm,
@@ -65,7 +66,8 @@ const AdminDashboard = () => {
         throw new Error(response.error.message);
       }
 
-      window.location.reload();
+      setEvents((prevEvents) => [...prevEvents, response]);
+      setShowNewEventForm(false);
       return response;
     } catch (error) {
       console.error("Error creating event:", error);

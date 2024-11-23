@@ -176,6 +176,7 @@ export const useAdminDashboard = () => {
     setActiveTab,
     templates,
     events,
+    setEvents,
     showNewTemplateForm,
     setShowNewTemplateForm,
     showNewEventForm,
