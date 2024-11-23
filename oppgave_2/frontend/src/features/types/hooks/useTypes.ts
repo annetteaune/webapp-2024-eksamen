@@ -1,5 +1,6 @@
 "use client";
 import { fetcher } from "@/api/fetcher";
+import { endpoints } from "@/api/urls";
 import { useEffect, useState } from "react";
 
 export function useTypes() {
@@ -11,7 +12,7 @@ export function useTypes() {
     const fetchTypes = async () => {
       try {
         setIsLoading(true);
-        const response = await fetcher<TypesResponse>("/types");
+        const response = await fetcher<TypesResponse>(endpoints.types.base);
         setTypes(response.types);
         setError(null);
       } catch (err) {

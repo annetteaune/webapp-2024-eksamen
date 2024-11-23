@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Template, Type } from "../interfaces";
 import { fetcher } from "@/api/fetcher";
+import { endpoints } from "@/api/urls";
 
 export const useTemplateManagement = () => {
   const [loading, setLoading] = useState<string | null>(null);
@@ -10,7 +11,7 @@ export const useTemplateManagement = () => {
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const response = await fetcher<{ types: Type[] }>("/types");
+        const response = await fetcher<{ types: Type[] }>(endpoints.types.base);
         setTypes(response.types);
       } catch (error) {
         console.error("Error fetching types:", error);
@@ -26,7 +27,7 @@ export const useTemplateManagement = () => {
     try {
       setLoading(template.id);
       const response = await fetcher<{ events: any[] }>(
-        `/events?template=${template.id}`
+        endpoints.events.filtered({ template: template.id })
       );
       if (response.events?.length > 0) {
         setError("Kan ikke redigere maler som er i bruk.");
@@ -46,7 +47,7 @@ export const useTemplateManagement = () => {
   ) => {
     try {
       const response = await fetcher<{ events: any[] }>(
-        `/events?template=${template.id}`
+        endpoints.events.filtered({ template: template.id })
       );
       if (response.events?.length > 0) {
         setError("Kan ikke slette maler som er i bruk.");

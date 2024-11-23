@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { fetcher } from "@/api/fetcher";
 import { Event, EventsResponse } from "../interfaces";
+import { endpoints } from "@/api/urls";
 
 export const useEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -12,7 +13,7 @@ export const useEvents = () => {
     const fetchEvents = async () => {
       try {
         setIsLoading(true);
-        const response = await fetcher<EventsResponse>("/events");
+        const response = await fetcher<EventsResponse>(endpoints.events.base);
         setEvents(response.events);
         setError(null);
       } catch (err) {

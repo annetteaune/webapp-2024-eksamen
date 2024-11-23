@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { fetcher } from "@/api/fetcher";
 import { Event } from "@/features/events/interfaces";
 import { Booking } from "@/features/bookings/interfaces";
+import { endpoints } from "@/api/urls";
 
 type BookingStatus =
   | "Godkjent"
@@ -19,8 +20,8 @@ export const useBookingsAdmin = (slug: string) => {
   const fetchData = async () => {
     try {
       const [eventData, bookingsData] = await Promise.all([
-        fetcher<Event>(`/events/${slug}`),
-        fetcher<{ bookings: Booking[] }>(`/bookings/${slug}`),
+        fetcher<Event>(endpoints.events.bySlug(slug)),
+        fetcher<{ bookings: Booking[] }>(endpoints.bookings.bySlug(slug)),
       ]);
       setEvent(eventData);
       setBookings(bookingsData.bookings);
@@ -47,14 +48,9 @@ export const useBookingsAdmin = (slug: string) => {
           return;
         }
 
-        const response = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3999"
-          }/bookings/${bookingId}`,
-          {
-            method: "DELETE",
-          }
-        );
+        const response = await fetch(endpoints.bookings.byId(bookingId), {
+          method: "DELETE",
+        });
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
@@ -67,21 +63,16 @@ export const useBookingsAdmin = (slug: string) => {
           prevBookings.filter((booking) => booking.id !== bookingId)
         );
       } else {
-        const response = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3999"
-          }/bookings/${bookingId}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              status,
-              has_paid: hasPaid,
-            }),
-          }
-        );
+        const response = await fetch(endpoints.bookings.byId(bookingId), {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status,
+            has_paid: hasPaid,
+          }),
+        });
 
         if (!response.ok) {
           const errorData = await response.json();

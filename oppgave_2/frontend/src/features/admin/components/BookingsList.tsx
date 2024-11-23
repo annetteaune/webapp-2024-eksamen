@@ -1,65 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Event } from "@/features/events/interfaces";
-import { Booking } from "@/features/bookings/interfaces";
-import { fetcher } from "@/api/fetcher";
 import { FaUsers } from "react-icons/fa";
 import Loader from "@/components/Loader";
-
-type EventBookings = {
-  event: Event;
-  bookings: {
-    approved: number;
-    pending: number;
-    waitlist: number;
-    total: number;
-  };
-};
+import { useBookingsList } from "../hooks/useBookingsList";
 
 const BookingsList = () => {
-  const [eventBookings, setEventBookings] = useState<EventBookings[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const eventsResponse = await fetcher<{ events: Event[] }>(
-          "/events?includePrivate=true"
-        );
-        const events = eventsResponse.events;
-
-        const bookingsData = await Promise.all(
-          events.map(async (event) => {
-            const bookingsResponse = await fetcher<{ bookings: Booking[] }>(
-              `/bookings/${event.slug}`
-            );
-            const bookings = bookingsResponse.bookings;
-
-            return {
-              event,
-              bookings: {
-                approved: bookings.filter((b) => b.status === "Godkjent")
-                  .length,
-                pending: bookings.filter((b) => b.status === "Til behandling")
-                  .length,
-                waitlist: bookings.filter((b) => b.status === "På venteliste")
-                  .length,
-                total: bookings.length,
-              },
-            };
-          })
-        );
-
-        setEventBookings(bookingsData);
-      } catch (error) {
-        console.error("Error fetching bookings data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { eventBookings, isLoading } = useBookingsList();
 
   if (isLoading) return <Loader />;
 

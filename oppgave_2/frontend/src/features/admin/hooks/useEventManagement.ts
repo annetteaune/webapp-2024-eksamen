@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { fetcher } from "@/api/fetcher";
 import { Event } from "@/features/events/interfaces";
+import { endpoints } from "@/api/urls";
 
 export const useEventManagement = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -11,9 +12,9 @@ export const useEventManagement = () => {
     onDeleteCallback: (id: string) => void
   ) => {
     try {
-      const event = await fetcher<Event>(`/events/by-id/${eventId}`);
+      const event = await fetcher<Event>(endpoints.events.byId(eventId));
       const bookingsResponse = await fetcher<{ bookings: any[] }>(
-        `/bookings/${event.slug}`
+        endpoints.bookings.bySlug(event.slug)
       );
       const hasBookings = bookingsResponse.bookings?.length > 0;
 
@@ -62,7 +63,11 @@ export const useEventManagement = () => {
         status: selectedEvent?.status,
       };
 
-      const response = await fetcher(`/events/${selectedEvent?.id}`, {
+      if (!selectedEvent?.id) {
+        throw new Error("No event selected for update");
+      }
+
+      const response = await fetcher(endpoints.events.byId(selectedEvent.id), {
         method: "PATCH",
         body: JSON.stringify(backendData),
         ignoreResponseError: true,

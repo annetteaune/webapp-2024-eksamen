@@ -1,6 +1,7 @@
 import { fetcher } from "@/api/fetcher";
 import { useEffect, useState } from "react";
 import { Booking, BookingsResponse, CreateBookingData } from "../interfaces";
+import { endpoints } from "@/api/urls";
 
 export function useBookings(eventId?: string) {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -12,7 +13,7 @@ export function useBookings(eventId?: string) {
       try {
         setIsLoading(true);
         const response = await fetcher<BookingsResponse>(
-          eventId ? `/bookings/${eventId}` : "/bookings"
+          eventId ? endpoints.bookings.bySlug(eventId) : endpoints.bookings.base
         );
         setBookings(response.bookings);
         setError(null);
@@ -30,7 +31,7 @@ export function useBookings(eventId?: string) {
 
   const createBooking = async (data: CreateBookingData) => {
     try {
-      const response = await fetcher<Booking>("/bookings", {
+      const response = await fetcher<Booking>(endpoints.bookings.base, {
         method: "POST",
         body: JSON.stringify(data),
       });

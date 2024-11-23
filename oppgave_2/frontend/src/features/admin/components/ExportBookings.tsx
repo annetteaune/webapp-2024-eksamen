@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { nb } from "date-fns/locale";
 import { Event } from "@/features/events/interfaces";
 import { Booking } from "@/features/bookings/interfaces";
+import { endpoints } from "@/api/urls";
 
 interface FormattedBooking {
   Navn: string;
@@ -53,8 +54,8 @@ const ExportBookings = () => {
       setError("");
 
       const [bookingsResponse, eventsResponse] = await Promise.all([
-        fetcher<{ bookings: Booking[] }>("/bookings"),
-        fetcher<{ events: Event[] }>("/events"),
+        fetcher<{ bookings: Booking[] }>(endpoints.bookings.base),
+        fetcher<{ events: Event[] }>(endpoints.events.base),
       ]);
 
       const allBookings = bookingsResponse.bookings;

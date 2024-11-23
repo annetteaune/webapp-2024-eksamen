@@ -5,6 +5,7 @@ import { Booking } from "@/features/bookings/interfaces";
 import { fetcher } from "@/api/fetcher";
 import { useBookings } from "./useBookings";
 import { useBookingHandler } from "./useBookingHandler";
+import { endpoints } from "@/api/urls";
 
 type Attendee = {
   name: string;
@@ -49,7 +50,9 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventData = await fetcher<Event>(`/events/${eventSlug}`);
+        const eventData = await fetcher<Event>(
+          endpoints.events.bySlug(eventSlug)
+        );
         if (!eventData) {
           throw new Error("Event not found");
         }
@@ -58,9 +61,13 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
         try {
           const [templateData, bookingsResponse] = await Promise.all([
             eventData.templateId
-              ? fetcher<Template>(`/templates/${eventData.templateId}`)
+              ? fetcher<Template>(
+                  endpoints.templates.byId(eventData.templateId)
+                )
               : Promise.resolve(null),
-            fetcher<{ bookings: Booking[] }>(`/bookings/${eventSlug}`),
+            fetcher<{ bookings: Booking[] }>(
+              endpoints.bookings.bySlug(eventSlug)
+            ),
           ]);
 
           setTemplate(templateData);

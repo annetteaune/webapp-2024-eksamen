@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { fetcher } from "@/api/fetcher";
 import { Event } from "../interfaces";
+import { endpoints } from "@/api/urls";
 
 // claude.ai - hele koden
 
@@ -30,7 +31,7 @@ export const generateUniqueSlug = async (
 ): Promise<string> => {
   try {
     const response = await fetcher<{ events: Event[] }>(
-      "/events?includePrivate=true"
+      endpoints.events.filtered({ includePrivate: "true" })
     );
     const existingEvents = response.events;
 

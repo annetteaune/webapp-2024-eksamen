@@ -4,6 +4,7 @@ import { fetcher } from "@/api/fetcher";
 import { Event, EventsResponse } from "../interfaces";
 import { useTypes } from "@/features/types/hooks/useTypes";
 import { getTypeSlug } from "../helpers/typeSlug";
+import { endpoints } from "@/api/urls";
 
 export const useEventList = () => {
   const searchParams = useSearchParams();
@@ -26,9 +27,8 @@ export const useEventList = () => {
           }
         }
 
-        const queryString = params.toString();
         const data = await fetcher<EventsResponse>(
-          `/events${queryString ? `?${queryString}` : ""}`
+          endpoints.events.filtered(Object.fromEntries(params))
         );
 
         const publicEvents = data.events

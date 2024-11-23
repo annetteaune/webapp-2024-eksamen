@@ -7,6 +7,7 @@ import {
   validateField,
   validateForm,
 } from "../helpers/validate";
+import { endpoints } from "@/api/urls";
 
 interface UseTemplateFormProps {
   onClose: () => void;
@@ -48,7 +49,7 @@ export const useTemplateForm = ({
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const response = await fetcher<{ types: Type[] }>("/types");
+        const response = await fetcher<{ types: Type[] }>(endpoints.types.base);
         setTypes(response.types);
       } catch (error) {
         console.error("Error fetching types:", error);

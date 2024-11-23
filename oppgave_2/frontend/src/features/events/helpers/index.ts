@@ -2,13 +2,13 @@ import { fetcher } from "@/api/fetcher";
 import { Booking } from "@/features/bookings/interfaces";
 import { BookingCounts } from "../interfaces";
 import { Template } from "@/features/admin/interfaces";
+import { endpoints } from "@/api/urls";
 
 export async function getBookingCounts(slug: string): Promise<BookingCounts> {
   try {
     const response = await fetcher<{ bookings: Booking[] }>(
-      `/bookings/${slug}`
+      endpoints.bookings.bySlug(slug)
     );
-
     if (!response || !response.bookings) {
       throw new Error("No bookings data received");
     }
@@ -42,7 +42,9 @@ export async function getTemplateDetails(
   templateId: string
 ): Promise<Template | null> {
   try {
-    const template = await fetcher<Template>(`/templates/${templateId}`);
+    const template = await fetcher<Template>(
+      endpoints.templates.byId(templateId)
+    );
     return template;
   } catch (error) {
     console.error("Error fetching template:", error);

@@ -1,12 +1,6 @@
 "use client";
-import { useState } from "react";
 import { Event } from "@/features/events/interfaces";
-import { fetcher } from "@/api/fetcher";
-import {
-  validateForm,
-  manualBookingSchema,
-  type ValidationErrors,
-} from "../helpers/validate";
+import { useManualBookingForm } from "../hooks/useManualBookingForm";
 
 interface ManualBookingFormProps {
   event: Event;
@@ -19,49 +13,8 @@ export const ManualBookingForm = ({
   onClose,
   onSuccess,
 }: ManualBookingFormProps) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<ValidationErrors>({});
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    const formData = { name, email };
-    const { isValid, errors: validationErrors } = validateForm(
-      manualBookingSchema,
-      formData
-    );
-
-    if (!isValid) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      await fetcher("/bookings", {
-        method: "POST",
-        body: JSON.stringify({
-          event_id: event.id,
-          name,
-          email,
-        }),
-      });
-
-      onSuccess();
-      onClose();
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      setErrors({
-        server: "Kunne ikke opprette påmelding",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { name, setName, email, setEmail, isSubmitting, errors, handleSubmit } =
+    useManualBookingForm({ event, onClose, onSuccess });
 
   return (
     <div className="modal">

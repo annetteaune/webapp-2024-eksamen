@@ -10,6 +10,7 @@ import {
   formatDateForInput,
 } from "../helpers/validate";
 import { generateUniqueSlug } from "@/features/events/helpers/generateUniqueSlug";
+import { endpoints } from "@/api/urls";
 
 interface UseEventFormProps {
   onSubmit: (data: Omit<Event, "id" | "status" | "waitlist">) => Promise<void>;
@@ -62,9 +63,11 @@ export const useEventForm = ({
       try {
         const [typesResponse, templatesResponse, eventsResponse] =
           await Promise.all([
-            fetcher<TypesResponse>("/types"),
-            fetcher<{ templates: Template[] }>("/templates"),
-            fetcher<{ events: Event[] }>("/events?includePrivate=true"),
+            fetcher<TypesResponse>(endpoints.types.base),
+            fetcher<{ templates: Template[] }>(endpoints.templates.base),
+            fetcher<{ events: Event[] }>(
+              endpoints.events.filtered({ includePrivate: "true" })
+            ),
           ]);
         setTypes(typesResponse.types);
         setTemplates(templatesResponse.templates);

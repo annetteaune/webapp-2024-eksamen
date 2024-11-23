@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { fetcher } from "@/api/fetcher";
 import { Template } from "../interfaces";
 import { Event } from "@/features/events/interfaces";
+import { endpoints } from "@/api/urls";
 
 export type TabType = "templates" | "events" | "bookings";
 
@@ -23,8 +24,8 @@ export const useAdminDashboard = () => {
       try {
         setIsLoading(true);
         const [templatesResponse, eventsResponse] = await Promise.all([
-          fetcher("/templates"),
-          fetcher("/events?includePrivate=true"),
+          fetcher(endpoints.templates.base),
+          fetcher(endpoints.events.filtered({ includePrivate: "true" })),
         ]);
         setTemplates(templatesResponse.templates);
         setEvents(eventsResponse.events);
@@ -37,7 +38,7 @@ export const useAdminDashboard = () => {
 
   const deleteEvent = async (eventId: string) => {
     try {
-      const response = await fetcher(`/events/${eventId}`, {
+      const response = await fetcher(endpoints.events.byId(eventId), {
         method: "DELETE",
         ignoreResponseError: true,
       });
@@ -72,7 +73,7 @@ export const useAdminDashboard = () => {
   ): Promise<{ success: boolean; message?: string }> => {
     try {
       const checkResponse = await fetcher<{ events: any[] }>(
-        `/events?template=${templateId}`
+        endpoints.events.filtered({ template: templateId })
       );
       if (checkResponse.events?.length > 0) {
         return {
@@ -80,7 +81,7 @@ export const useAdminDashboard = () => {
           message: "Kan ikke slette maler som er i bruk.",
         };
       }
-      await fetcher(`/templates/${templateId}`, {
+      await fetcher(endpoints.templates.byId(templateId), {
         method: "DELETE",
       });
       setTemplates(templates.filter((template) => template.id !== templateId));
@@ -108,7 +109,7 @@ export const useAdminDashboard = () => {
       fixed_price: formData.fixedPrice,
       type_id: formData.typeId,
     };
-    const response = await fetcher("/templates", {
+    const response = await fetcher(endpoints.templates.base, {
       method: "POST",
       body: JSON.stringify(backendData),
     });
@@ -140,7 +141,7 @@ export const useAdminDashboard = () => {
     };
 
     try {
-      const response = await fetcher(`/templates/${templateId}`, {
+      const response = await fetcher(endpoints.templates.byId(templateId), {
         method: "PATCH",
         body: JSON.stringify(backendData),
       });
@@ -192,7 +193,7 @@ export const useAdminDashboard = () => {
         ...(eventData.templateId && { template_id: eventData.templateId }),
       };
 
-      const response = await fetcher("/events", {
+      const response = await fetcher(endpoints.events.base, {
         method: "POST",
         body: JSON.stringify(backendData),
       });

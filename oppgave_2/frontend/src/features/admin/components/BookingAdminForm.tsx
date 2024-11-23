@@ -1,8 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
 import { Booking } from "@/features/bookings/interfaces";
-import { Event } from "@/features/events/interfaces";
-import { fetcher } from "@/api/fetcher";
+import { useBookingAdminForm } from "../hooks/useBookingAdminForm";
 
 type BookingStatus =
   | "Godkjent"
@@ -25,38 +23,16 @@ export const BookingAdminForm = ({
   onClose,
   onSubmit,
 }: BookingAdminFormProps) => {
-  const [status, setStatus] = useState<BookingStatus>(booking.status);
-  const [hasPaid, setHasPaid] = useState(booking.hasPaid);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [event, setEvent] = useState<Event | null>(null);
-
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const eventData = await fetcher<Event>(
-          `/events/by-id/${booking.eventId}`
-        );
-        setEvent(eventData);
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      }
-    };
-    fetchEvent();
-  }, [booking.eventId]);
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      await onSubmit(booking.id, status, hasPaid);
-      onClose();
-    } catch (error) {
-      console.error("Error updating booking:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const isPaidEvent = event?.price && event.price > 0;
+  const {
+    status,
+    setStatus,
+    hasPaid,
+    setHasPaid,
+    isSubmitting,
+    event,
+    isPaidEvent,
+    handleSubmit,
+  } = useBookingAdminForm({ booking, onSubmit, onClose });
 
   return (
     <div className="modal">
