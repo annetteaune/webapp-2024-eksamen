@@ -1,7 +1,5 @@
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { Template, Type } from "../interfaces";
-import { useState, useEffect } from "react";
-import { fetcher } from "@/api/fetcher";
 import ErrorMessage from "@/components/ErrorMessage";
 import { useTemplateManagement } from "../hooks/useTemplateManagement";
 

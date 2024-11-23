@@ -15,7 +15,7 @@ interface FormattedBooking {
   Betalt: string;
 }
 
-// claude.ai har hjulpet meg å sette opp denne komponenten
+// claude.ai har hjulpet meg å sette opp hele komponenten
 const ExportBookings = () => {
   const [selectedYear, setSelectedYear] = useState(2024);
 

@@ -88,7 +88,6 @@ export const useBookingHandler = (
       const validated = bookingDataSchema.parse(data);
       const status = getBookingStatus(1);
 
-      // Ensure we can actually accept this booking
       if (!status.canBook && !status.mustUseWaitlist) {
         return {
           success: false,

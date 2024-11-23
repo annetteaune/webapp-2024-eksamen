@@ -156,11 +156,6 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
     }
   };
 
-  const resetForm = () => {
-    setSubmitSuccess(false);
-    setAttendees([{ name: "", email: "" }]);
-  };
-
   return {
     attendees,
     isSubmitting,
@@ -173,6 +168,5 @@ export const useBookingForm = ({ eventId, eventSlug }: UseBookingFormProps) => {
     removeAttendee,
     updateAttendee,
     handleSubmit,
-    resetForm,
   };
 };

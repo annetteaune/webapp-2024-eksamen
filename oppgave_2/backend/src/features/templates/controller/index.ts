@@ -114,13 +114,13 @@ app.patch("/:templateId", async (c) => {
   }
 });
 
+// claude.ai
 app.delete("/:templateId", async (c) => {
   try {
     const templateId = c.req.param("templateId");
     const result = await removeTemplate(db, templateId);
 
     if (!result.success) {
-      // Return appropriate status code without logging expected errors
       return c.json(
         { error: result.error },
         {
@@ -135,7 +135,6 @@ app.delete("/:templateId", async (c) => {
     }
     return c.json({ success: true }, { status: 200 });
   } catch (error) {
-    // Only log unexpected errors
     console.error("Unexpected error during template deletion:", error);
     return c.json(
       {

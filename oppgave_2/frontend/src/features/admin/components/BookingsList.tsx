@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Event } from "@/features/events/interfaces";
 import { Booking } from "@/features/bookings/interfaces";
 import { fetcher } from "@/api/fetcher";
-import Link from "next/link";
 import { FaUsers } from "react-icons/fa";
 import Loader from "@/components/Loader";
 

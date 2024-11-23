@@ -2,35 +2,12 @@ import { type DB } from "../../../db/db";
 import { type Result } from "../../../types";
 import { generateUUID } from "../../../lib/uuid";
 import {
+  CreateEvent,
+  DbEvent,
+  Event,
   eventSchema,
-  type createEventSchema,
-  type updateEventSchema,
+  UpdateEvent,
 } from "../helpers";
-import { z } from "zod";
-
-export type Event = z.infer<typeof eventSchema>;
-export type CreateEvent = z.infer<typeof createEventSchema>;
-export type UpdateEvent = z.infer<typeof updateEventSchema>;
-
-type DbEvent = {
-  id: string;
-  slug: string;
-  title: string;
-  description_short: string;
-  description_long: string;
-  date: string;
-  location: string;
-  type_id: string;
-  type_name: string;
-  capacity: number;
-  price: number;
-  template_id: string | null;
-  status: string;
-  is_private: number;
-  allow_same_day: number;
-  waitlist: string | null;
-  allow_waitlist: string;
-};
 
 // har fått hjelp av claude.ai til å skrive queries for filtrering
 // filtrerer også på templateID, for å unngå error i console-loggen ved forsøk på sletting av template i bruk,

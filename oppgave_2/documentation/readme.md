@@ -4,174 +4,71 @@
 
 [Se Wireframes(PDF)](./files/wireframes.pdf)
 
+Wireframes samsvarer ikke 100% med den endelige prototypen men setter grunnlaget for dataflyt og nødvendige ressurser.
+
 ## 2,3,4: Endepunkter, verb og responser:
 
 ### /events - alle arrangementer
 
-- GET
-  - Formål: Hente alle arrangementer, mulighet for filtrering basert på parametere
-  - Respons: Array med arrangement-objekter
-  - Statuskoder:
-    - 200: Success
-    - 500: Server error
-- POST:
-  - Formål: Opprette nytt arrangement
-  - Statuskoder:
-    - 201: Created successfully
-    - 400: Validation error
-    - 500: Server error
+| Verb | Formål                                                                 | Respons                        | Statuskoder                                                             |
+| ---- | ---------------------------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------- |
+| GET  | Hente alle arrangementer, mulighet for filtrering basert på parametere | Array med arrangement-objekter | 200: Success<br>500: Server error                                       |
+| POST | Opprette nytt arrangement                                              |                                | 201: Created successfully<br>400: Validation error<br>500: Server error |
 
 ### /events/:slug
 
-- GET
-  - Formål: Henter et arrangement basert på slug, som gir en penere url enn å hente ut med id
-  - Respons: Ett enkelt arrangement-objekt
-  - Statuskoder:
-    - 200: Success
-    - 404: Event not found
-    - 500: Server error
+| Verb | Formål                                                                            | Respons                       | Statuskoder                                               |
+| ---- | --------------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------------------- |
+| GET  | Henter et arrangement basert på slug, som gir en penere url enn å hente ut med id | Ett enkelt arrangement-objekt | 200: Success<br>404: Event not found<br>500: Server error |
 
 ### /events/by-id/:eventId
 
-- GET
-
-  - Formål: Henter spesifikke arrangementer basert på ID
-  - Brukes i hovedsak internt i applikasjonen
-  - Respons: Ett enkelt arrangement-objekt
-  - Statuskoder:
-    - 200: Success
-    - 404: Event not found
-    - 500: Server error
-
-- PATCH
-
-  - Formål: Oppdatere utvalgte elementer ved et arrangement
-  - Respons: Ett enkelt arrangement-objekt
-  - Statuskoder:
-    - 200: Updated successfully
-    - 400: Validation error
-    - 404: Event not found
-    - 500: Server error
-
-- DELETE
-  - Formål: Slette arrangement fra databasen
-  - Respons: Suksessmelding 200
-  - Statuskoder:
-    - 200: Deleted successfully
-    - 400: Event has bookings
-    - 404: Event not found
-    - 500: Server error
+| Verb   | Formål                                          | Respons                       | Statuskoder                                                                                       |
+| ------ | ----------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| GET    | Henter spesifikke arrangementer basert på ID    | Ett enkelt arrangement-objekt | 200: Success<br>404: Event not found<br>500: Server error                                         |
+| PATCH  | Oppdatere utvalgte elementer ved et arrangement | Ett enkelt arrangement-objekt | 200: Updated successfully<br>400: Validation error<br>404: Event not found<br>500: Server error   |
+| DELETE | Slette arrangement fra databasen                | Suksessmelding 200            | 200: Deleted successfully<br>400: Event has bookings<br>404: Event not found<br>500: Server error |
 
 ### /bookings
 
-- GET
+| Verb | Formål                 | Respons                      | Statuskoder                                                                        |
+| ---- | ---------------------- | ---------------------------- | ---------------------------------------------------------------------------------- |
+| GET  | Hente alle påmeldinger | Array med påmelding-objekter | 200: Success<br>500: Server error                                                  |
+| POST | Opprette ny påmelding  | Ett enkelt påmeldingsobjekt  | 201: Created successfully<br>400: Validation error/Event full<br>500: Server error |
 
-  - Formål: Hente alle påmeldinger
-  - Respons: Array med påmelding-objekter
-  - Statuskoder:
-    - 200: Success
-    - 500: Server error
+### /bookings/:slug
 
-- POST
-
-  - Formål: Opprette ny påmelding
-  - Respons: Ett enkelt påmeldingsobjekt (ved flere på en gang håndteres de hver for seg)
-  - Statuskoder:
-    - 201: Created successfully
-    - 400: Validation error/Event full
-    - 500: Server error
-
-  ### /bookings/:slug
-
-- GET
-  - Formål: Hente påmeldiger for ett arrangement
-  - Respons: Array med påmeldingsobjekter
-  - Statuskoder:
-    - 200: Success
-    - 404: Event not found
-    - 500: Server error
+| Verb | Formål                               | Respons                      | Statuskoder                                               |
+| ---- | ------------------------------------ | ---------------------------- | --------------------------------------------------------- |
+| GET  | Hente påmeldiger for ett arrangement | Array med påmeldingsobjekter | 200: Success<br>404: Event not found<br>500: Server error |
 
 ### /bookings/:bookingId
 
-- PATCH
-
-  - Formål: Oppdatere påmeldingsstatus
-  - Respons:
-    ```typescript
-    {
-      status: "Godkjent" | "Til behandling" | "På venteliste" | "Avslått";
-      has_paid?: boolean;
-    }
-    ```
-  - Statuskoder:
-    - 200: Updated successfully
-    - 404: Booking not found
-    - 500: Server error
-
-- DELETE
-  - Formål: Slette påmelding
-  - Respons: Suksessmelding 200
-  - Statuskoder:
-    - 200: Deleted successfully
-    - 404: Booking not found
-    - 500: Server error
+| Verb   | Formål                     | Respons                                                          | Statuskoder                                                              |
+| ------ | -------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| PATCH  | Oppdatere påmeldingsstatus | Ett enkelt påmeldingsobjekt med statusstring og betalingsboolean | 200: Updated successfully<br>404: Booking not found<br>500: Server error |
+| DELETE | Slette påmelding           | Suksessmelding 200                                               | 200: Deleted successfully<br>404: Booking not found<br>500: Server error |
 
 ### /templates
 
-- GET
-
-  - Formål: hente alle maler
-  - Respons: Array med mal-objekter
-  - Statuskoder:
-    - 200: Success
-    - 500: Server error
-
-- POST
-  - Formål: Opprette ny mal
-  - Respons: Statuskode 201
-  - Statuskoder:
-    - 201: Created successfully
-    - 400: Validation error
-    - 500: Server error
+| Verb | Formål           | Respons                | Statuskoder                                                             |
+| ---- | ---------------- | ---------------------- | ----------------------------------------------------------------------- |
+| GET  | Hente alle maler | Array med mal-objekter | 200: Success<br>500: Server error                                       |
+| POST | Opprette ny mal  | Statuskode 201         | 201: Created successfully<br>400: Validation error<br>500: Server error |
 
 ### /templates/:templateId
 
-- GET
-
-  - Formål: Hente en spesifikk mal via mal-id
-  - Respons: Ett enkelt malobjekt
-  - Statuskoder:
-    - 200: Success
-    - 404: Template not found
-    - 500: Server error
-
-- PATCH
-
-  - Formål: Oppdatere mal
-  - Body: Updated template fields
-  - Respons: Updated template object
-  - Statuskoder:
-    - 200: Updated successfully
-    - 404: Template not found
-    - 500: Server error
-
-- DELETE
-  - Formål: Slette mal
-  - Respons: Statuskode 200
-  - Statuskoder:
-    - 200: Deleted successfully
-    - 409: Template in use
-    - 404: Template not found
-    - 500: Server error
+| Verb   | Formål                            | Respons                 | Statuskoder                                                                                       |
+| ------ | --------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------- |
+| GET    | Hente en spesifikk mal via mal-id | Ett enkelt malobjekt    | 200: Success<br>404: Template not found<br>500: Server error                                      |
+| PATCH  | Oppdatere mal                     | Updated template object | 200: Updated successfully<br>404: Template not found<br>500: Server error                         |
+| DELETE | Slette mal                        | Statuskode 200          | 200: Deleted successfully<br>409: Template in use<br>404: Template not found<br>500: Server error |
 
 ### /types
 
-- GET
-  - Formål: Hente alle arrangementtyper
-  - Respons: Array med type-objekter
-  - Statuskoder:
-    - 200: Success
-    - 500: Server error
+| Verb | Formål                      | Respons                 | Statuskoder                       |
+| ---- | --------------------------- | ----------------------- | --------------------------------- |
+| GET  | Hente alle arrangementtyper | Array med type-objekter | 200: Success<br>500: Server error |
 
 ## 5: Sidestruktur
 
@@ -238,9 +135,25 @@ Endepuktet `/events` tar imot query-parametere fra frontend. Controlleren skille
 
 ## 8: Malsystemet:
 
-- Opprettes gjennom administrasjonpanelet. Navn og type velges. Ukedager kan velges for å opprettholde regler rundt dager. Avhukingsbokser låser et arrangement til å benytte samme innstillinger om malen brukes som grunnlag for arrangementet.
+Gjenbrukbare maler for effektiv arrangementsoppretting for arrangementer som går igjen.
 
-- Gjenbruk: Kan velges fra en drop-down i arrangementskjema. Om en mal velges, vil enkelte felter, som type, kapasitet og pris auto-fylles. Dato må samsvare med dager satt i malen. Enkelte felter kan overstyres, basert på den enkelte malens innstillinger. I till skal ikke maler som er i bruk kunne slettes eller endres.
+### Opprettelse:
+
+- Opprettes gjennom administrasjonpanelet.
+- Navn, type, kapasitet og tillatte dager må fylles inn
+- Konfigurerbare felter:
+  - Pris (fast/variabel)
+  - Privat arrangement
+  - Venteliste
+  - Tillate andre arrangementer på samme dag
+
+### Gjenbruk:
+
+- Kan velges fra en drop-down i arrangementskjema.
+- Om en mal velges, vil enkelte felter, som type, kapasitet, venteliste og pris auto-fylles.
+- Dato må samsvare med dager satt i malen.
+- Enkelte felter kan overstyres, basert på den enkelte malens innstillinger.
+- Maler som er i bruk kan ikke slettes eller endres.
 
 ## 9: Databasemodell og relasjoner:
 

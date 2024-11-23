@@ -1,6 +1,6 @@
-// claude.ai - hele koden
 import { z } from "zod";
 
+// claude.ai - hele koden
 export const templateFormSchema = z.object({
   name: z
     .string()
@@ -87,8 +87,6 @@ export const eventFormSchema = z.object({
   allowSameDay: z.boolean(),
 });
 
-export type TemplateFormData = z.infer<typeof templateFormSchema>;
-export type EventFormData = z.infer<typeof eventFormSchema>;
 export type ValidationErrors = Partial<Record<string, string>>;
 
 // claude.ai

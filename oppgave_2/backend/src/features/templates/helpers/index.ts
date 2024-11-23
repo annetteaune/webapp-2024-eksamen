@@ -38,3 +38,16 @@ export const updateTemplateSchema = templateSchema.partial().omit({
 export type Template = z.infer<typeof templateSchema>;
 export type CreateTemplate = z.infer<typeof createTemplateSchema>;
 export type UpdateTemplate = z.infer<typeof updateTemplateSchema>;
+
+export type DbTemplate = {
+  id: string;
+  name: string;
+  allowed_days: string;
+  max_capacity: number;
+  price: number;
+  is_private: number;
+  allow_waitlist: number;
+  allow_same_day: number;
+  fixed_price: number;
+  created_at: string;
+};

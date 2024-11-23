@@ -2,28 +2,12 @@ import { type DB } from "../../../db/db";
 import { type Result } from "../../../types";
 import { generateUUID } from "../../../lib/uuid";
 import {
+  CreateTemplate,
+  DbTemplate,
+  Template,
   templateSchema,
-  type createTemplateSchema,
-  type updateTemplateSchema,
+  UpdateTemplate,
 } from "../helpers";
-import { z } from "zod";
-
-export type Template = z.infer<typeof templateSchema>;
-export type CreateTemplate = z.infer<typeof createTemplateSchema>;
-export type UpdateTemplate = z.infer<typeof updateTemplateSchema>;
-
-type DbTemplate = {
-  id: string;
-  name: string;
-  allowed_days: string;
-  max_capacity: number;
-  price: number;
-  is_private: number;
-  allow_waitlist: number;
-  allow_same_day: number;
-  fixed_price: number;
-  created_at: string;
-};
 
 export const findAllTemplates = async (db: DB): Promise<Result<Template[]>> => {
   try {

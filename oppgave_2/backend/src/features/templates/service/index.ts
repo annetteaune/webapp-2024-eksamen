@@ -5,11 +5,10 @@ import {
   createTemplate,
   updateTemplate,
   deleteTemplate,
-  type CreateTemplate,
-  type UpdateTemplate,
 } from "../repository";
 import { toTemplateResponse, toTemplatesResponse } from "../mappers";
 import { type Result } from "@/types";
+import { CreateTemplate, UpdateTemplate } from "../helpers";
 
 type TemplateResponse = ReturnType<typeof toTemplateResponse>;
 type TemplatesResponse = ReturnType<typeof toTemplatesResponse>;

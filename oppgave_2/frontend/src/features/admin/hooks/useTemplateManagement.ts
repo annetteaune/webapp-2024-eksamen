@@ -28,12 +28,10 @@ export const useTemplateManagement = () => {
       const response = await fetcher<{ events: any[] }>(
         `/events?template=${template.id}`
       );
-
       if (response.events?.length > 0) {
         setError("Kan ikke redigere maler som er i bruk.");
         return;
       }
-
       onEdit(template);
     } catch (error) {
       setError("Kunne ikke sjekke om malen er i bruk.");
@@ -50,12 +48,10 @@ export const useTemplateManagement = () => {
       const response = await fetcher<{ events: any[] }>(
         `/events?template=${template.id}`
       );
-
       if (response.events?.length > 0) {
         setError("Kan ikke slette maler som er i bruk.");
         return;
       }
-
       if (
         window.confirm(
           "Er du sikker på at du vil slette denne malen? Dette kan ikke angres."

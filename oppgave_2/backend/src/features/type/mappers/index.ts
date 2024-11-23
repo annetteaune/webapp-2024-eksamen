@@ -1,4 +1,4 @@
-import { type Type } from "../repository";
+import { Type } from "../helpers";
 
 export const toTypeResponse = (type: Type) => ({
   id: type.id,

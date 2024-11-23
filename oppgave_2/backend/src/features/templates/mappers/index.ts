@@ -1,5 +1,3 @@
-import { type Template } from "../repository";
-
 export const toTemplateResponse = (template: any) => ({
   id: template.id,
   name: template.name,

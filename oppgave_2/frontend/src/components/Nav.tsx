@@ -6,8 +6,7 @@ import { IoPeopleCircleOutline } from "react-icons/io5";
 export default function Nav() {
   const router = useRouter();
 
-  // resette params når man klikker på logo
-  // claude.ai
+  // resette params når man klikker på logo - claude.ai
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     router.push("/");

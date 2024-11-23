@@ -2,22 +2,12 @@
 import { useTypes } from "@/features/types/hooks/useTypes";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { getTypeSlug } from "../helpers/typeSlug";
 
 export default function Filter() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { types, isLoading: isLoadingTypes } = useTypes();
-
-  // konverterer typenavn til url-vennlig format, tar høyde for norske bokstaver og mellomrom
-  // fått hjelp av claude.ai
-  const getTypeSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/æ/g, "ae")
-      .replace(/ø/g, "o")
-      .replace(/å/g, "a")
-      .replace(/\s+/g, "-");
-  };
 
   const [selectedType, setSelectedType] = useState(
     searchParams.get("type") || ""

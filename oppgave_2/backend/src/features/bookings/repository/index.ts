@@ -92,46 +92,6 @@ export const findBookingsByEventId = async (
   }
 };
 
-const getApprovedBookingsCount = (db: DB, eventId: string): number => {
-  const result = db
-    .prepare(
-      `
-      SELECT COUNT(*) as count 
-      FROM bookings 
-      WHERE event_id = ? AND status = 'Godkjent'
-    `
-    )
-    .get(eventId) as { count: number };
-
-  return result.count;
-};
-
-const getEventDetails = (db: DB, eventId: string): EventDetails | undefined => {
-  return db
-    .prepare(
-      `
-      SELECT e.price, e.capacity, e.template_id, e.status,
-             t.allow_waitlist
-      FROM events e
-      JOIN templates t ON e.template_id = t.id
-      WHERE e.id = ?
-    `
-    )
-    .get(eventId) as EventDetails;
-};
-
-const getTemplateDetails = (db: DB, templateId: string) => {
-  return db
-    .prepare(
-      `
-      SELECT allow_waitlist
-      FROM templates
-      WHERE id = ?
-    `
-    )
-    .get(templateId) as { allow_waitlist: number };
-};
-
 // claude.ai har skrevet store deler av denne koden
 export const createBooking = async (
   db: DB,

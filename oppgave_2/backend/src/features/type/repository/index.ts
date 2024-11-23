@@ -1,9 +1,6 @@
 import { type DB } from "@/db/db";
 import { type Result } from "@/types";
-import { typeSchema } from "../helpers";
-import { z } from "zod";
-
-export type Type = z.infer<typeof typeSchema>;
+import { Type, typeSchema } from "../helpers";
 
 export const findAllTypes = async (db: DB): Promise<Result<Type[]>> => {
   try {

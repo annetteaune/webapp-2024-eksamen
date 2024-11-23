@@ -24,7 +24,6 @@ export default function BookingForm({
     removeAttendee,
     updateAttendee,
     handleSubmit,
-    resetForm,
   } = useBookingForm({ eventId, eventSlug });
 
   if (!event) {

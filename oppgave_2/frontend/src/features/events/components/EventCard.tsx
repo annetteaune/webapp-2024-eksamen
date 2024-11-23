@@ -21,14 +21,12 @@ type EventCardProps = {
 };
 
 export default function EventCard({
-  id,
   slug,
   title,
   type,
   date,
   location,
   description,
-  capacity,
   status,
 }: EventCardProps) {
   const formattedDate = format(new Date(date), "d. MMMM yyyy", {

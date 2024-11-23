@@ -16,6 +16,7 @@ export const useAdminDashboard = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -171,6 +172,72 @@ export const useAdminDashboard = () => {
     }
   };
 
+  const handleCreateEvent = async (
+    eventData: Omit<Event, "id" | "status" | "waitlist">
+  ) => {
+    try {
+      const backendData = {
+        slug: eventData.slug,
+        title: eventData.title,
+        description_short: eventData.descriptionShort,
+        description_long: eventData.descriptionLong,
+        date: new Date(eventData.date).toISOString(),
+        location: eventData.location,
+        type_id: eventData.type.id,
+        capacity: Number(eventData.capacity),
+        price: Number(eventData.price),
+        is_private: Boolean(eventData.isPrivate),
+        allow_same_day: Boolean(eventData.allowSameDay),
+        allow_waitlist: Boolean(eventData.allowWaitlist),
+        ...(eventData.templateId && { template_id: eventData.templateId }),
+      };
+
+      const response = await fetcher("/events", {
+        method: "POST",
+        body: JSON.stringify(backendData),
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      setEvents((prev) => [...prev, response]);
+      setShowNewEventForm(false);
+      return response;
+    } catch (error) {
+      console.error("Error creating event:", error);
+      throw error;
+    }
+  };
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      const result = await deleteEvent(eventId);
+      if (!result.success) {
+        setErrorMessage(result.message || "Kunne ikke slette arrangementet");
+      }
+    } catch (error) {
+      setErrorMessage(
+        "En uventet feil oppstod under sletting av arrangementet"
+      );
+    }
+  };
+
+  const handleSubmitTemplate = async (
+    data: Omit<Template, "id" | "createdAt">
+  ) => {
+    if (selectedTemplate) {
+      const result = await updateTemplate(selectedTemplate.id, data);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+    } else {
+      const result = await createTemplate(data);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+    }
+  };
+
   return {
     activeTab,
     setActiveTab,
@@ -188,5 +255,10 @@ export const useAdminDashboard = () => {
     deleteTemplate,
     createTemplate,
     updateTemplate,
+    handleCreateEvent,
+    handleDeleteEvent,
+    handleSubmitTemplate,
+    errorMessage,
+    setErrorMessage,
   };
 };

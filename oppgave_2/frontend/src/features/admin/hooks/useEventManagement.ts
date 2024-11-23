@@ -21,7 +21,6 @@ export const useEventManagement = () => {
         setError("Kan ikke slette arrangementer som har påmeldinger.");
         return;
       }
-
       if (
         window.confirm(
           "Er du sikker på at du vil slette dette arrangementet? Dette kan ikke angres."
@@ -30,7 +29,7 @@ export const useEventManagement = () => {
         onDeleteCallback(eventId);
       }
     } catch (error) {
-      setError("Kunne ikke sjekke påmeldingsstatus. Prøv igjen senere.");
+      setError("Kunne ikke sjekke påmeldingsstatus.");
     }
   };
 

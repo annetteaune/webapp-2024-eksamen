@@ -57,3 +57,27 @@ export const updateEventSchema = z
     allow_waitlist: z.boolean(),
   })
   .partial();
+
+export type Event = z.infer<typeof eventSchema>;
+export type CreateEvent = z.infer<typeof createEventSchema>;
+export type UpdateEvent = z.infer<typeof updateEventSchema>;
+
+export type DbEvent = {
+  id: string;
+  slug: string;
+  title: string;
+  description_short: string;
+  description_long: string;
+  date: string;
+  location: string;
+  type_id: string;
+  type_name: string;
+  capacity: number;
+  price: number;
+  template_id: string | null;
+  status: string;
+  is_private: number;
+  allow_same_day: number;
+  waitlist: string | null;
+  allow_waitlist: string;
+};
