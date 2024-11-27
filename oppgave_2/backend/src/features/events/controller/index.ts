@@ -13,6 +13,7 @@ import { createEventSchema, updateEventSchema } from "../helpers";
 const app = new Hono();
 
 app.get("/", async (c) => {
+  // fått hjelp av claide.ai til å håndtere filtrering
   const { type, month, year, template, includePrivate } = c.req.query();
 
   const filters = {

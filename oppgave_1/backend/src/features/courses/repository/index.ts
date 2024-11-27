@@ -104,10 +104,7 @@ export const createCourseRepository = (db: DB) => {
   ): Promise<Result<Course>> => {
     try {
       const courseId = String(Math.random());
-
-      // Start a transaction to ensure all operations succeed or fail together
       const result = db.transaction(() => {
-        // Insert course
         const courseStmt = db.prepare(`
           INSERT INTO courses (id, title, slug, description, category)
           VALUES (?, ?, ?, ?, ?)
@@ -121,7 +118,6 @@ export const createCourseRepository = (db: DB) => {
           courseData.category
         );
 
-        // Insert lessons if they exist
         if (courseData.lessons && courseData.lessons.length > 0) {
           const lessonStmt = db.prepare(`
             INSERT INTO lessons (id, course_id, title, slug, preAmble)
@@ -136,7 +132,6 @@ export const createCourseRepository = (db: DB) => {
           for (const lesson of courseData.lessons) {
             const lessonId = String(Math.random());
 
-            // Insert lesson
             lessonStmt.run(
               lessonId,
               courseId,
@@ -145,14 +140,9 @@ export const createCourseRepository = (db: DB) => {
               lesson.preAmble
             );
 
-            // Insert lesson texts if they exist
             if (lesson.text && lesson.text.length > 0) {
               for (const textItem of lesson.text) {
-                textStmt.run(
-                  String(Math.random()), // Generate new ID for each text
-                  lessonId,
-                  textItem.text
-                );
+                textStmt.run(String(Math.random()), lessonId, textItem.text);
               }
             }
           }
@@ -179,6 +169,7 @@ export const createCourseRepository = (db: DB) => {
     category: string
   ): Promise<Result<Course>> => {
     try {
+      // claude.ai
       const stmt = db.prepare(`
         UPDATE courses 
         SET category = ?
@@ -192,14 +183,14 @@ export const createCourseRepository = (db: DB) => {
     }
   };
 
-  // slette
+  // slette - hjelp fra claude.ai
   const remove = async (slug: string): Promise<Result<void>> => {
     try {
       const courseQuery = db.prepare("SELECT id FROM courses WHERE slug = ?");
       const course = courseQuery.get(slug) as CourseRow;
 
       if (course) {
-        // henter alle tilknyttede leksjoner for å få tilgang til slugs
+        // henter alle tilknyttede leksjoner for å få tilgang til slugs - claude.ai
         const lessonsQuery = db.prepare(
           "SELECT id, slug FROM lessons WHERE course_id = ?"
         );

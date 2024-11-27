@@ -100,7 +100,7 @@ export const ResultHandler = {
 };
 
 // typer for å hente leksjoner tilhørende kurs
-// her har jeg fått hjelp fra claude.ai
+//  claude.ai
 export interface CourseRow {
   id: string;
   title: string;
@@ -108,27 +108,17 @@ export interface CourseRow {
   description: string;
   category: string;
 }
-// claude.ai
-export interface LessonRow {
-  id: string;
-  course_id: string;
-  title: string;
-  slug: string;
-  pre_amble: string;
-  order_number: number;
-}
+
 // claude.ai
 export interface LessonText {
   id: string;
   text: string;
 }
 // claude.ai
-// For creating new lesson text without requiring an id
 export interface CreateLessonTextDTO {
   text: string;
 }
 // claude.ai
-// For creating new lessons
 export interface CreateLessonDTO {
   title: string;
   slug: string;
@@ -136,7 +126,6 @@ export interface CreateLessonDTO {
   text: CreateLessonTextDTO[];
 }
 // claude.ai
-// For creating new courses
 export interface CreateCourseDTO {
   title: string;
   slug: string;

@@ -21,14 +21,6 @@ type DbBooking = {
   status: string;
 };
 
-type EventDetails = {
-  price: number;
-  capacity: number;
-  template_id: string;
-  status: string;
-  allow_waitlist: string;
-};
-
 type DbEvent = {
   id: string;
   capacity: number;

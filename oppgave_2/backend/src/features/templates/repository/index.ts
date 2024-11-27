@@ -55,7 +55,7 @@ export const findTemplateById = async (
         success: false,
         error: {
           code: "TEMPLATE_NOT_FOUND",
-          message: `Mal ${templateId} kunne ikke finnes`,
+          message: `Malen ${templateId} kunne ikke finnes`,
         },
       };
     }
@@ -186,6 +186,7 @@ export const updateTemplate = async (
   }
 };
 
+// fått hjelp av claude.ai
 export const deleteTemplate = async (
   db: DB,
   templateId: string

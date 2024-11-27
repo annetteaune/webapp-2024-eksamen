@@ -22,13 +22,6 @@ export interface Comment {
   createdAt?: string;
 }
 
-export interface CreateCommentDTO {
-  createdById: string;
-  createdByName: string;
-  comment: string;
-  lessonSlug: string;
-}
-
 export interface LessonText {
   id: string;
   text: string;
@@ -49,11 +42,6 @@ export interface Course {
   description: string;
   lessons: Lesson[];
   category: string;
-}
-
-export interface CourseStep {
-  id: string;
-  name: string;
 }
 
 export interface CourseFields {

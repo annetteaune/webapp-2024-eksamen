@@ -5,7 +5,7 @@ import { createCourseRepository } from "../repository";
 
 import db from "../../../db/db";
 import { courseSchema } from "../helpers";
-import { Course, CreateCourseDTO } from "@/types";
+import { CreateCourseDTO } from "@/types";
 
 const courseRouter = new Hono();
 
